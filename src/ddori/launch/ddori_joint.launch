@@ -1,6 +1,8 @@
 <launch>
-
-
+<!--
+	<include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch">
+	</include>
+-->
 	<arg name="gui" default="False" />
 	<param name="robot_description" textfile="$(find ddori_description)/urdf/ddori.urdf" />
 	<param name="use_gui" value="$(arg gui)"/>	
@@ -30,6 +32,12 @@
 	<node pkg="ddori_keyop" type="keyop" name="keyop">
 	    <remap from="keyop/motor_power" to="motor_power"/>	
 	    <remap from="keyop/cmd_vel" to="cmd_vel"/>	
+	    <remap from="keyop/cmd_armservo_power" to="cmd_armservo_power"/>	
+	    <remap from="keyop/cmd_armshug" to="cmd_armshug"/>	
+	    <remap from="keyop/cmd_armspos" to="cmd_armspos"/>	
+	    <remap from="keyop/cmd_gassesnsor_power" to="cmd_gassesnsor_power"/>	
+	    <remap from="keyop/cmd_light" to="cmd_light"/>	
+	    <remap from="keyop/cmd_sonar_power" to="cmd_sonar_power"/>	
 	</node>
 	<node pkg="mpu_6050" type="mpu_6050_node" name="mpu_6050_node"/>
 	<node pkg="imu_offset" type="imu_yaw_offset" name="imu_yaw_offset"/>
@@ -42,9 +50,5 @@
 	<node pkg="web_video_server" type="web_video_server" name="web_video_server">
 		<param name="_port" value="8080"/>
 	</node>
--->	
-<!--	
-	<include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch">
-	</include>
 -->	
 </launch>
