@@ -1,0 +1,8 @@
+prefix=/home/dolmangi/catkin_ws/install
+
+Name: ddori
+Description: Description of ddori
+Version: 0.0.0
+Cflags: -I/home/dolmangi/catkin_ws/install/include
+Libs: -L/home/dolmangi/catkin_ws/install/lib 
+Requires: 

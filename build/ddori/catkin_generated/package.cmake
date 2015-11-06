@@ -1,0 +1,7 @@
+set(_CATKIN_CURRENT_PACKAGE "ddori")
+set(ddori_MAINTAINER "pi <pi@todo.todo>")
+set(ddori_DEPRECATED "")
+set(ddori_VERSION "0.0.0")
+set(ddori_BUILD_DEPENDS "roscpp" "rospy" "std_msgs")
+set(ddori_RUN_DEPENDS "roscpp" "rospy" "std_msgs")
+set(ddori_BUILDTOOL_DEPENDS "catkin")
