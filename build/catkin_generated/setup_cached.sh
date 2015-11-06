@@ -8,4 +8,5 @@
 
 # modified environment variables
 export LD_LIBRARY_PATH="/home/dolmangi/catkin_ws/devel/lib/arm-linux-gnueabihf:/opt/ros/indigo/lib/arm-linux-gnueabihf:/home/dolmangi/catkin_ws/devel/lib:/opt/ros/indigo/lib"
+export PKG_CONFIG_PATH="/home/dolmangi/catkin_ws/devel/lib/arm-linux-gnueabihf/pkgconfig:/opt/ros/indigo/lib/arm-linux-gnueabihf/pkgconfig:/home/dolmangi/catkin_ws/devel/lib/pkgconfig:/opt/ros/indigo/lib/pkgconfig"
 export PWD="/home/dolmangi/catkin_ws/build"

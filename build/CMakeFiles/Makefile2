@@ -448,8 +448,8 @@ clean: ddori/CMakeFiles/ddori_gencpp.dir/clean
 # Target rules for target ddori/CMakeFiles/ddori_generate_messages.dir
 
 # All Build rule for target.
-ddori/CMakeFiles/ddori_generate_messages.dir/all: ddori/CMakeFiles/ddori_generate_messages_cpp.dir/all
 ddori/CMakeFiles/ddori_generate_messages.dir/all: ddori/CMakeFiles/ddori_generate_messages_py.dir/all
+ddori/CMakeFiles/ddori_generate_messages.dir/all: ddori/CMakeFiles/ddori_generate_messages_cpp.dir/all
 ddori/CMakeFiles/ddori_generate_messages.dir/all: ddori/CMakeFiles/ddori_generate_messages_lisp.dir/all
 	$(MAKE) -f ddori/CMakeFiles/ddori_generate_messages.dir/build.make ddori/CMakeFiles/ddori_generate_messages.dir/depend
 	$(MAKE) -f ddori/CMakeFiles/ddori_generate_messages.dir/build.make ddori/CMakeFiles/ddori_generate_messages.dir/build
@@ -486,9 +486,9 @@ clean: ddori/CMakeFiles/ddori_generate_messages.dir/clean
 
 # All Build rule for target.
 ddori/CMakeFiles/ddori_generate_messages_cpp.dir/all: ddori/CMakeFiles/_ddori_generate_messages_check_deps_pir_sensor_msg.dir/all
-ddori/CMakeFiles/ddori_generate_messages_cpp.dir/all: ddori/CMakeFiles/_ddori_generate_messages_check_deps_temperature_msg.dir/all
-ddori/CMakeFiles/ddori_generate_messages_cpp.dir/all: ddori/CMakeFiles/_ddori_generate_messages_check_deps_battery_msg.dir/all
 ddori/CMakeFiles/ddori_generate_messages_cpp.dir/all: ddori/CMakeFiles/std_msgs_generate_messages_cpp.dir/all
+ddori/CMakeFiles/ddori_generate_messages_cpp.dir/all: ddori/CMakeFiles/_ddori_generate_messages_check_deps_battery_msg.dir/all
+ddori/CMakeFiles/ddori_generate_messages_cpp.dir/all: ddori/CMakeFiles/_ddori_generate_messages_check_deps_temperature_msg.dir/all
 	$(MAKE) -f ddori/CMakeFiles/ddori_generate_messages_cpp.dir/build.make ddori/CMakeFiles/ddori_generate_messages_cpp.dir/depend
 	$(MAKE) -f ddori/CMakeFiles/ddori_generate_messages_cpp.dir/build.make ddori/CMakeFiles/ddori_generate_messages_cpp.dir/build
 	$(CMAKE_COMMAND) -E cmake_progress_report /home/dolmangi/catkin_ws/build/CMakeFiles  1 2 3
@@ -520,9 +520,9 @@ clean: ddori/CMakeFiles/ddori_generate_messages_cpp.dir/clean
 
 # All Build rule for target.
 ddori/CMakeFiles/ddori_generate_messages_lisp.dir/all: ddori/CMakeFiles/_ddori_generate_messages_check_deps_pir_sensor_msg.dir/all
-ddori/CMakeFiles/ddori_generate_messages_lisp.dir/all: ddori/CMakeFiles/_ddori_generate_messages_check_deps_temperature_msg.dir/all
 ddori/CMakeFiles/ddori_generate_messages_lisp.dir/all: ddori/CMakeFiles/_ddori_generate_messages_check_deps_battery_msg.dir/all
 ddori/CMakeFiles/ddori_generate_messages_lisp.dir/all: ddori/CMakeFiles/std_msgs_generate_messages_lisp.dir/all
+ddori/CMakeFiles/ddori_generate_messages_lisp.dir/all: ddori/CMakeFiles/_ddori_generate_messages_check_deps_temperature_msg.dir/all
 	$(MAKE) -f ddori/CMakeFiles/ddori_generate_messages_lisp.dir/build.make ddori/CMakeFiles/ddori_generate_messages_lisp.dir/depend
 	$(MAKE) -f ddori/CMakeFiles/ddori_generate_messages_lisp.dir/build.make ddori/CMakeFiles/ddori_generate_messages_lisp.dir/build
 	$(CMAKE_COMMAND) -E cmake_progress_report /home/dolmangi/catkin_ws/build/CMakeFiles  4 5 6
@@ -554,9 +554,9 @@ clean: ddori/CMakeFiles/ddori_generate_messages_lisp.dir/clean
 
 # All Build rule for target.
 ddori/CMakeFiles/ddori_generate_messages_py.dir/all: ddori/CMakeFiles/_ddori_generate_messages_check_deps_pir_sensor_msg.dir/all
-ddori/CMakeFiles/ddori_generate_messages_py.dir/all: ddori/CMakeFiles/_ddori_generate_messages_check_deps_temperature_msg.dir/all
 ddori/CMakeFiles/ddori_generate_messages_py.dir/all: ddori/CMakeFiles/_ddori_generate_messages_check_deps_battery_msg.dir/all
 ddori/CMakeFiles/ddori_generate_messages_py.dir/all: ddori/CMakeFiles/std_msgs_generate_messages_py.dir/all
+ddori/CMakeFiles/ddori_generate_messages_py.dir/all: ddori/CMakeFiles/_ddori_generate_messages_check_deps_temperature_msg.dir/all
 	$(MAKE) -f ddori/CMakeFiles/ddori_generate_messages_py.dir/build.make ddori/CMakeFiles/ddori_generate_messages_py.dir/depend
 	$(MAKE) -f ddori/CMakeFiles/ddori_generate_messages_py.dir/build.make ddori/CMakeFiles/ddori_generate_messages_py.dir/build
 	$(CMAKE_COMMAND) -E cmake_progress_report /home/dolmangi/catkin_ws/build/CMakeFiles  7 8 9 10
