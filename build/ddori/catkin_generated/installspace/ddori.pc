@@ -5,4 +5,4 @@ Description: Description of ddori
 Version: 0.0.0
 Cflags: -I/home/dolmangi/catkin_ws/install/include
 Libs: -L/home/dolmangi/catkin_ws/install/lib 
-Requires: 
+Requires: roscpp rospy std_msgs ecl_exceptions ecl_threads ecl_time

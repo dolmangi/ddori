@@ -1,6 +1,6 @@
 # generated from genmsg/cmake/pkg-genmsg.context.in
 
-messages_str = "/home/dolmangi/catkin_ws/src/ddori/msg/battery_msg.msg;/home/dolmangi/catkin_ws/src/ddori/msg/pir_sensor_msg.msg;/home/dolmangi/catkin_ws/src/ddori/msg/temperature_msg.msg"
+messages_str = "/home/dolmangi/catkin_ws/src/ddori/msg/ddori_sensor.msg"
 services_str = ""
 pkg_name = "ddori"
 dependencies_str = "std_msgs"

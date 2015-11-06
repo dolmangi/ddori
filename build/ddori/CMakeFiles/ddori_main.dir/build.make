@@ -96,8 +96,15 @@ ddori_main_EXTERNAL_OBJECTS =
 /home/dolmangi/catkin_ws/devel/lib/ddori/ddori_main: /opt/ros/indigo/lib/libcpp_common.so
 /home/dolmangi/catkin_ws/devel/lib/ddori/ddori_main: /usr/lib/arm-linux-gnueabihf/libboost_system.so
 /home/dolmangi/catkin_ws/devel/lib/ddori/ddori_main: /usr/lib/arm-linux-gnueabihf/libboost_thread.so
-/home/dolmangi/catkin_ws/devel/lib/ddori/ddori_main: /usr/lib/arm-linux-gnueabihf/libpthread.so
 /home/dolmangi/catkin_ws/devel/lib/ddori/ddori_main: /usr/lib/arm-linux-gnueabihf/libconsole_bridge.so
+/home/dolmangi/catkin_ws/devel/lib/ddori/ddori_main: /opt/ros/indigo/lib/libecl_threads.so
+/home/dolmangi/catkin_ws/devel/lib/ddori/ddori_main: /usr/lib/arm-linux-gnueabihf/libpthread.so
+/home/dolmangi/catkin_ws/devel/lib/ddori/ddori_main: /opt/ros/indigo/lib/libecl_type_traits.so
+/home/dolmangi/catkin_ws/devel/lib/ddori/ddori_main: /opt/ros/indigo/lib/libecl_time.so
+/home/dolmangi/catkin_ws/devel/lib/ddori/ddori_main: /opt/ros/indigo/lib/libecl_exceptions.so
+/home/dolmangi/catkin_ws/devel/lib/ddori/ddori_main: /opt/ros/indigo/lib/libecl_errors.so
+/home/dolmangi/catkin_ws/devel/lib/ddori/ddori_main: /opt/ros/indigo/lib/libecl_time_lite.so
+/home/dolmangi/catkin_ws/devel/lib/ddori/ddori_main: /usr/lib/arm-linux-gnueabihf/librt.so
 /home/dolmangi/catkin_ws/devel/lib/ddori/ddori_main: ddori/CMakeFiles/ddori_main.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --red --bold "Linking CXX executable /home/dolmangi/catkin_ws/devel/lib/ddori/ddori_main"
 	cd /home/dolmangi/catkin_ws/build/ddori && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/ddori_main.dir/link.txt --verbose=$(VERBOSE)

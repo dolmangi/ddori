@@ -45,41 +45,23 @@ CMAKE_BINARY_DIR = /home/dolmangi/catkin_ws/build
 # Include the progress variables for this target.
 include ddori/CMakeFiles/ddori_generate_messages_py.dir/progress.make
 
-ddori/CMakeFiles/ddori_generate_messages_py: /home/dolmangi/catkin_ws/devel/lib/python2.7/dist-packages/ddori/msg/_battery_msg.py
-ddori/CMakeFiles/ddori_generate_messages_py: /home/dolmangi/catkin_ws/devel/lib/python2.7/dist-packages/ddori/msg/_temperature_msg.py
-ddori/CMakeFiles/ddori_generate_messages_py: /home/dolmangi/catkin_ws/devel/lib/python2.7/dist-packages/ddori/msg/_pir_sensor_msg.py
+ddori/CMakeFiles/ddori_generate_messages_py: /home/dolmangi/catkin_ws/devel/lib/python2.7/dist-packages/ddori/msg/_ddori_sensor.py
 ddori/CMakeFiles/ddori_generate_messages_py: /home/dolmangi/catkin_ws/devel/lib/python2.7/dist-packages/ddori/msg/__init__.py
 
-/home/dolmangi/catkin_ws/devel/lib/python2.7/dist-packages/ddori/msg/_battery_msg.py: /opt/ros/indigo/share/genpy/cmake/../../../lib/genpy/genmsg_py.py
-/home/dolmangi/catkin_ws/devel/lib/python2.7/dist-packages/ddori/msg/_battery_msg.py: /home/dolmangi/catkin_ws/src/ddori/msg/battery_msg.msg
+/home/dolmangi/catkin_ws/devel/lib/python2.7/dist-packages/ddori/msg/_ddori_sensor.py: /opt/ros/indigo/share/genpy/cmake/../../../lib/genpy/genmsg_py.py
+/home/dolmangi/catkin_ws/devel/lib/python2.7/dist-packages/ddori/msg/_ddori_sensor.py: /home/dolmangi/catkin_ws/src/ddori/msg/ddori_sensor.msg
 	$(CMAKE_COMMAND) -E cmake_progress_report /home/dolmangi/catkin_ws/build/CMakeFiles $(CMAKE_PROGRESS_1)
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold "Generating Python from MSG ddori/battery_msg"
-	cd /home/dolmangi/catkin_ws/build/ddori && ../catkin_generated/env_cached.sh /usr/bin/python /opt/ros/indigo/share/genpy/cmake/../../../lib/genpy/genmsg_py.py /home/dolmangi/catkin_ws/src/ddori/msg/battery_msg.msg -Iddori:/home/dolmangi/catkin_ws/src/ddori/msg -Istd_msgs:/opt/ros/indigo/share/std_msgs/cmake/../msg -p ddori -o /home/dolmangi/catkin_ws/devel/lib/python2.7/dist-packages/ddori/msg
-
-/home/dolmangi/catkin_ws/devel/lib/python2.7/dist-packages/ddori/msg/_temperature_msg.py: /opt/ros/indigo/share/genpy/cmake/../../../lib/genpy/genmsg_py.py
-/home/dolmangi/catkin_ws/devel/lib/python2.7/dist-packages/ddori/msg/_temperature_msg.py: /home/dolmangi/catkin_ws/src/ddori/msg/temperature_msg.msg
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/dolmangi/catkin_ws/build/CMakeFiles $(CMAKE_PROGRESS_2)
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold "Generating Python from MSG ddori/temperature_msg"
-	cd /home/dolmangi/catkin_ws/build/ddori && ../catkin_generated/env_cached.sh /usr/bin/python /opt/ros/indigo/share/genpy/cmake/../../../lib/genpy/genmsg_py.py /home/dolmangi/catkin_ws/src/ddori/msg/temperature_msg.msg -Iddori:/home/dolmangi/catkin_ws/src/ddori/msg -Istd_msgs:/opt/ros/indigo/share/std_msgs/cmake/../msg -p ddori -o /home/dolmangi/catkin_ws/devel/lib/python2.7/dist-packages/ddori/msg
-
-/home/dolmangi/catkin_ws/devel/lib/python2.7/dist-packages/ddori/msg/_pir_sensor_msg.py: /opt/ros/indigo/share/genpy/cmake/../../../lib/genpy/genmsg_py.py
-/home/dolmangi/catkin_ws/devel/lib/python2.7/dist-packages/ddori/msg/_pir_sensor_msg.py: /home/dolmangi/catkin_ws/src/ddori/msg/pir_sensor_msg.msg
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/dolmangi/catkin_ws/build/CMakeFiles $(CMAKE_PROGRESS_3)
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold "Generating Python from MSG ddori/pir_sensor_msg"
-	cd /home/dolmangi/catkin_ws/build/ddori && ../catkin_generated/env_cached.sh /usr/bin/python /opt/ros/indigo/share/genpy/cmake/../../../lib/genpy/genmsg_py.py /home/dolmangi/catkin_ws/src/ddori/msg/pir_sensor_msg.msg -Iddori:/home/dolmangi/catkin_ws/src/ddori/msg -Istd_msgs:/opt/ros/indigo/share/std_msgs/cmake/../msg -p ddori -o /home/dolmangi/catkin_ws/devel/lib/python2.7/dist-packages/ddori/msg
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold "Generating Python from MSG ddori/ddori_sensor"
+	cd /home/dolmangi/catkin_ws/build/ddori && ../catkin_generated/env_cached.sh /usr/bin/python /opt/ros/indigo/share/genpy/cmake/../../../lib/genpy/genmsg_py.py /home/dolmangi/catkin_ws/src/ddori/msg/ddori_sensor.msg -Iddori:/home/dolmangi/catkin_ws/src/ddori/msg -Istd_msgs:/opt/ros/indigo/share/std_msgs/cmake/../msg -p ddori -o /home/dolmangi/catkin_ws/devel/lib/python2.7/dist-packages/ddori/msg
 
 /home/dolmangi/catkin_ws/devel/lib/python2.7/dist-packages/ddori/msg/__init__.py: /opt/ros/indigo/share/genpy/cmake/../../../lib/genpy/genmsg_py.py
-/home/dolmangi/catkin_ws/devel/lib/python2.7/dist-packages/ddori/msg/__init__.py: /home/dolmangi/catkin_ws/devel/lib/python2.7/dist-packages/ddori/msg/_battery_msg.py
-/home/dolmangi/catkin_ws/devel/lib/python2.7/dist-packages/ddori/msg/__init__.py: /home/dolmangi/catkin_ws/devel/lib/python2.7/dist-packages/ddori/msg/_temperature_msg.py
-/home/dolmangi/catkin_ws/devel/lib/python2.7/dist-packages/ddori/msg/__init__.py: /home/dolmangi/catkin_ws/devel/lib/python2.7/dist-packages/ddori/msg/_pir_sensor_msg.py
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/dolmangi/catkin_ws/build/CMakeFiles $(CMAKE_PROGRESS_4)
+/home/dolmangi/catkin_ws/devel/lib/python2.7/dist-packages/ddori/msg/__init__.py: /home/dolmangi/catkin_ws/devel/lib/python2.7/dist-packages/ddori/msg/_ddori_sensor.py
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/dolmangi/catkin_ws/build/CMakeFiles $(CMAKE_PROGRESS_2)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold "Generating Python msg __init__.py for ddori"
 	cd /home/dolmangi/catkin_ws/build/ddori && ../catkin_generated/env_cached.sh /usr/bin/python /opt/ros/indigo/share/genpy/cmake/../../../lib/genpy/genmsg_py.py -o /home/dolmangi/catkin_ws/devel/lib/python2.7/dist-packages/ddori/msg --initpy
 
 ddori_generate_messages_py: ddori/CMakeFiles/ddori_generate_messages_py
-ddori_generate_messages_py: /home/dolmangi/catkin_ws/devel/lib/python2.7/dist-packages/ddori/msg/_battery_msg.py
-ddori_generate_messages_py: /home/dolmangi/catkin_ws/devel/lib/python2.7/dist-packages/ddori/msg/_temperature_msg.py
-ddori_generate_messages_py: /home/dolmangi/catkin_ws/devel/lib/python2.7/dist-packages/ddori/msg/_pir_sensor_msg.py
+ddori_generate_messages_py: /home/dolmangi/catkin_ws/devel/lib/python2.7/dist-packages/ddori/msg/_ddori_sensor.py
 ddori_generate_messages_py: /home/dolmangi/catkin_ws/devel/lib/python2.7/dist-packages/ddori/msg/__init__.py
 ddori_generate_messages_py: ddori/CMakeFiles/ddori_generate_messages_py.dir/build.make
 .PHONY : ddori_generate_messages_py

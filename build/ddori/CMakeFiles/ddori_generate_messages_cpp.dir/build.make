@@ -45,35 +45,17 @@ CMAKE_BINARY_DIR = /home/dolmangi/catkin_ws/build
 # Include the progress variables for this target.
 include ddori/CMakeFiles/ddori_generate_messages_cpp.dir/progress.make
 
-ddori/CMakeFiles/ddori_generate_messages_cpp: /home/dolmangi/catkin_ws/devel/include/ddori/battery_msg.h
-ddori/CMakeFiles/ddori_generate_messages_cpp: /home/dolmangi/catkin_ws/devel/include/ddori/temperature_msg.h
-ddori/CMakeFiles/ddori_generate_messages_cpp: /home/dolmangi/catkin_ws/devel/include/ddori/pir_sensor_msg.h
+ddori/CMakeFiles/ddori_generate_messages_cpp: /home/dolmangi/catkin_ws/devel/include/ddori/ddori_sensor.h
 
-/home/dolmangi/catkin_ws/devel/include/ddori/battery_msg.h: /opt/ros/indigo/share/gencpp/cmake/../../../lib/gencpp/gen_cpp.py
-/home/dolmangi/catkin_ws/devel/include/ddori/battery_msg.h: /home/dolmangi/catkin_ws/src/ddori/msg/battery_msg.msg
-/home/dolmangi/catkin_ws/devel/include/ddori/battery_msg.h: /opt/ros/indigo/share/gencpp/cmake/../msg.h.template
+/home/dolmangi/catkin_ws/devel/include/ddori/ddori_sensor.h: /opt/ros/indigo/share/gencpp/cmake/../../../lib/gencpp/gen_cpp.py
+/home/dolmangi/catkin_ws/devel/include/ddori/ddori_sensor.h: /home/dolmangi/catkin_ws/src/ddori/msg/ddori_sensor.msg
+/home/dolmangi/catkin_ws/devel/include/ddori/ddori_sensor.h: /opt/ros/indigo/share/gencpp/cmake/../msg.h.template
 	$(CMAKE_COMMAND) -E cmake_progress_report /home/dolmangi/catkin_ws/build/CMakeFiles $(CMAKE_PROGRESS_1)
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold "Generating C++ code from ddori/battery_msg.msg"
-	cd /home/dolmangi/catkin_ws/build/ddori && ../catkin_generated/env_cached.sh /usr/bin/python /opt/ros/indigo/share/gencpp/cmake/../../../lib/gencpp/gen_cpp.py /home/dolmangi/catkin_ws/src/ddori/msg/battery_msg.msg -Iddori:/home/dolmangi/catkin_ws/src/ddori/msg -Istd_msgs:/opt/ros/indigo/share/std_msgs/cmake/../msg -p ddori -o /home/dolmangi/catkin_ws/devel/include/ddori -e /opt/ros/indigo/share/gencpp/cmake/..
-
-/home/dolmangi/catkin_ws/devel/include/ddori/temperature_msg.h: /opt/ros/indigo/share/gencpp/cmake/../../../lib/gencpp/gen_cpp.py
-/home/dolmangi/catkin_ws/devel/include/ddori/temperature_msg.h: /home/dolmangi/catkin_ws/src/ddori/msg/temperature_msg.msg
-/home/dolmangi/catkin_ws/devel/include/ddori/temperature_msg.h: /opt/ros/indigo/share/gencpp/cmake/../msg.h.template
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/dolmangi/catkin_ws/build/CMakeFiles $(CMAKE_PROGRESS_2)
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold "Generating C++ code from ddori/temperature_msg.msg"
-	cd /home/dolmangi/catkin_ws/build/ddori && ../catkin_generated/env_cached.sh /usr/bin/python /opt/ros/indigo/share/gencpp/cmake/../../../lib/gencpp/gen_cpp.py /home/dolmangi/catkin_ws/src/ddori/msg/temperature_msg.msg -Iddori:/home/dolmangi/catkin_ws/src/ddori/msg -Istd_msgs:/opt/ros/indigo/share/std_msgs/cmake/../msg -p ddori -o /home/dolmangi/catkin_ws/devel/include/ddori -e /opt/ros/indigo/share/gencpp/cmake/..
-
-/home/dolmangi/catkin_ws/devel/include/ddori/pir_sensor_msg.h: /opt/ros/indigo/share/gencpp/cmake/../../../lib/gencpp/gen_cpp.py
-/home/dolmangi/catkin_ws/devel/include/ddori/pir_sensor_msg.h: /home/dolmangi/catkin_ws/src/ddori/msg/pir_sensor_msg.msg
-/home/dolmangi/catkin_ws/devel/include/ddori/pir_sensor_msg.h: /opt/ros/indigo/share/gencpp/cmake/../msg.h.template
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/dolmangi/catkin_ws/build/CMakeFiles $(CMAKE_PROGRESS_3)
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold "Generating C++ code from ddori/pir_sensor_msg.msg"
-	cd /home/dolmangi/catkin_ws/build/ddori && ../catkin_generated/env_cached.sh /usr/bin/python /opt/ros/indigo/share/gencpp/cmake/../../../lib/gencpp/gen_cpp.py /home/dolmangi/catkin_ws/src/ddori/msg/pir_sensor_msg.msg -Iddori:/home/dolmangi/catkin_ws/src/ddori/msg -Istd_msgs:/opt/ros/indigo/share/std_msgs/cmake/../msg -p ddori -o /home/dolmangi/catkin_ws/devel/include/ddori -e /opt/ros/indigo/share/gencpp/cmake/..
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold "Generating C++ code from ddori/ddori_sensor.msg"
+	cd /home/dolmangi/catkin_ws/build/ddori && ../catkin_generated/env_cached.sh /usr/bin/python /opt/ros/indigo/share/gencpp/cmake/../../../lib/gencpp/gen_cpp.py /home/dolmangi/catkin_ws/src/ddori/msg/ddori_sensor.msg -Iddori:/home/dolmangi/catkin_ws/src/ddori/msg -Istd_msgs:/opt/ros/indigo/share/std_msgs/cmake/../msg -p ddori -o /home/dolmangi/catkin_ws/devel/include/ddori -e /opt/ros/indigo/share/gencpp/cmake/..
 
 ddori_generate_messages_cpp: ddori/CMakeFiles/ddori_generate_messages_cpp
-ddori_generate_messages_cpp: /home/dolmangi/catkin_ws/devel/include/ddori/battery_msg.h
-ddori_generate_messages_cpp: /home/dolmangi/catkin_ws/devel/include/ddori/temperature_msg.h
-ddori_generate_messages_cpp: /home/dolmangi/catkin_ws/devel/include/ddori/pir_sensor_msg.h
+ddori_generate_messages_cpp: /home/dolmangi/catkin_ws/devel/include/ddori/ddori_sensor.h
 ddori_generate_messages_cpp: ddori/CMakeFiles/ddori_generate_messages_cpp.dir/build.make
 .PHONY : ddori_generate_messages_cpp
 

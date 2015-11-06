@@ -9,6 +9,9 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   std_msgs
   genmsg
+  ecl_exceptions 
+  ecl_threads 
+  ecl_time
 )
 
 ## System dependencies are found with CMake's conventions
@@ -47,9 +50,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## Generate messages in the 'msg' folder
  add_message_files(
    FILES
-   battery_msg.msg
-   pir_sensor_msg.msg
-   temperature_msg.msg
+   ddori_sensor.msg
  )
 
 ## Generate services in the 'srv' folder
@@ -104,7 +105,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES ddori
-#  CATKIN_DEPENDS roscpp rospy std_msgs
+  CATKIN_DEPENDS roscpp rospy std_msgs ecl_exceptions ecl_threads ecl_time 
 #  DEPENDS system_lib
 )
 

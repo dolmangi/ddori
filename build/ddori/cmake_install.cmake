@@ -33,11 +33,7 @@ IF(NOT DEFINED CMAKE_INSTALL_SO_NO_EXE)
 ENDIF(NOT DEFINED CMAKE_INSTALL_SO_NO_EXE)
 
 IF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/ddori/msg" TYPE FILE FILES
-    "/home/dolmangi/catkin_ws/src/ddori/msg/battery_msg.msg"
-    "/home/dolmangi/catkin_ws/src/ddori/msg/pir_sensor_msg.msg"
-    "/home/dolmangi/catkin_ws/src/ddori/msg/temperature_msg.msg"
-    )
+  FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/ddori/msg" TYPE FILE FILES "/home/dolmangi/catkin_ws/src/ddori/msg/ddori_sensor.msg")
 ENDIF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
 
 IF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")

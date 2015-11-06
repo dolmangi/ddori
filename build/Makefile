@@ -241,43 +241,17 @@ gtest_main/fast:
 .PHONY : gtest_main/fast
 
 #=============================================================================
-# Target rules for targets named _ddori_generate_messages_check_deps_battery_msg
+# Target rules for targets named _ddori_generate_messages_check_deps_ddori_sensor
 
 # Build rule for target.
-_ddori_generate_messages_check_deps_battery_msg: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 _ddori_generate_messages_check_deps_battery_msg
-.PHONY : _ddori_generate_messages_check_deps_battery_msg
+_ddori_generate_messages_check_deps_ddori_sensor: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 _ddori_generate_messages_check_deps_ddori_sensor
+.PHONY : _ddori_generate_messages_check_deps_ddori_sensor
 
 # fast build rule for target.
-_ddori_generate_messages_check_deps_battery_msg/fast:
-	$(MAKE) -f ddori/CMakeFiles/_ddori_generate_messages_check_deps_battery_msg.dir/build.make ddori/CMakeFiles/_ddori_generate_messages_check_deps_battery_msg.dir/build
-.PHONY : _ddori_generate_messages_check_deps_battery_msg/fast
-
-#=============================================================================
-# Target rules for targets named _ddori_generate_messages_check_deps_pir_sensor_msg
-
-# Build rule for target.
-_ddori_generate_messages_check_deps_pir_sensor_msg: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 _ddori_generate_messages_check_deps_pir_sensor_msg
-.PHONY : _ddori_generate_messages_check_deps_pir_sensor_msg
-
-# fast build rule for target.
-_ddori_generate_messages_check_deps_pir_sensor_msg/fast:
-	$(MAKE) -f ddori/CMakeFiles/_ddori_generate_messages_check_deps_pir_sensor_msg.dir/build.make ddori/CMakeFiles/_ddori_generate_messages_check_deps_pir_sensor_msg.dir/build
-.PHONY : _ddori_generate_messages_check_deps_pir_sensor_msg/fast
-
-#=============================================================================
-# Target rules for targets named _ddori_generate_messages_check_deps_temperature_msg
-
-# Build rule for target.
-_ddori_generate_messages_check_deps_temperature_msg: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 _ddori_generate_messages_check_deps_temperature_msg
-.PHONY : _ddori_generate_messages_check_deps_temperature_msg
-
-# fast build rule for target.
-_ddori_generate_messages_check_deps_temperature_msg/fast:
-	$(MAKE) -f ddori/CMakeFiles/_ddori_generate_messages_check_deps_temperature_msg.dir/build.make ddori/CMakeFiles/_ddori_generate_messages_check_deps_temperature_msg.dir/build
-.PHONY : _ddori_generate_messages_check_deps_temperature_msg/fast
+_ddori_generate_messages_check_deps_ddori_sensor/fast:
+	$(MAKE) -f ddori/CMakeFiles/_ddori_generate_messages_check_deps_ddori_sensor.dir/build.make ddori/CMakeFiles/_ddori_generate_messages_check_deps_ddori_sensor.dir/build
+.PHONY : _ddori_generate_messages_check_deps_ddori_sensor/fast
 
 #=============================================================================
 # Target rules for targets named ddori_gencpp
@@ -520,9 +494,7 @@ help:
 	@echo "... tests"
 	@echo "... gtest"
 	@echo "... gtest_main"
-	@echo "... _ddori_generate_messages_check_deps_battery_msg"
-	@echo "... _ddori_generate_messages_check_deps_pir_sensor_msg"
-	@echo "... _ddori_generate_messages_check_deps_temperature_msg"
+	@echo "... _ddori_generate_messages_check_deps_ddori_sensor"
 	@echo "... ddori_gencpp"
 	@echo "... ddori_generate_messages"
 	@echo "... ddori_generate_messages_cpp"

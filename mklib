@@ -1,0 +1,3 @@
+mkdir ~/temp_work
+rm -rf ~/temp_work/ros_lib
+rosrun rosserial_arduino make_libraries.py ~/temp_work/

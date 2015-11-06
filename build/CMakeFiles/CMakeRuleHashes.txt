@@ -1,12 +1,15 @@
 # Hashes of file build rules.
 7905554abe49bf287f6e3582f668c7aa /home/dolmangi/catkin_ws/devel/include/ddori/battery_msg.h
+1b2f289526a77f334ec76b8d1bf04816 /home/dolmangi/catkin_ws/devel/include/ddori/ddori_sensor.h
 37db043709f715406c296376bada8ab8 /home/dolmangi/catkin_ws/devel/include/ddori/pir_sensor_msg.h
 5655d550ee05ae4f904bc4f18dec6c41 /home/dolmangi/catkin_ws/devel/include/ddori/temperature_msg.h
 d04d2978070859638714f81cdd26ee01 /home/dolmangi/catkin_ws/devel/lib/python2.7/dist-packages/ddori/msg/__init__.py
 e413b1d086f239499ea87f4ffc0a3045 /home/dolmangi/catkin_ws/devel/lib/python2.7/dist-packages/ddori/msg/_battery_msg.py
+fa3ae3445bd0520bc5d29afd83a40457 /home/dolmangi/catkin_ws/devel/lib/python2.7/dist-packages/ddori/msg/_ddori_sensor.py
 81ae6fcd1f8a20b65ffcd0cc2cd41598 /home/dolmangi/catkin_ws/devel/lib/python2.7/dist-packages/ddori/msg/_pir_sensor_msg.py
 181a91d5395b2e568a6324f46378b8f9 /home/dolmangi/catkin_ws/devel/lib/python2.7/dist-packages/ddori/msg/_temperature_msg.py
 228da2961c54859a25bd9a483f2a97d6 /home/dolmangi/catkin_ws/devel/share/common-lisp/ros/ddori/msg/battery_msg.lisp
+9abe3929a771c5d78852cec18a29a86d /home/dolmangi/catkin_ws/devel/share/common-lisp/ros/ddori/msg/ddori_sensor.lisp
 073ef3fbc561cbfe10f0c0f499c0eed6 /home/dolmangi/catkin_ws/devel/share/common-lisp/ros/ddori/msg/pir_sensor_msg.lisp
 a8e17412a9d52ba39f6c6ebb987fe8f6 /home/dolmangi/catkin_ws/devel/share/common-lisp/ros/ddori/msg/temperature_msg.lisp
 fc7b0eb31b87adc59a512203661546d2 CMakeFiles/clean_test_results
@@ -14,9 +17,7 @@ f98df3af88a9bb5df9b7e54d8b926918 CMakeFiles/download_extra_data
 f98df3af88a9bb5df9b7e54d8b926918 CMakeFiles/doxygen
 f98df3af88a9bb5df9b7e54d8b926918 CMakeFiles/run_tests
 f98df3af88a9bb5df9b7e54d8b926918 CMakeFiles/tests
-f2a06d5801ef0ab64601d78edc1ed31c ddori/CMakeFiles/_ddori_generate_messages_check_deps_battery_msg
-9d8791306b51b10fdfb0c13a25ff65c0 ddori/CMakeFiles/_ddori_generate_messages_check_deps_pir_sensor_msg
-b6eb430f354178c9c6a8adb3a58eb6e9 ddori/CMakeFiles/_ddori_generate_messages_check_deps_temperature_msg
+4e7849efb75aea10697441ec86d3fdcc ddori/CMakeFiles/_ddori_generate_messages_check_deps_ddori_sensor
 e5d9e73863d7b4072a5592987285c5ea ddori/CMakeFiles/ddori_gencpp
 e5d9e73863d7b4072a5592987285c5ea ddori/CMakeFiles/ddori_generate_messages
 e5d9e73863d7b4072a5592987285c5ea ddori/CMakeFiles/ddori_generate_messages_cpp

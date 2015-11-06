@@ -150,46 +150,18 @@ depend:
 .PHONY : depend
 
 # Convenience name for target.
-ddori/CMakeFiles/_ddori_generate_messages_check_deps_battery_msg.dir/rule:
-	cd /home/dolmangi/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 ddori/CMakeFiles/_ddori_generate_messages_check_deps_battery_msg.dir/rule
-.PHONY : ddori/CMakeFiles/_ddori_generate_messages_check_deps_battery_msg.dir/rule
+ddori/CMakeFiles/_ddori_generate_messages_check_deps_ddori_sensor.dir/rule:
+	cd /home/dolmangi/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 ddori/CMakeFiles/_ddori_generate_messages_check_deps_ddori_sensor.dir/rule
+.PHONY : ddori/CMakeFiles/_ddori_generate_messages_check_deps_ddori_sensor.dir/rule
 
 # Convenience name for target.
-_ddori_generate_messages_check_deps_battery_msg: ddori/CMakeFiles/_ddori_generate_messages_check_deps_battery_msg.dir/rule
-.PHONY : _ddori_generate_messages_check_deps_battery_msg
+_ddori_generate_messages_check_deps_ddori_sensor: ddori/CMakeFiles/_ddori_generate_messages_check_deps_ddori_sensor.dir/rule
+.PHONY : _ddori_generate_messages_check_deps_ddori_sensor
 
 # fast build rule for target.
-_ddori_generate_messages_check_deps_battery_msg/fast:
-	cd /home/dolmangi/catkin_ws/build && $(MAKE) -f ddori/CMakeFiles/_ddori_generate_messages_check_deps_battery_msg.dir/build.make ddori/CMakeFiles/_ddori_generate_messages_check_deps_battery_msg.dir/build
-.PHONY : _ddori_generate_messages_check_deps_battery_msg/fast
-
-# Convenience name for target.
-ddori/CMakeFiles/_ddori_generate_messages_check_deps_pir_sensor_msg.dir/rule:
-	cd /home/dolmangi/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 ddori/CMakeFiles/_ddori_generate_messages_check_deps_pir_sensor_msg.dir/rule
-.PHONY : ddori/CMakeFiles/_ddori_generate_messages_check_deps_pir_sensor_msg.dir/rule
-
-# Convenience name for target.
-_ddori_generate_messages_check_deps_pir_sensor_msg: ddori/CMakeFiles/_ddori_generate_messages_check_deps_pir_sensor_msg.dir/rule
-.PHONY : _ddori_generate_messages_check_deps_pir_sensor_msg
-
-# fast build rule for target.
-_ddori_generate_messages_check_deps_pir_sensor_msg/fast:
-	cd /home/dolmangi/catkin_ws/build && $(MAKE) -f ddori/CMakeFiles/_ddori_generate_messages_check_deps_pir_sensor_msg.dir/build.make ddori/CMakeFiles/_ddori_generate_messages_check_deps_pir_sensor_msg.dir/build
-.PHONY : _ddori_generate_messages_check_deps_pir_sensor_msg/fast
-
-# Convenience name for target.
-ddori/CMakeFiles/_ddori_generate_messages_check_deps_temperature_msg.dir/rule:
-	cd /home/dolmangi/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 ddori/CMakeFiles/_ddori_generate_messages_check_deps_temperature_msg.dir/rule
-.PHONY : ddori/CMakeFiles/_ddori_generate_messages_check_deps_temperature_msg.dir/rule
-
-# Convenience name for target.
-_ddori_generate_messages_check_deps_temperature_msg: ddori/CMakeFiles/_ddori_generate_messages_check_deps_temperature_msg.dir/rule
-.PHONY : _ddori_generate_messages_check_deps_temperature_msg
-
-# fast build rule for target.
-_ddori_generate_messages_check_deps_temperature_msg/fast:
-	cd /home/dolmangi/catkin_ws/build && $(MAKE) -f ddori/CMakeFiles/_ddori_generate_messages_check_deps_temperature_msg.dir/build.make ddori/CMakeFiles/_ddori_generate_messages_check_deps_temperature_msg.dir/build
-.PHONY : _ddori_generate_messages_check_deps_temperature_msg/fast
+_ddori_generate_messages_check_deps_ddori_sensor/fast:
+	cd /home/dolmangi/catkin_ws/build && $(MAKE) -f ddori/CMakeFiles/_ddori_generate_messages_check_deps_ddori_sensor.dir/build.make ddori/CMakeFiles/_ddori_generate_messages_check_deps_ddori_sensor.dir/build
+.PHONY : _ddori_generate_messages_check_deps_ddori_sensor/fast
 
 # Convenience name for target.
 ddori/CMakeFiles/ddori_gencpp.dir/rule:
@@ -459,9 +431,7 @@ help:
 	@echo "... all (the default if no target is provided)"
 	@echo "... clean"
 	@echo "... depend"
-	@echo "... _ddori_generate_messages_check_deps_battery_msg"
-	@echo "... _ddori_generate_messages_check_deps_pir_sensor_msg"
-	@echo "... _ddori_generate_messages_check_deps_temperature_msg"
+	@echo "... _ddori_generate_messages_check_deps_ddori_sensor"
 	@echo "... ddori_gencpp"
 	@echo "... ddori_generate_messages"
 	@echo "... ddori_generate_messages_cpp"

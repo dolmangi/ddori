@@ -2,12 +2,12 @@
 
 #include <ros.h>
 #include <std_msgs/String.h>
+#include <std_msgs/Int8.h>
 #include <std_msgs/Int16.h>
 #include <std_msgs/UInt16.h>
 #include <std_msgs/UInt32.h>
 #include <std_msgs/Int32.h>
-#include <ddori/battery_msg.h>
-#include <ddori/pir_sensor_msg.h>
+#include <ddori/ddori_sensor.h>
 //#include <Servo.h> 
 #include <Wire.h>
 #include <Adafruit_PWMServoDriver.h>
@@ -143,19 +143,22 @@ class NewHardware : public ArduinoHardware
   NewHardware():ArduinoHardware(&Serial1, 57600){};
 };
 ros::NodeHandle_<NewHardware>  nh;
-ddori::battery_msg  battery_msg_data;
-ddori::pir_sensor_msg  pir_det_msg;
-std_msgs::Int16 current_arm_left;
-std_msgs::Int16 current_arm_right;
+ddori::ddori_sensor  sensor_msg_data;
+//std_msgs::Int16 current_arm_left;
+//std_msgs::Int16 current_arm_right;
 
 
-
-ros::Publisher pub_battery_msg("battery_msg", &battery_msg_data);
-ros::Publisher pub_current_arm_left("cur_arm_left", &current_arm_left);
-ros::Publisher pub_current_arm_right("cur_arm_right", &current_arm_right);
-ros::Publisher pub_pir_det("pir_detection_msg", &pir_det_msg);
+ros::Publisher pub_ddori_sensor("ddori_sensor", &sensor_msg_data);
+//ros::Publisher pub_current_arm_left("cur_arm_left", &current_arm_left);
+//ros::Publisher pub_current_arm_right("cur_arm_right", &current_arm_right);
 
 
+void light_commandCb( const std_msgs::Int8& light_cmd){
+    if (light_cmd.data==1)
+        powerled_onoff( 2,1);
+     else
+        powerled_onoff( 2,0);
+}
 
 void messageCb( const std_msgs::UInt16& command){
     if (command.data==1)
@@ -169,7 +172,7 @@ void messageCb( const std_msgs::UInt16& command){
 }
  
 ros::Subscriber<std_msgs::UInt16> sub_cmd("command", messageCb );
-
+ros::Subscriber<std_msgs::Int8> subLight_cmd("cmd_light", light_commandCb );
 
 void setup() {
     // set the digital pin as output:
@@ -269,14 +272,15 @@ void setup() {
     // ROS 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     nh.initNode();
-    nh.advertise(pub_battery_msg);
-    nh.advertise(pub_current_arm_left);
-    nh.advertise(pub_current_arm_right);
-    nh.advertise(pub_pir_det);
-    
+    nh.advertise(pub_ddori_sensor);
+//    nh.advertise(pub_current_arm_left);
+//    nh.advertise(pub_current_arm_right);
+
+    nh.subscribe(subLight_cmd);   
     nh.subscribe(sub_cmd);
+    
     //	Serial1.begin(57600);
-    Serial1.println("ddori starting...");	
+    //Serial1.println("ddori starting...");	
 }
 
 
@@ -318,35 +322,18 @@ void loop()
                 //////////////////////////////////////////////////////////////////////////////////////////////
                 // ROS 
                 ////////////////////////////////////////////////////////////////////////////////////////////////
-                battery_msg_data.voltage= get_battery_mv();
-                battery_msg_data.current=get_battery_ma();
+                sensor_msg_data.voltage= get_battery_mv();
+                sensor_msg_data.current=get_battery_ma();
                 
-                pub_battery_msg.publish(&battery_msg_data);
-                {
+                sensor_msg_data.pir = 0;
+                sensor_msg_data.pir |= digitalRead(pir_det1_pin) ? 1 : 0;
+                sensor_msg_data.pir |= digitalRead(pir_det2_pin) ? 2 : 0;
+                sensor_msg_data.pir |= digitalRead(pir_det3_pin) ? 4 : 0;
+                sensor_msg_data.pir |= digitalRead(pir_det4_pin) ? 8 : 0;
+                //Serial1.print("pir="); Serial1.println(sensor_msg_data.pir);
                   
-                  pir_det_msg.pir_det = 0;
-                  pir_det_msg.pir_det |= digitalRead(pir_det1_pin) ? 1 : 0;
-                  pir_det_msg.pir_det |= digitalRead(pir_det2_pin) ? 2 : 0;
-                  pir_det_msg.pir_det |= digitalRead(pir_det3_pin) ? 4 : 0;
-                  pir_det_msg.pir_det |= digitalRead(pir_det4_pin) ? 8 : 0;
-                  //Serial1.print("pir="); Serial1.println(pir_det_msg.pir_det);
-                  pub_pir_det.publish(&pir_det_msg);
-                  
-                    /* 
-                  if (pir_det_msg.data) {
-                    powerled_onoff( 2,1);
-                  }
-                  else {
-                    powerled_onoff( 2,0);
-                  }
-                 
-                  Serial1.print("pir1="); Serial1.print(pir1);Serial1.print(",");
-                  Serial1.print("pir2="); Serial1.print(pir2);Serial1.print(",");
-                  Serial1.print("pir3="); Serial1.print(pir3);Serial1.println("");
-                  */
-                }
-
-                
+                pub_ddori_sensor.publish(&sensor_msg_data);
+              
 /*    
 
               Serial1.print("Requesting temperatures...");

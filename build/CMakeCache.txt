@@ -263,6 +263,39 @@ ddori_BINARY_DIR:STATIC=/home/dolmangi/catkin_ws/build/ddori
 //Value Computed by CMake
 ddori_SOURCE_DIR:STATIC=/home/dolmangi/catkin_ws/src/ddori
 
+//The directory containing a CMake configuration file for ecl_build.
+ecl_build_DIR:PATH=/opt/ros/indigo/share/ecl_build/cmake
+
+//The directory containing a CMake configuration file for ecl_concepts.
+ecl_concepts_DIR:PATH=/opt/ros/indigo/share/ecl_concepts/cmake
+
+//The directory containing a CMake configuration file for ecl_config.
+ecl_config_DIR:PATH=/opt/ros/indigo/share/ecl_config/cmake
+
+//The directory containing a CMake configuration file for ecl_errors.
+ecl_errors_DIR:PATH=/opt/ros/indigo/share/ecl_errors/cmake
+
+//The directory containing a CMake configuration file for ecl_exceptions.
+ecl_exceptions_DIR:PATH=/opt/ros/indigo/share/ecl_exceptions/cmake
+
+//The directory containing a CMake configuration file for ecl_mpl.
+ecl_mpl_DIR:PATH=/opt/ros/indigo/share/ecl_mpl/cmake
+
+//The directory containing a CMake configuration file for ecl_threads.
+ecl_threads_DIR:PATH=/opt/ros/indigo/share/ecl_threads/cmake
+
+//The directory containing a CMake configuration file for ecl_time.
+ecl_time_DIR:PATH=/opt/ros/indigo/share/ecl_time/cmake
+
+//The directory containing a CMake configuration file for ecl_time_lite.
+ecl_time_lite_DIR:PATH=/opt/ros/indigo/share/ecl_time_lite/cmake
+
+//The directory containing a CMake configuration file for ecl_type_traits.
+ecl_type_traits_DIR:PATH=/opt/ros/indigo/share/ecl_type_traits/cmake
+
+//The directory containing a CMake configuration file for ecl_utilities.
+ecl_utilities_DIR:PATH=/opt/ros/indigo/share/ecl_utilities/cmake
+
 //The directory containing a CMake configuration file for gencpp.
 gencpp_DIR:PATH=/opt/ros/indigo/share/gencpp/cmake
 
@@ -301,7 +334,7 @@ gtest_force_shared_crt:BOOL=OFF
 gtest_main_LIB_DEPENDS:STATIC=general;-lpthread;general;gtest;
 
 //Path to a library.
-lib:FILEPATH=/opt/ros/indigo/lib/libxmlrpcpp.so
+lib:FILEPATH=/usr/lib/arm-linux-gnueabihf/librt.so
 
 //The directory containing a CMake configuration file for message_runtime.
 message_runtime_DIR:PATH=/opt/ros/indigo/share/message_runtime/cmake

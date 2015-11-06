@@ -1,6 +1,6 @@
 # generated from genmsg/cmake/pkg-genmsg.cmake.em
 
-message(STATUS "ddori: 3 messages, 0 services")
+message(STATUS "ddori: 1 messages, 0 services")
 
 set(MSG_I_FLAGS "-Iddori:/home/dolmangi/catkin_ws/src/ddori/msg;-Istd_msgs:/opt/ros/indigo/share/std_msgs/cmake/../msg")
 
@@ -15,19 +15,9 @@ add_custom_target(ddori_generate_messages ALL)
 
 
 
-get_filename_component(_filename "/home/dolmangi/catkin_ws/src/ddori/msg/battery_msg.msg" NAME_WE)
+get_filename_component(_filename "/home/dolmangi/catkin_ws/src/ddori/msg/ddori_sensor.msg" NAME_WE)
 add_custom_target(_ddori_generate_messages_check_deps_${_filename}
-  COMMAND ${CATKIN_ENV} ${PYTHON_EXECUTABLE} ${GENMSG_CHECK_DEPS_SCRIPT} "ddori" "/home/dolmangi/catkin_ws/src/ddori/msg/battery_msg.msg" ""
-)
-
-get_filename_component(_filename "/home/dolmangi/catkin_ws/src/ddori/msg/temperature_msg.msg" NAME_WE)
-add_custom_target(_ddori_generate_messages_check_deps_${_filename}
-  COMMAND ${CATKIN_ENV} ${PYTHON_EXECUTABLE} ${GENMSG_CHECK_DEPS_SCRIPT} "ddori" "/home/dolmangi/catkin_ws/src/ddori/msg/temperature_msg.msg" ""
-)
-
-get_filename_component(_filename "/home/dolmangi/catkin_ws/src/ddori/msg/pir_sensor_msg.msg" NAME_WE)
-add_custom_target(_ddori_generate_messages_check_deps_${_filename}
-  COMMAND ${CATKIN_ENV} ${PYTHON_EXECUTABLE} ${GENMSG_CHECK_DEPS_SCRIPT} "ddori" "/home/dolmangi/catkin_ws/src/ddori/msg/pir_sensor_msg.msg" ""
+  COMMAND ${CATKIN_ENV} ${PYTHON_EXECUTABLE} ${GENMSG_CHECK_DEPS_SCRIPT} "ddori" "/home/dolmangi/catkin_ws/src/ddori/msg/ddori_sensor.msg" ""
 )
 
 #
@@ -37,19 +27,7 @@ add_custom_target(_ddori_generate_messages_check_deps_${_filename}
 ### Section generating for lang: gencpp
 ### Generating Messages
 _generate_msg_cpp(ddori
-  "/home/dolmangi/catkin_ws/src/ddori/msg/battery_msg.msg"
-  "${MSG_I_FLAGS}"
-  ""
-  ${CATKIN_DEVEL_PREFIX}/${gencpp_INSTALL_DIR}/ddori
-)
-_generate_msg_cpp(ddori
-  "/home/dolmangi/catkin_ws/src/ddori/msg/temperature_msg.msg"
-  "${MSG_I_FLAGS}"
-  ""
-  ${CATKIN_DEVEL_PREFIX}/${gencpp_INSTALL_DIR}/ddori
-)
-_generate_msg_cpp(ddori
-  "/home/dolmangi/catkin_ws/src/ddori/msg/pir_sensor_msg.msg"
+  "/home/dolmangi/catkin_ws/src/ddori/msg/ddori_sensor.msg"
   "${MSG_I_FLAGS}"
   ""
   ${CATKIN_DEVEL_PREFIX}/${gencpp_INSTALL_DIR}/ddori
@@ -69,11 +47,7 @@ add_custom_target(ddori_generate_messages_cpp
 add_dependencies(ddori_generate_messages ddori_generate_messages_cpp)
 
 # add dependencies to all check dependencies targets
-get_filename_component(_filename "/home/dolmangi/catkin_ws/src/ddori/msg/battery_msg.msg" NAME_WE)
-add_dependencies(ddori_generate_messages_cpp _ddori_generate_messages_check_deps_${_filename})
-get_filename_component(_filename "/home/dolmangi/catkin_ws/src/ddori/msg/temperature_msg.msg" NAME_WE)
-add_dependencies(ddori_generate_messages_cpp _ddori_generate_messages_check_deps_${_filename})
-get_filename_component(_filename "/home/dolmangi/catkin_ws/src/ddori/msg/pir_sensor_msg.msg" NAME_WE)
+get_filename_component(_filename "/home/dolmangi/catkin_ws/src/ddori/msg/ddori_sensor.msg" NAME_WE)
 add_dependencies(ddori_generate_messages_cpp _ddori_generate_messages_check_deps_${_filename})
 
 # target for backward compatibility
@@ -86,19 +60,7 @@ list(APPEND ${PROJECT_NAME}_EXPORTED_TARGETS ddori_generate_messages_cpp)
 ### Section generating for lang: genlisp
 ### Generating Messages
 _generate_msg_lisp(ddori
-  "/home/dolmangi/catkin_ws/src/ddori/msg/battery_msg.msg"
-  "${MSG_I_FLAGS}"
-  ""
-  ${CATKIN_DEVEL_PREFIX}/${genlisp_INSTALL_DIR}/ddori
-)
-_generate_msg_lisp(ddori
-  "/home/dolmangi/catkin_ws/src/ddori/msg/temperature_msg.msg"
-  "${MSG_I_FLAGS}"
-  ""
-  ${CATKIN_DEVEL_PREFIX}/${genlisp_INSTALL_DIR}/ddori
-)
-_generate_msg_lisp(ddori
-  "/home/dolmangi/catkin_ws/src/ddori/msg/pir_sensor_msg.msg"
+  "/home/dolmangi/catkin_ws/src/ddori/msg/ddori_sensor.msg"
   "${MSG_I_FLAGS}"
   ""
   ${CATKIN_DEVEL_PREFIX}/${genlisp_INSTALL_DIR}/ddori
@@ -118,11 +80,7 @@ add_custom_target(ddori_generate_messages_lisp
 add_dependencies(ddori_generate_messages ddori_generate_messages_lisp)
 
 # add dependencies to all check dependencies targets
-get_filename_component(_filename "/home/dolmangi/catkin_ws/src/ddori/msg/battery_msg.msg" NAME_WE)
-add_dependencies(ddori_generate_messages_lisp _ddori_generate_messages_check_deps_${_filename})
-get_filename_component(_filename "/home/dolmangi/catkin_ws/src/ddori/msg/temperature_msg.msg" NAME_WE)
-add_dependencies(ddori_generate_messages_lisp _ddori_generate_messages_check_deps_${_filename})
-get_filename_component(_filename "/home/dolmangi/catkin_ws/src/ddori/msg/pir_sensor_msg.msg" NAME_WE)
+get_filename_component(_filename "/home/dolmangi/catkin_ws/src/ddori/msg/ddori_sensor.msg" NAME_WE)
 add_dependencies(ddori_generate_messages_lisp _ddori_generate_messages_check_deps_${_filename})
 
 # target for backward compatibility
@@ -135,19 +93,7 @@ list(APPEND ${PROJECT_NAME}_EXPORTED_TARGETS ddori_generate_messages_lisp)
 ### Section generating for lang: genpy
 ### Generating Messages
 _generate_msg_py(ddori
-  "/home/dolmangi/catkin_ws/src/ddori/msg/battery_msg.msg"
-  "${MSG_I_FLAGS}"
-  ""
-  ${CATKIN_DEVEL_PREFIX}/${genpy_INSTALL_DIR}/ddori
-)
-_generate_msg_py(ddori
-  "/home/dolmangi/catkin_ws/src/ddori/msg/temperature_msg.msg"
-  "${MSG_I_FLAGS}"
-  ""
-  ${CATKIN_DEVEL_PREFIX}/${genpy_INSTALL_DIR}/ddori
-)
-_generate_msg_py(ddori
-  "/home/dolmangi/catkin_ws/src/ddori/msg/pir_sensor_msg.msg"
+  "/home/dolmangi/catkin_ws/src/ddori/msg/ddori_sensor.msg"
   "${MSG_I_FLAGS}"
   ""
   ${CATKIN_DEVEL_PREFIX}/${genpy_INSTALL_DIR}/ddori
@@ -167,11 +113,7 @@ add_custom_target(ddori_generate_messages_py
 add_dependencies(ddori_generate_messages ddori_generate_messages_py)
 
 # add dependencies to all check dependencies targets
-get_filename_component(_filename "/home/dolmangi/catkin_ws/src/ddori/msg/battery_msg.msg" NAME_WE)
-add_dependencies(ddori_generate_messages_py _ddori_generate_messages_check_deps_${_filename})
-get_filename_component(_filename "/home/dolmangi/catkin_ws/src/ddori/msg/temperature_msg.msg" NAME_WE)
-add_dependencies(ddori_generate_messages_py _ddori_generate_messages_check_deps_${_filename})
-get_filename_component(_filename "/home/dolmangi/catkin_ws/src/ddori/msg/pir_sensor_msg.msg" NAME_WE)
+get_filename_component(_filename "/home/dolmangi/catkin_ws/src/ddori/msg/ddori_sensor.msg" NAME_WE)
 add_dependencies(ddori_generate_messages_py _ddori_generate_messages_check_deps_${_filename})
 
 # target for backward compatibility

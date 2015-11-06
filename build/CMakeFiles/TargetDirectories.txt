@@ -1,6 +1,4 @@
-/home/dolmangi/catkin_ws/build/ddori/CMakeFiles/_ddori_generate_messages_check_deps_battery_msg.dir
-/home/dolmangi/catkin_ws/build/ddori/CMakeFiles/_ddori_generate_messages_check_deps_pir_sensor_msg.dir
-/home/dolmangi/catkin_ws/build/ddori/CMakeFiles/_ddori_generate_messages_check_deps_temperature_msg.dir
+/home/dolmangi/catkin_ws/build/ddori/CMakeFiles/_ddori_generate_messages_check_deps_ddori_sensor.dir
 /home/dolmangi/catkin_ws/build/CMakeFiles/clean_test_results.dir
 /home/dolmangi/catkin_ws/build/ddori/CMakeFiles/ddori_gencpp.dir
 /home/dolmangi/catkin_ws/build/ddori/CMakeFiles/ddori_generate_messages.dir
