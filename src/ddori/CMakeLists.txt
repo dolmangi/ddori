@@ -51,6 +51,8 @@ find_package(catkin REQUIRED COMPONENTS
  add_message_files(
    FILES
    ddori_sensor.msg
+   servo_control.msg
+   motor_speed.msg
  )
 
 ## Generate services in the 'srv' folder

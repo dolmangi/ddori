@@ -8,15 +8,14 @@
 #include <std_msgs/UInt32.h>
 #include <std_msgs/Int32.h>
 #include <ddori/ddori_sensor.h>
+#include <ddori/servo_control.h>
+#include <ddori/motor_speed.h>
 //#include <Servo.h> 
 #include <Wire.h>
 #include <Adafruit_PWMServoDriver.h>
 #include <OneWire.h>
 #include <DallasTemperature.h>
 
-//Servo left_arm;
-//Servo right_arm;
-//Servo eye_servo;
 
 const int left_tr1_pin  = 46;
 const int left_tr2_pin  = 47;
@@ -97,6 +96,7 @@ int eye_servo_on=0;
 int eye_position=150;
 int eye_position_target=0;
 
+unsigned long systick=0;
 
 #define LOOPTIME        100                 
 //#define NUMREADINGS     10
@@ -134,23 +134,19 @@ int light_on=0;
 int updatePid_l(int command, int targetValue, int currentValue);   
 void getMotorData();
 
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 // ROS Initialization
 ////////////////////////////////////////////////////////////////////////////////////////////////
 class NewHardware : public ArduinoHardware
 {
   public:
-  NewHardware():ArduinoHardware(&Serial1, 57600){};
+  NewHardware():ArduinoHardware(&Serial1, 115200){};
 };
 ros::NodeHandle_<NewHardware>  nh;
 ddori::ddori_sensor  sensor_msg_data;
-//std_msgs::Int16 current_arm_left;
-//std_msgs::Int16 current_arm_right;
-
 
 ros::Publisher pub_ddori_sensor("ddori_sensor", &sensor_msg_data);
-//ros::Publisher pub_current_arm_left("cur_arm_left", &current_arm_left);
-//ros::Publisher pub_current_arm_right("cur_arm_right", &current_arm_right);
 
 
 void light_commandCb( const std_msgs::Int8& light_cmd){
@@ -160,20 +156,90 @@ void light_commandCb( const std_msgs::Int8& light_cmd){
         powerled_onoff( 2,0);
 }
 
-void messageCb( const std_msgs::UInt16& command){
-    if (command.data==1)
-        powerled_onoff( 2,1);
-     else
-        powerled_onoff( 2,0);
-//  digitalWrite(13, HIGH-digitalRead(13));   // blink the led
-//    current_arm_left.data=command.data;
-//    current_arm_left.data=command;
-//    pub_current_arm_left.publish(&current_arm_left);
-}
- 
-ros::Subscriber<std_msgs::UInt16> sub_cmd("command", messageCb );
-ros::Subscriber<std_msgs::Int8> subLight_cmd("cmd_light", light_commandCb );
 
+void armservo_power_commandCb( const std_msgs::Int8& cmd){
+    if (cmd.data)    digitalWrite(pwm_servo_output_power, LOW);
+    else             digitalWrite(pwm_servo_output_power, HIGH);
+}
+
+void armservo_pos_commandCb( const ddori::servo_control& cmd) {
+    pwm.setPWM(cmd.no, 0, cmd.pos);
+}
+void arms_pos_commandCb( const std_msgs::Int8& cmd)
+{
+    pwm.setPWM(0, 0, map(cmd.data,0,100,PWM0_LOW, PWM0_HIGH));
+    pwm.setPWM(4, 0, map(cmd.data,0,100,PWM4_HIGH, PWM4_LOW));      
+}
+void arms_hug_commandCb( const std_msgs::Int8& cmd)
+{
+    pwm.setPWM(1, 0, map(cmd.data,0,100,PWM1_LOW, PWM1_HIGH));
+    pwm.setPWM(5, 0, map(cmd.data,0,100,PWM5_HIGH, PWM5_LOW));        
+}
+
+void gassensor_power_commandCb( const std_msgs::Int8& cmd){
+}
+void phone_power_commandCb( const std_msgs::Int8& cmd){
+}
+void foscam_power_commandCb( const std_msgs::Int8& cmd){
+}
+void camservo_pos_commandCb( const std_msgs::Int8& cmd){
+}
+
+void wheel_pwm_commandCb( const ddori::motor_speed& cmd)  {
+
+    if (cmd.left_dir) {
+        digitalWrite(left_tr1_pin, LOW);
+        digitalWrite(left_tr2_pin, HIGH);
+    }   else {
+        digitalWrite(left_tr1_pin, HIGH);
+        digitalWrite(left_tr2_pin, LOW);
+    }
+
+    if (cmd.right_dir) {
+        digitalWrite(right_tr1_pin, LOW);
+        digitalWrite(right_tr2_pin, HIGH);      
+    }   else {
+        digitalWrite(right_tr1_pin, HIGH);
+        digitalWrite(right_tr2_pin, LOW);      
+    }
+    speed_req_l=cmd.left_speed;
+    speed_req_r=cmd.right_speed;
+}
+
+void wheel_stop_commandCb( const std_msgs::Int8& cmd){
+    speed_req_l = 0;
+    speed_req_r = 0;
+    stop();
+}
+
+void alloff_commandCb( const std_msgs::Int8& cmd){
+    speed_req_l = 0;
+    speed_req_r = 0;
+    stop();
+    powerled_onoff( 2,0);    
+    digitalWrite(pwm_servo_output_power, HIGH);
+}
+
+
+ros::Subscriber<std_msgs::Int8> subLight_cmd("cmd_light", light_commandCb );
+ros::Subscriber<std_msgs::Int8> subArmServoPower_cmd("cmd_armservo_power", armservo_power_commandCb   );
+ros::Subscriber<ddori::servo_control> subArmServoPos_cmd("cmd_armservo_pos",   armservo_pos_commandCb );
+ros::Subscriber<std_msgs::Int8> subGasSensorPower_cmd("cmd_gassesnsor_power", gassensor_power_commandCb   );
+ros::Subscriber<std_msgs::Int8> subPhonePower_cmd("cmd_phone_power",   phone_power_commandCb );
+ros::Subscriber<std_msgs::Int8> subFoscamPower_cmd("cmd_foscam_power",   foscam_power_commandCb );
+ros::Subscriber<std_msgs::Int8> subCamservoPos_cmd("cmd_camservo_pos",   camservo_pos_commandCb );
+ros::Subscriber<ddori::motor_speed> subPWM_cmd("cmd_pwm",   wheel_pwm_commandCb );
+ros::Subscriber<std_msgs::Int8> subStop_cmd("cmd_stop",   wheel_stop_commandCb );
+ros::Subscriber<std_msgs::Int8> subAllOff_cmd("cmd_alloff",   alloff_commandCb );
+ros::Subscriber<std_msgs::Int8> subArmsHug_cmd("cmd_armshug",   arms_hug_commandCb );
+ros::Subscriber<std_msgs::Int8> subArmsPos_cmd("cmd_armspos",   arms_pos_commandCb );
+
+
+
+
+//=======================================
+// SETUP
+//=======================================
 void setup() {
     // set the digital pin as output:
 
@@ -273,11 +339,20 @@ void setup() {
     ////////////////////////////////////////////////////////////////////////////////////////////////
     nh.initNode();
     nh.advertise(pub_ddori_sensor);
-//    nh.advertise(pub_current_arm_left);
-//    nh.advertise(pub_current_arm_right);
 
     nh.subscribe(subLight_cmd);   
-    nh.subscribe(sub_cmd);
+    nh.subscribe(subArmServoPower_cmd);
+    nh.subscribe(subArmServoPos_cmd);
+    nh.subscribe(subGasSensorPower_cmd);
+    nh.subscribe(subPhonePower_cmd);
+    nh.subscribe(subFoscamPower_cmd);
+    nh.subscribe(subCamservoPos_cmd);
+    nh.subscribe(subPWM_cmd);
+    nh.subscribe(subStop_cmd);
+    nh.subscribe(subAllOff_cmd);    
+    nh.subscribe(subArmsHug_cmd);
+    nh.subscribe(subArmsPos_cmd);
+    
     
     //	Serial1.begin(57600);
     //Serial1.println("ddori starting...");	
@@ -293,6 +368,9 @@ static int ld=0;
 static int rd=0;
 int off_flag=0;
 unsigned long last_arm_milli = 0;     
+//=======================================
+// LOOP
+//=======================================
 void loop()
 {
 	unsigned long cur_millis=millis();
@@ -316,57 +394,52 @@ void loop()
 		OCR2A = PWM_val_r;		// send PWM to motor
 		
                 
-                // display data
-                check_battery();
-                        
-                //////////////////////////////////////////////////////////////////////////////////////////////
-                // ROS 
-                ////////////////////////////////////////////////////////////////////////////////////////////////
-                sensor_msg_data.voltage= get_battery_mv();
-                sensor_msg_data.current=get_battery_ma();
-                
-                sensor_msg_data.pir = 0;
-                sensor_msg_data.pir |= digitalRead(pir_det1_pin) ? 1 : 0;
-                sensor_msg_data.pir |= digitalRead(pir_det2_pin) ? 2 : 0;
-                sensor_msg_data.pir |= digitalRead(pir_det3_pin) ? 4 : 0;
-                sensor_msg_data.pir |= digitalRead(pir_det4_pin) ? 8 : 0;
-                //Serial1.print("pir="); Serial1.println(sensor_msg_data.pir);
-                  
-                pub_ddori_sensor.publish(&sensor_msg_data);
-              
+    // display data
+    check_battery();
+            
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    // ROS 
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    sensor_msg_data.voltage= get_battery_mv();
+    sensor_msg_data.current=get_battery_ma();
+    
+    sensor_msg_data.time_stamp=cur_millis;
+    sensor_msg_data.left_encoder=speed_act_l;
+    sensor_msg_data.right_encoder=speed_act_r;
+    sensor_msg_data.left_pwm=PWM_val_l;
+    sensor_msg_data.right_pwm=PWM_val_r;
+    
+    sensor_msg_data.pir = 0;
+    sensor_msg_data.pir |= digitalRead(pir_det1_pin) ? 1 : 0;
+    sensor_msg_data.pir |= digitalRead(pir_det2_pin) ? 2 : 0;
+    sensor_msg_data.pir |= digitalRead(pir_det3_pin) ? 4 : 0;
+    sensor_msg_data.pir |= digitalRead(pir_det4_pin) ? 8 : 0;
+    //Serial1.print("pir="); Serial1.println(sensor_msg_data.pir);
+      
+    pub_ddori_sensor.publish(&sensor_msg_data);
+
 /*    
 
-              Serial1.print("Requesting temperatures...");
-              temp_sensors.requestTemperatures();         // Send the command to get temperatures
-              Serial1.println("DONE");
-              Serial1.print("Temperature for Device 1 is: ");
-              Serial1.print(temp_sensors.getTempCByIndex(0)); // Why "byIndex"? You can have more than one IC on the same bus. 0 refers to the first IC on the wire
+    Serial1.print("Requesting temperatures...");
+    temp_sensors.requestTemperatures();         // Send the command to get temperatures
+    Serial1.println("DONE");
+    Serial1.print("Temperature for Device 1 is: ");
+    Serial1.print(temp_sensors.getTempCByIndex(0)); // Why "byIndex"? You can have more than one IC on the same bus. 0 refers to the first IC on the wire
 */
-                /*
-                Serial1.print("SP:");			Serial1.print(speed_req_l);  	Serial1.print(",");		Serial1.print(speed_req_r); 
-                Serial1.print("  RPM:");		Serial1.print(speed_act_l);		Serial1.print(",");		Serial1.print(speed_act_r); 
-                Serial1.print("  PWM:");		Serial1.print(PWM_val_l);   	Serial1.print(",");		Serial1.print(PWM_val_r); 
-                Serial1.print("  ENC:");	Serial1.print(enc_cnt_diff_l);  		Serial1.print(",");		Serial1.print(enc_cnt_diff_r); 
-                Serial1.print("  DIR:");	Serial1.print(ld==1?"F":"B");  		Serial1.print(",");		Serial1.print(rd==1?"F":"B"); 
-                Serial1.print("  kp:");			Serial1.print(Kp);
-                Serial1.print("  kd:");			Serial1.println(Kd);          
-                //        printMotorInfo();                            
-                */
-            
-                // Serial1.print("v="); 
-                // Serial1.print(get_battery_mv()); 
-                // Serial1.print(",a="); 
-                // Serial1.print(get_battery_ma()); 
-                // Serial1.print("  L:"); 
-                // Serial1.print(PWM_val_l); 
-                // Serial1.print("  R:"); 
-                // Serial1.print(PWM_val_r); 
-                // Serial1.print("  cnt L:");		Serial1.print(count_l);		Serial1.print(",R:"); Serial1.print(count_r);  
-                //Serial1.println(""); 
-  //*/                  
-	}
-        nh.spinOnce();
-        delay(1);
+/*
+    Serial1.print("SP:");			Serial1.print(speed_req_l);  	Serial1.print(",");		Serial1.print(speed_req_r); 
+    Serial1.print("  RPM:");		Serial1.print(speed_act_l);		Serial1.print(",");		Serial1.print(speed_act_r); 
+    Serial1.print("  PWM:");		Serial1.print(PWM_val_l);   	Serial1.print(",");		Serial1.print(PWM_val_r); 
+    Serial1.print("  ENC:");	Serial1.print(enc_cnt_diff_l);  		Serial1.print(",");		Serial1.print(enc_cnt_diff_r); 
+    Serial1.print("  DIR:");	Serial1.print(ld==1?"F":"B");  		Serial1.print(",");		Serial1.print(rd==1?"F":"B"); 
+    Serial1.print("  kp:");			Serial1.print(Kp);
+    Serial1.print("  kd:");			Serial1.println(Kd);          
+    //        printMotorInfo();                            
+*/
+
+  }
+  nh.spinOnce();
+  delay(1);
 }
 
 #define  BAT_V_AVG_CNT  20

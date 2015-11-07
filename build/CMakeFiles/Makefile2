@@ -230,7 +230,7 @@ gtest/preinstall:
 gtest/CMakeFiles/gtest.dir/all:
 	$(MAKE) -f gtest/CMakeFiles/gtest.dir/build.make gtest/CMakeFiles/gtest.dir/depend
 	$(MAKE) -f gtest/CMakeFiles/gtest.dir/build.make gtest/CMakeFiles/gtest.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/dolmangi/catkin_ws/build/CMakeFiles  6
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/dolmangi/catkin_ws/build/CMakeFiles  12
 	@echo "Built target gtest"
 .PHONY : gtest/CMakeFiles/gtest.dir/all
 
@@ -261,7 +261,7 @@ clean: gtest/CMakeFiles/gtest.dir/clean
 gtest/CMakeFiles/gtest_main.dir/all: gtest/CMakeFiles/gtest.dir/all
 	$(MAKE) -f gtest/CMakeFiles/gtest_main.dir/build.make gtest/CMakeFiles/gtest_main.dir/depend
 	$(MAKE) -f gtest/CMakeFiles/gtest_main.dir/build.make gtest/CMakeFiles/gtest_main.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/dolmangi/catkin_ws/build/CMakeFiles  7
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/dolmangi/catkin_ws/build/CMakeFiles  13
 	@echo "Built target gtest_main"
 .PHONY : gtest/CMakeFiles/gtest_main.dir/all
 
@@ -295,6 +295,8 @@ ddori/all: ddori/CMakeFiles/ddori_main.dir/all
 
 # Convenience name for "clean" pass in the directory.
 ddori/clean: ddori/CMakeFiles/_ddori_generate_messages_check_deps_ddori_sensor.dir/clean
+ddori/clean: ddori/CMakeFiles/_ddori_generate_messages_check_deps_motor_speed.dir/clean
+ddori/clean: ddori/CMakeFiles/_ddori_generate_messages_check_deps_servo_control.dir/clean
 ddori/clean: ddori/CMakeFiles/ddori_gencpp.dir/clean
 ddori/clean: ddori/CMakeFiles/ddori_generate_messages.dir/clean
 ddori/clean: ddori/CMakeFiles/ddori_generate_messages_cpp.dir/clean
@@ -350,6 +352,68 @@ clean: ddori/CMakeFiles/_ddori_generate_messages_check_deps_ddori_sensor.dir/cle
 .PHONY : clean
 
 #=============================================================================
+# Target rules for target ddori/CMakeFiles/_ddori_generate_messages_check_deps_motor_speed.dir
+
+# All Build rule for target.
+ddori/CMakeFiles/_ddori_generate_messages_check_deps_motor_speed.dir/all:
+	$(MAKE) -f ddori/CMakeFiles/_ddori_generate_messages_check_deps_motor_speed.dir/build.make ddori/CMakeFiles/_ddori_generate_messages_check_deps_motor_speed.dir/depend
+	$(MAKE) -f ddori/CMakeFiles/_ddori_generate_messages_check_deps_motor_speed.dir/build.make ddori/CMakeFiles/_ddori_generate_messages_check_deps_motor_speed.dir/build
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/dolmangi/catkin_ws/build/CMakeFiles 
+	@echo "Built target _ddori_generate_messages_check_deps_motor_speed"
+.PHONY : ddori/CMakeFiles/_ddori_generate_messages_check_deps_motor_speed.dir/all
+
+# Build rule for subdir invocation for target.
+ddori/CMakeFiles/_ddori_generate_messages_check_deps_motor_speed.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/dolmangi/catkin_ws/build/CMakeFiles 0
+	$(MAKE) -f CMakeFiles/Makefile2 ddori/CMakeFiles/_ddori_generate_messages_check_deps_motor_speed.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/dolmangi/catkin_ws/build/CMakeFiles 0
+.PHONY : ddori/CMakeFiles/_ddori_generate_messages_check_deps_motor_speed.dir/rule
+
+# Convenience name for target.
+_ddori_generate_messages_check_deps_motor_speed: ddori/CMakeFiles/_ddori_generate_messages_check_deps_motor_speed.dir/rule
+.PHONY : _ddori_generate_messages_check_deps_motor_speed
+
+# clean rule for target.
+ddori/CMakeFiles/_ddori_generate_messages_check_deps_motor_speed.dir/clean:
+	$(MAKE) -f ddori/CMakeFiles/_ddori_generate_messages_check_deps_motor_speed.dir/build.make ddori/CMakeFiles/_ddori_generate_messages_check_deps_motor_speed.dir/clean
+.PHONY : ddori/CMakeFiles/_ddori_generate_messages_check_deps_motor_speed.dir/clean
+
+# clean rule for target.
+clean: ddori/CMakeFiles/_ddori_generate_messages_check_deps_motor_speed.dir/clean
+.PHONY : clean
+
+#=============================================================================
+# Target rules for target ddori/CMakeFiles/_ddori_generate_messages_check_deps_servo_control.dir
+
+# All Build rule for target.
+ddori/CMakeFiles/_ddori_generate_messages_check_deps_servo_control.dir/all:
+	$(MAKE) -f ddori/CMakeFiles/_ddori_generate_messages_check_deps_servo_control.dir/build.make ddori/CMakeFiles/_ddori_generate_messages_check_deps_servo_control.dir/depend
+	$(MAKE) -f ddori/CMakeFiles/_ddori_generate_messages_check_deps_servo_control.dir/build.make ddori/CMakeFiles/_ddori_generate_messages_check_deps_servo_control.dir/build
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/dolmangi/catkin_ws/build/CMakeFiles 
+	@echo "Built target _ddori_generate_messages_check_deps_servo_control"
+.PHONY : ddori/CMakeFiles/_ddori_generate_messages_check_deps_servo_control.dir/all
+
+# Build rule for subdir invocation for target.
+ddori/CMakeFiles/_ddori_generate_messages_check_deps_servo_control.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/dolmangi/catkin_ws/build/CMakeFiles 0
+	$(MAKE) -f CMakeFiles/Makefile2 ddori/CMakeFiles/_ddori_generate_messages_check_deps_servo_control.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/dolmangi/catkin_ws/build/CMakeFiles 0
+.PHONY : ddori/CMakeFiles/_ddori_generate_messages_check_deps_servo_control.dir/rule
+
+# Convenience name for target.
+_ddori_generate_messages_check_deps_servo_control: ddori/CMakeFiles/_ddori_generate_messages_check_deps_servo_control.dir/rule
+.PHONY : _ddori_generate_messages_check_deps_servo_control
+
+# clean rule for target.
+ddori/CMakeFiles/_ddori_generate_messages_check_deps_servo_control.dir/clean:
+	$(MAKE) -f ddori/CMakeFiles/_ddori_generate_messages_check_deps_servo_control.dir/build.make ddori/CMakeFiles/_ddori_generate_messages_check_deps_servo_control.dir/clean
+.PHONY : ddori/CMakeFiles/_ddori_generate_messages_check_deps_servo_control.dir/clean
+
+# clean rule for target.
+clean: ddori/CMakeFiles/_ddori_generate_messages_check_deps_servo_control.dir/clean
+.PHONY : clean
+
+#=============================================================================
 # Target rules for target ddori/CMakeFiles/ddori_gencpp.dir
 
 # All Build rule for target.
@@ -362,7 +426,7 @@ ddori/CMakeFiles/ddori_gencpp.dir/all: ddori/CMakeFiles/ddori_generate_messages_
 
 # Build rule for subdir invocation for target.
 ddori/CMakeFiles/ddori_gencpp.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/dolmangi/catkin_ws/build/CMakeFiles 1
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/dolmangi/catkin_ws/build/CMakeFiles 3
 	$(MAKE) -f CMakeFiles/Makefile2 ddori/CMakeFiles/ddori_gencpp.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/dolmangi/catkin_ws/build/CMakeFiles 0
 .PHONY : ddori/CMakeFiles/ddori_gencpp.dir/rule
@@ -385,8 +449,8 @@ clean: ddori/CMakeFiles/ddori_gencpp.dir/clean
 
 # All Build rule for target.
 ddori/CMakeFiles/ddori_generate_messages.dir/all: ddori/CMakeFiles/ddori_generate_messages_cpp.dir/all
-ddori/CMakeFiles/ddori_generate_messages.dir/all: ddori/CMakeFiles/ddori_generate_messages_py.dir/all
 ddori/CMakeFiles/ddori_generate_messages.dir/all: ddori/CMakeFiles/ddori_generate_messages_lisp.dir/all
+ddori/CMakeFiles/ddori_generate_messages.dir/all: ddori/CMakeFiles/ddori_generate_messages_py.dir/all
 	$(MAKE) -f ddori/CMakeFiles/ddori_generate_messages.dir/build.make ddori/CMakeFiles/ddori_generate_messages.dir/depend
 	$(MAKE) -f ddori/CMakeFiles/ddori_generate_messages.dir/build.make ddori/CMakeFiles/ddori_generate_messages.dir/build
 	$(CMAKE_COMMAND) -E cmake_progress_report /home/dolmangi/catkin_ws/build/CMakeFiles 
@@ -399,7 +463,7 @@ all: ddori/CMakeFiles/ddori_generate_messages.dir/all
 
 # Build rule for subdir invocation for target.
 ddori/CMakeFiles/ddori_generate_messages.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/dolmangi/catkin_ws/build/CMakeFiles 4
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/dolmangi/catkin_ws/build/CMakeFiles 10
 	$(MAKE) -f CMakeFiles/Makefile2 ddori/CMakeFiles/ddori_generate_messages.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/dolmangi/catkin_ws/build/CMakeFiles 0
 .PHONY : ddori/CMakeFiles/ddori_generate_messages.dir/rule
@@ -422,16 +486,18 @@ clean: ddori/CMakeFiles/ddori_generate_messages.dir/clean
 
 # All Build rule for target.
 ddori/CMakeFiles/ddori_generate_messages_cpp.dir/all: ddori/CMakeFiles/_ddori_generate_messages_check_deps_ddori_sensor.dir/all
+ddori/CMakeFiles/ddori_generate_messages_cpp.dir/all: ddori/CMakeFiles/_ddori_generate_messages_check_deps_servo_control.dir/all
 ddori/CMakeFiles/ddori_generate_messages_cpp.dir/all: ddori/CMakeFiles/std_msgs_generate_messages_cpp.dir/all
+ddori/CMakeFiles/ddori_generate_messages_cpp.dir/all: ddori/CMakeFiles/_ddori_generate_messages_check_deps_motor_speed.dir/all
 	$(MAKE) -f ddori/CMakeFiles/ddori_generate_messages_cpp.dir/build.make ddori/CMakeFiles/ddori_generate_messages_cpp.dir/depend
 	$(MAKE) -f ddori/CMakeFiles/ddori_generate_messages_cpp.dir/build.make ddori/CMakeFiles/ddori_generate_messages_cpp.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/dolmangi/catkin_ws/build/CMakeFiles  1
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/dolmangi/catkin_ws/build/CMakeFiles  1 2 3
 	@echo "Built target ddori_generate_messages_cpp"
 .PHONY : ddori/CMakeFiles/ddori_generate_messages_cpp.dir/all
 
 # Build rule for subdir invocation for target.
 ddori/CMakeFiles/ddori_generate_messages_cpp.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/dolmangi/catkin_ws/build/CMakeFiles 1
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/dolmangi/catkin_ws/build/CMakeFiles 3
 	$(MAKE) -f CMakeFiles/Makefile2 ddori/CMakeFiles/ddori_generate_messages_cpp.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/dolmangi/catkin_ws/build/CMakeFiles 0
 .PHONY : ddori/CMakeFiles/ddori_generate_messages_cpp.dir/rule
@@ -454,16 +520,18 @@ clean: ddori/CMakeFiles/ddori_generate_messages_cpp.dir/clean
 
 # All Build rule for target.
 ddori/CMakeFiles/ddori_generate_messages_lisp.dir/all: ddori/CMakeFiles/_ddori_generate_messages_check_deps_ddori_sensor.dir/all
+ddori/CMakeFiles/ddori_generate_messages_lisp.dir/all: ddori/CMakeFiles/_ddori_generate_messages_check_deps_servo_control.dir/all
 ddori/CMakeFiles/ddori_generate_messages_lisp.dir/all: ddori/CMakeFiles/std_msgs_generate_messages_lisp.dir/all
+ddori/CMakeFiles/ddori_generate_messages_lisp.dir/all: ddori/CMakeFiles/_ddori_generate_messages_check_deps_motor_speed.dir/all
 	$(MAKE) -f ddori/CMakeFiles/ddori_generate_messages_lisp.dir/build.make ddori/CMakeFiles/ddori_generate_messages_lisp.dir/depend
 	$(MAKE) -f ddori/CMakeFiles/ddori_generate_messages_lisp.dir/build.make ddori/CMakeFiles/ddori_generate_messages_lisp.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/dolmangi/catkin_ws/build/CMakeFiles  2
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/dolmangi/catkin_ws/build/CMakeFiles  4 5 6
 	@echo "Built target ddori_generate_messages_lisp"
 .PHONY : ddori/CMakeFiles/ddori_generate_messages_lisp.dir/all
 
 # Build rule for subdir invocation for target.
 ddori/CMakeFiles/ddori_generate_messages_lisp.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/dolmangi/catkin_ws/build/CMakeFiles 1
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/dolmangi/catkin_ws/build/CMakeFiles 3
 	$(MAKE) -f CMakeFiles/Makefile2 ddori/CMakeFiles/ddori_generate_messages_lisp.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/dolmangi/catkin_ws/build/CMakeFiles 0
 .PHONY : ddori/CMakeFiles/ddori_generate_messages_lisp.dir/rule
@@ -486,16 +554,18 @@ clean: ddori/CMakeFiles/ddori_generate_messages_lisp.dir/clean
 
 # All Build rule for target.
 ddori/CMakeFiles/ddori_generate_messages_py.dir/all: ddori/CMakeFiles/_ddori_generate_messages_check_deps_ddori_sensor.dir/all
+ddori/CMakeFiles/ddori_generate_messages_py.dir/all: ddori/CMakeFiles/_ddori_generate_messages_check_deps_servo_control.dir/all
 ddori/CMakeFiles/ddori_generate_messages_py.dir/all: ddori/CMakeFiles/std_msgs_generate_messages_py.dir/all
+ddori/CMakeFiles/ddori_generate_messages_py.dir/all: ddori/CMakeFiles/_ddori_generate_messages_check_deps_motor_speed.dir/all
 	$(MAKE) -f ddori/CMakeFiles/ddori_generate_messages_py.dir/build.make ddori/CMakeFiles/ddori_generate_messages_py.dir/depend
 	$(MAKE) -f ddori/CMakeFiles/ddori_generate_messages_py.dir/build.make ddori/CMakeFiles/ddori_generate_messages_py.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/dolmangi/catkin_ws/build/CMakeFiles  3 4
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/dolmangi/catkin_ws/build/CMakeFiles  7 8 9 10
 	@echo "Built target ddori_generate_messages_py"
 .PHONY : ddori/CMakeFiles/ddori_generate_messages_py.dir/all
 
 # Build rule for subdir invocation for target.
 ddori/CMakeFiles/ddori_generate_messages_py.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/dolmangi/catkin_ws/build/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/dolmangi/catkin_ws/build/CMakeFiles 4
 	$(MAKE) -f CMakeFiles/Makefile2 ddori/CMakeFiles/ddori_generate_messages_py.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/dolmangi/catkin_ws/build/CMakeFiles 0
 .PHONY : ddori/CMakeFiles/ddori_generate_messages_py.dir/rule
@@ -526,7 +596,7 @@ ddori/CMakeFiles/ddori_genlisp.dir/all: ddori/CMakeFiles/ddori_generate_messages
 
 # Build rule for subdir invocation for target.
 ddori/CMakeFiles/ddori_genlisp.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/dolmangi/catkin_ws/build/CMakeFiles 1
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/dolmangi/catkin_ws/build/CMakeFiles 3
 	$(MAKE) -f CMakeFiles/Makefile2 ddori/CMakeFiles/ddori_genlisp.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/dolmangi/catkin_ws/build/CMakeFiles 0
 .PHONY : ddori/CMakeFiles/ddori_genlisp.dir/rule
@@ -557,7 +627,7 @@ ddori/CMakeFiles/ddori_genpy.dir/all: ddori/CMakeFiles/ddori_generate_messages_p
 
 # Build rule for subdir invocation for target.
 ddori/CMakeFiles/ddori_genpy.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/dolmangi/catkin_ws/build/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/dolmangi/catkin_ws/build/CMakeFiles 4
 	$(MAKE) -f CMakeFiles/Makefile2 ddori/CMakeFiles/ddori_genpy.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/dolmangi/catkin_ws/build/CMakeFiles 0
 .PHONY : ddori/CMakeFiles/ddori_genpy.dir/rule
@@ -582,7 +652,7 @@ clean: ddori/CMakeFiles/ddori_genpy.dir/clean
 ddori/CMakeFiles/ddori_main.dir/all: ddori/CMakeFiles/ddori_generate_messages_cpp.dir/all
 	$(MAKE) -f ddori/CMakeFiles/ddori_main.dir/build.make ddori/CMakeFiles/ddori_main.dir/depend
 	$(MAKE) -f ddori/CMakeFiles/ddori_main.dir/build.make ddori/CMakeFiles/ddori_main.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/dolmangi/catkin_ws/build/CMakeFiles  5
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/dolmangi/catkin_ws/build/CMakeFiles  11
 	@echo "Built target ddori_main"
 .PHONY : ddori/CMakeFiles/ddori_main.dir/all
 
@@ -592,7 +662,7 @@ all: ddori/CMakeFiles/ddori_main.dir/all
 
 # Build rule for subdir invocation for target.
 ddori/CMakeFiles/ddori_main.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/dolmangi/catkin_ws/build/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/dolmangi/catkin_ws/build/CMakeFiles 4
 	$(MAKE) -f CMakeFiles/Makefile2 ddori/CMakeFiles/ddori_main.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/dolmangi/catkin_ws/build/CMakeFiles 0
 .PHONY : ddori/CMakeFiles/ddori_main.dir/rule

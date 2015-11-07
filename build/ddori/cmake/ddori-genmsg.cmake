@@ -1,6 +1,6 @@
 # generated from genmsg/cmake/pkg-genmsg.cmake.em
 
-message(STATUS "ddori: 1 messages, 0 services")
+message(STATUS "ddori: 3 messages, 0 services")
 
 set(MSG_I_FLAGS "-Iddori:/home/dolmangi/catkin_ws/src/ddori/msg;-Istd_msgs:/opt/ros/indigo/share/std_msgs/cmake/../msg")
 
@@ -20,6 +20,16 @@ add_custom_target(_ddori_generate_messages_check_deps_${_filename}
   COMMAND ${CATKIN_ENV} ${PYTHON_EXECUTABLE} ${GENMSG_CHECK_DEPS_SCRIPT} "ddori" "/home/dolmangi/catkin_ws/src/ddori/msg/ddori_sensor.msg" ""
 )
 
+get_filename_component(_filename "/home/dolmangi/catkin_ws/src/ddori/msg/servo_control.msg" NAME_WE)
+add_custom_target(_ddori_generate_messages_check_deps_${_filename}
+  COMMAND ${CATKIN_ENV} ${PYTHON_EXECUTABLE} ${GENMSG_CHECK_DEPS_SCRIPT} "ddori" "/home/dolmangi/catkin_ws/src/ddori/msg/servo_control.msg" ""
+)
+
+get_filename_component(_filename "/home/dolmangi/catkin_ws/src/ddori/msg/motor_speed.msg" NAME_WE)
+add_custom_target(_ddori_generate_messages_check_deps_${_filename}
+  COMMAND ${CATKIN_ENV} ${PYTHON_EXECUTABLE} ${GENMSG_CHECK_DEPS_SCRIPT} "ddori" "/home/dolmangi/catkin_ws/src/ddori/msg/motor_speed.msg" ""
+)
+
 #
 #  langs = gencpp;genlisp;genpy
 #
@@ -28,6 +38,18 @@ add_custom_target(_ddori_generate_messages_check_deps_${_filename}
 ### Generating Messages
 _generate_msg_cpp(ddori
   "/home/dolmangi/catkin_ws/src/ddori/msg/ddori_sensor.msg"
+  "${MSG_I_FLAGS}"
+  ""
+  ${CATKIN_DEVEL_PREFIX}/${gencpp_INSTALL_DIR}/ddori
+)
+_generate_msg_cpp(ddori
+  "/home/dolmangi/catkin_ws/src/ddori/msg/servo_control.msg"
+  "${MSG_I_FLAGS}"
+  ""
+  ${CATKIN_DEVEL_PREFIX}/${gencpp_INSTALL_DIR}/ddori
+)
+_generate_msg_cpp(ddori
+  "/home/dolmangi/catkin_ws/src/ddori/msg/motor_speed.msg"
   "${MSG_I_FLAGS}"
   ""
   ${CATKIN_DEVEL_PREFIX}/${gencpp_INSTALL_DIR}/ddori
@@ -49,6 +71,10 @@ add_dependencies(ddori_generate_messages ddori_generate_messages_cpp)
 # add dependencies to all check dependencies targets
 get_filename_component(_filename "/home/dolmangi/catkin_ws/src/ddori/msg/ddori_sensor.msg" NAME_WE)
 add_dependencies(ddori_generate_messages_cpp _ddori_generate_messages_check_deps_${_filename})
+get_filename_component(_filename "/home/dolmangi/catkin_ws/src/ddori/msg/servo_control.msg" NAME_WE)
+add_dependencies(ddori_generate_messages_cpp _ddori_generate_messages_check_deps_${_filename})
+get_filename_component(_filename "/home/dolmangi/catkin_ws/src/ddori/msg/motor_speed.msg" NAME_WE)
+add_dependencies(ddori_generate_messages_cpp _ddori_generate_messages_check_deps_${_filename})
 
 # target for backward compatibility
 add_custom_target(ddori_gencpp)
@@ -61,6 +87,18 @@ list(APPEND ${PROJECT_NAME}_EXPORTED_TARGETS ddori_generate_messages_cpp)
 ### Generating Messages
 _generate_msg_lisp(ddori
   "/home/dolmangi/catkin_ws/src/ddori/msg/ddori_sensor.msg"
+  "${MSG_I_FLAGS}"
+  ""
+  ${CATKIN_DEVEL_PREFIX}/${genlisp_INSTALL_DIR}/ddori
+)
+_generate_msg_lisp(ddori
+  "/home/dolmangi/catkin_ws/src/ddori/msg/servo_control.msg"
+  "${MSG_I_FLAGS}"
+  ""
+  ${CATKIN_DEVEL_PREFIX}/${genlisp_INSTALL_DIR}/ddori
+)
+_generate_msg_lisp(ddori
+  "/home/dolmangi/catkin_ws/src/ddori/msg/motor_speed.msg"
   "${MSG_I_FLAGS}"
   ""
   ${CATKIN_DEVEL_PREFIX}/${genlisp_INSTALL_DIR}/ddori
@@ -82,6 +120,10 @@ add_dependencies(ddori_generate_messages ddori_generate_messages_lisp)
 # add dependencies to all check dependencies targets
 get_filename_component(_filename "/home/dolmangi/catkin_ws/src/ddori/msg/ddori_sensor.msg" NAME_WE)
 add_dependencies(ddori_generate_messages_lisp _ddori_generate_messages_check_deps_${_filename})
+get_filename_component(_filename "/home/dolmangi/catkin_ws/src/ddori/msg/servo_control.msg" NAME_WE)
+add_dependencies(ddori_generate_messages_lisp _ddori_generate_messages_check_deps_${_filename})
+get_filename_component(_filename "/home/dolmangi/catkin_ws/src/ddori/msg/motor_speed.msg" NAME_WE)
+add_dependencies(ddori_generate_messages_lisp _ddori_generate_messages_check_deps_${_filename})
 
 # target for backward compatibility
 add_custom_target(ddori_genlisp)
@@ -94,6 +136,18 @@ list(APPEND ${PROJECT_NAME}_EXPORTED_TARGETS ddori_generate_messages_lisp)
 ### Generating Messages
 _generate_msg_py(ddori
   "/home/dolmangi/catkin_ws/src/ddori/msg/ddori_sensor.msg"
+  "${MSG_I_FLAGS}"
+  ""
+  ${CATKIN_DEVEL_PREFIX}/${genpy_INSTALL_DIR}/ddori
+)
+_generate_msg_py(ddori
+  "/home/dolmangi/catkin_ws/src/ddori/msg/servo_control.msg"
+  "${MSG_I_FLAGS}"
+  ""
+  ${CATKIN_DEVEL_PREFIX}/${genpy_INSTALL_DIR}/ddori
+)
+_generate_msg_py(ddori
+  "/home/dolmangi/catkin_ws/src/ddori/msg/motor_speed.msg"
   "${MSG_I_FLAGS}"
   ""
   ${CATKIN_DEVEL_PREFIX}/${genpy_INSTALL_DIR}/ddori
@@ -114,6 +168,10 @@ add_dependencies(ddori_generate_messages ddori_generate_messages_py)
 
 # add dependencies to all check dependencies targets
 get_filename_component(_filename "/home/dolmangi/catkin_ws/src/ddori/msg/ddori_sensor.msg" NAME_WE)
+add_dependencies(ddori_generate_messages_py _ddori_generate_messages_check_deps_${_filename})
+get_filename_component(_filename "/home/dolmangi/catkin_ws/src/ddori/msg/servo_control.msg" NAME_WE)
+add_dependencies(ddori_generate_messages_py _ddori_generate_messages_check_deps_${_filename})
+get_filename_component(_filename "/home/dolmangi/catkin_ws/src/ddori/msg/motor_speed.msg" NAME_WE)
 add_dependencies(ddori_generate_messages_py _ddori_generate_messages_check_deps_${_filename})
 
 # target for backward compatibility

@@ -206,6 +206,8 @@ SET(CMAKE_DEPEND_INFO_FILES
   "gtest/CMakeFiles/gtest.dir/DependInfo.cmake"
   "gtest/CMakeFiles/gtest_main.dir/DependInfo.cmake"
   "ddori/CMakeFiles/_ddori_generate_messages_check_deps_ddori_sensor.dir/DependInfo.cmake"
+  "ddori/CMakeFiles/_ddori_generate_messages_check_deps_motor_speed.dir/DependInfo.cmake"
+  "ddori/CMakeFiles/_ddori_generate_messages_check_deps_servo_control.dir/DependInfo.cmake"
   "ddori/CMakeFiles/ddori_gencpp.dir/DependInfo.cmake"
   "ddori/CMakeFiles/ddori_generate_messages.dir/DependInfo.cmake"
   "ddori/CMakeFiles/ddori_generate_messages_cpp.dir/DependInfo.cmake"

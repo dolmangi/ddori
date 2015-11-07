@@ -46,6 +46,8 @@ CMAKE_BINARY_DIR = /home/dolmangi/catkin_ws/build
 include ddori/CMakeFiles/ddori_generate_messages_py.dir/progress.make
 
 ddori/CMakeFiles/ddori_generate_messages_py: /home/dolmangi/catkin_ws/devel/lib/python2.7/dist-packages/ddori/msg/_ddori_sensor.py
+ddori/CMakeFiles/ddori_generate_messages_py: /home/dolmangi/catkin_ws/devel/lib/python2.7/dist-packages/ddori/msg/_servo_control.py
+ddori/CMakeFiles/ddori_generate_messages_py: /home/dolmangi/catkin_ws/devel/lib/python2.7/dist-packages/ddori/msg/_motor_speed.py
 ddori/CMakeFiles/ddori_generate_messages_py: /home/dolmangi/catkin_ws/devel/lib/python2.7/dist-packages/ddori/msg/__init__.py
 
 /home/dolmangi/catkin_ws/devel/lib/python2.7/dist-packages/ddori/msg/_ddori_sensor.py: /opt/ros/indigo/share/genpy/cmake/../../../lib/genpy/genmsg_py.py
@@ -54,14 +56,30 @@ ddori/CMakeFiles/ddori_generate_messages_py: /home/dolmangi/catkin_ws/devel/lib/
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold "Generating Python from MSG ddori/ddori_sensor"
 	cd /home/dolmangi/catkin_ws/build/ddori && ../catkin_generated/env_cached.sh /usr/bin/python /opt/ros/indigo/share/genpy/cmake/../../../lib/genpy/genmsg_py.py /home/dolmangi/catkin_ws/src/ddori/msg/ddori_sensor.msg -Iddori:/home/dolmangi/catkin_ws/src/ddori/msg -Istd_msgs:/opt/ros/indigo/share/std_msgs/cmake/../msg -p ddori -o /home/dolmangi/catkin_ws/devel/lib/python2.7/dist-packages/ddori/msg
 
+/home/dolmangi/catkin_ws/devel/lib/python2.7/dist-packages/ddori/msg/_servo_control.py: /opt/ros/indigo/share/genpy/cmake/../../../lib/genpy/genmsg_py.py
+/home/dolmangi/catkin_ws/devel/lib/python2.7/dist-packages/ddori/msg/_servo_control.py: /home/dolmangi/catkin_ws/src/ddori/msg/servo_control.msg
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/dolmangi/catkin_ws/build/CMakeFiles $(CMAKE_PROGRESS_2)
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold "Generating Python from MSG ddori/servo_control"
+	cd /home/dolmangi/catkin_ws/build/ddori && ../catkin_generated/env_cached.sh /usr/bin/python /opt/ros/indigo/share/genpy/cmake/../../../lib/genpy/genmsg_py.py /home/dolmangi/catkin_ws/src/ddori/msg/servo_control.msg -Iddori:/home/dolmangi/catkin_ws/src/ddori/msg -Istd_msgs:/opt/ros/indigo/share/std_msgs/cmake/../msg -p ddori -o /home/dolmangi/catkin_ws/devel/lib/python2.7/dist-packages/ddori/msg
+
+/home/dolmangi/catkin_ws/devel/lib/python2.7/dist-packages/ddori/msg/_motor_speed.py: /opt/ros/indigo/share/genpy/cmake/../../../lib/genpy/genmsg_py.py
+/home/dolmangi/catkin_ws/devel/lib/python2.7/dist-packages/ddori/msg/_motor_speed.py: /home/dolmangi/catkin_ws/src/ddori/msg/motor_speed.msg
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/dolmangi/catkin_ws/build/CMakeFiles $(CMAKE_PROGRESS_3)
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold "Generating Python from MSG ddori/motor_speed"
+	cd /home/dolmangi/catkin_ws/build/ddori && ../catkin_generated/env_cached.sh /usr/bin/python /opt/ros/indigo/share/genpy/cmake/../../../lib/genpy/genmsg_py.py /home/dolmangi/catkin_ws/src/ddori/msg/motor_speed.msg -Iddori:/home/dolmangi/catkin_ws/src/ddori/msg -Istd_msgs:/opt/ros/indigo/share/std_msgs/cmake/../msg -p ddori -o /home/dolmangi/catkin_ws/devel/lib/python2.7/dist-packages/ddori/msg
+
 /home/dolmangi/catkin_ws/devel/lib/python2.7/dist-packages/ddori/msg/__init__.py: /opt/ros/indigo/share/genpy/cmake/../../../lib/genpy/genmsg_py.py
 /home/dolmangi/catkin_ws/devel/lib/python2.7/dist-packages/ddori/msg/__init__.py: /home/dolmangi/catkin_ws/devel/lib/python2.7/dist-packages/ddori/msg/_ddori_sensor.py
-	$(CMAKE_COMMAND) -E cmake_progress_report /home/dolmangi/catkin_ws/build/CMakeFiles $(CMAKE_PROGRESS_2)
+/home/dolmangi/catkin_ws/devel/lib/python2.7/dist-packages/ddori/msg/__init__.py: /home/dolmangi/catkin_ws/devel/lib/python2.7/dist-packages/ddori/msg/_servo_control.py
+/home/dolmangi/catkin_ws/devel/lib/python2.7/dist-packages/ddori/msg/__init__.py: /home/dolmangi/catkin_ws/devel/lib/python2.7/dist-packages/ddori/msg/_motor_speed.py
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/dolmangi/catkin_ws/build/CMakeFiles $(CMAKE_PROGRESS_4)
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold "Generating Python msg __init__.py for ddori"
 	cd /home/dolmangi/catkin_ws/build/ddori && ../catkin_generated/env_cached.sh /usr/bin/python /opt/ros/indigo/share/genpy/cmake/../../../lib/genpy/genmsg_py.py -o /home/dolmangi/catkin_ws/devel/lib/python2.7/dist-packages/ddori/msg --initpy
 
 ddori_generate_messages_py: ddori/CMakeFiles/ddori_generate_messages_py
 ddori_generate_messages_py: /home/dolmangi/catkin_ws/devel/lib/python2.7/dist-packages/ddori/msg/_ddori_sensor.py
+ddori_generate_messages_py: /home/dolmangi/catkin_ws/devel/lib/python2.7/dist-packages/ddori/msg/_servo_control.py
+ddori_generate_messages_py: /home/dolmangi/catkin_ws/devel/lib/python2.7/dist-packages/ddori/msg/_motor_speed.py
 ddori_generate_messages_py: /home/dolmangi/catkin_ws/devel/lib/python2.7/dist-packages/ddori/msg/__init__.py
 ddori_generate_messages_py: ddori/CMakeFiles/ddori_generate_messages_py.dir/build.make
 .PHONY : ddori_generate_messages_py

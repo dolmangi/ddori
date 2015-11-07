@@ -1,7 +1,10 @@
 #include "ros/ros.h"
 #include "std_msgs/String.h"
 #include "std_msgs/Int8.h"
+#include "std_msgs/UInt16.h"
 #include "ddori/ddori_sensor.h"
+#include "ddori/servo_control.h"
+#include "ddori/motor_speed.h"
 
 
 #include <termios.h> // for keyboard input
@@ -24,10 +27,40 @@ geometry_msgs::TwistPtr cmd;
 geometry_msgs::TwistStampedPtr cmd_stamped;
 double linear_vel_step, linear_vel_max;
 char thread_run=1;
+
+unsigned char servo_pos[10]={0};
+int speed_left=0;
+int speed_right=0;
+
 std_msgs::Int8 light_on; 
-ros::Publisher light_control_publisher;
+std_msgs::Int8 ArmServoPower ;
+std_msgs::Int8 GasSensorPower; 
+std_msgs::Int8 PhonePower; 
+std_msgs::Int8 FoscamPower; 
+std_msgs::Int8 CamServoPos; 
+std_msgs::Int8 ArmsPos; 
+std_msgs::Int8 ArmsHug; 
+
+
+
 ros::Subscriber sensor_subscriber;
 ros::Publisher velocity_publisher;
+
+ros::Publisher light_control_publisher;
+ros::Publisher WheelPWM_publisher;
+ros::Publisher ArmServoPower_publisher;
+ros::Publisher ArmServoPos_publisher;
+ros::Publisher GasSensorPower_publisher;
+ros::Publisher PhonePower_publisher;
+ros::Publisher FoscamPower_publisher;
+ros::Publisher CamServoPos_publisher;
+ros::Publisher Stop_publisher;
+ros::Publisher AllOff_publisher;
+ros::Publisher ArmsPos_publisher;
+ros::Publisher ArmsHug_publisher;
+
+
+
 ecl::Thread thread;
 int key_file_descriptor=0;
 struct termios original_terminal_state;
@@ -36,9 +69,26 @@ void processKeyboardInput(char c);
 void keyboardInputThread();
 
 
+ddori::ddori_sensor prev;
 void sensor_Callback(const ddori::ddori_sensor::ConstPtr& msg)
 {
-	ROS_INFO("BATTERY : %d[v] %d[a]   PIR:%d", msg->voltage, msg->current, msg->pir);
+	char display=0;
+
+	if (msg->voltage*1.0 > prev.voltage*1.1 || msg->voltage*1.0 < prev.voltage*0.9)  display=1;
+	if (msg->current*1.0 > prev.current*1.1 || msg->current*1.0 < prev.current*0.9)  display=1;
+	if (msg->left_pwm != prev.left_pwm  || msg->right_pwm != prev.right_pwm ) display=1;
+	if (msg->left_encoder != prev.left_encoder  || msg->right_encoder != prev.right_encoder ) display=1;
+	if (msg->pir != prev.pir ) display=1;
+		
+	if (display) {
+		ROS_INFO("%d: %6.2f[V] %d[mA]   PIR:%d  pwm=%u,%u   enc=%d,%d    speed=%d,%d", msg->time_stamp, msg->voltage/100.0, msg->current, msg->pir, 
+			(unsigned char)msg->left_pwm, (unsigned char)msg->right_pwm,
+			(char)msg->left_encoder, (char)msg->right_encoder,
+			(char)speed_left, (char)speed_right);
+	}
+
+	prev = *msg;
+
 }
 
 
@@ -82,7 +132,28 @@ int main(int argc, char **argv)
 	sensor_subscriber = n.subscribe("ddori_sensor", 1000, sensor_Callback);
 	velocity_publisher = n.advertise<geometry_msgs::Twist>("cmd_vel", 1);
 	light_control_publisher = n.advertise<std_msgs::Int8>("cmd_light", 1);
+
+	ArmServoPower_publisher	= n.advertise<std_msgs::Int8>("cmd_armservo_power", 1);
+	ArmServoPos_publisher	= n.advertise<ddori::servo_control>("cmd_armservo_pos", 1);
+	ArmsPos_publisher			= n.advertise<std_msgs::Int8>("cmd_armspos", 1);
+	ArmsHug_publisher		= n.advertise<std_msgs::Int8>("cmd_armshug", 1);
+	
+	GasSensorPower_publisher= n.advertise<std_msgs::Int8>("cmd_gassesnsor_power", 1);
+	PhonePower_publisher		= n.advertise<std_msgs::Int8>("cmd_phone_power", 1);
+	FoscamPower_publisher	= n.advertise<std_msgs::Int8>("cmd_foscam_power", 1);
+	
+	CamServoPos_publisher	= n.advertise<std_msgs::Int8>("cmd_camservo_pos", 1);
+	WheelPWM_publisher		= n.advertise<ddori::motor_speed>("cmd_pwm", 1);
+	Stop_publisher				= n.advertise<std_msgs::Int8>("cmd_stop", 1);
+	AllOff_publisher			= n.advertise<std_msgs::Int8>("cmd_alloff", 1);
+
+
+
+
 	light_on.data=0;
+	ArmsPos.data=30;
+	ArmsHug.data=30;
+
 	
 	tcgetattr(key_file_descriptor, &original_terminal_state); // get terminal properties
 
@@ -142,6 +213,31 @@ void keyboardInputThread()
 		loop_rate.sleep();
 	}
 }
+void send_speed(int left, int  right)
+{
+	ddori::motor_speed ms;
+	if (left<0) {
+		ms.left_speed=-left;
+		ms.left_dir=1;
+	}
+	else {
+		ms.left_speed=left;
+		ms.left_dir=0;
+	}
+
+	if (right<0) {
+		ms.right_speed=-right;
+		ms.right_dir=1;
+	}
+	else {
+		ms.right_speed=right;
+		ms.right_dir=0;
+	}
+	
+	WheelPWM_publisher.publish(ms);		
+	
+}
+
 void processKeyboardInput(char c)
 {
 	/*
@@ -155,46 +251,107 @@ void processKeyboardInput(char c)
 	{
 		case KeyCode_Left:
 		{
+			if (speed_left >-120) speed_left-=10;
+			if (speed_right<120) speed_right+=10;
+			send_speed(speed_left,speed_right);
 			//incrementAngularVelocity();
 			ROS_INFO("incrementAngularVelocity");
 			break;
 		}
+		
 		case KeyCode_Right:
 		{
+			if (speed_left <120) speed_left+=10;
+			if (speed_right>-120) speed_right-=10;
+			send_speed(speed_left,speed_right);
+
 			//decrementAngularVelocity();
 			ROS_INFO("decrementAngularVelocity");
 			break;
 		}
 		case KeyCode_Up:
 		{
+			if (speed_left <120) speed_left+=10;
+			if (speed_right<120) speed_right+=10;
+			send_speed(speed_left,speed_right);
+
 			//incrementLinearVelocity();
 			ROS_INFO("incrementLinearVelocity");
 			break;
 		}
 		case KeyCode_Down:
 		{
+			if (speed_left >-120) speed_left-=10;
+			if (speed_right>-120) speed_right-=10;
+			send_speed(speed_left,speed_right);
 			//decrementLinearVelocity();
 			ROS_INFO("decrementLinearVelocity");
 			break;
 		}
 		case KeyCode_Space:
 		{
+			std_msgs::Int8 Stop; 
+			Stop.data=0;
+			speed_left = speed_right = 0;
 			//resetVelocity();
 			ROS_INFO("resetVelocity");
+			Stop_publisher.publish(Stop);			
 			break;
 		}
 		case 'q':
 		{
 			thread_run = 0;
+			std_msgs::Int8 AllOff; 
+			AllOff.data=0;
 			ROS_INFO("quit_requested");
+			AllOff_publisher.publish(AllOff);
 			break;
 		}
 		case 'd':
 		{
-			//disable();
 			ROS_INFO("disable");
 			break;
 		}
+		case 'a':
+		{
+			ArmsPos.data++;
+			if (ArmsPos.data>100) ArmsPos.data=100;
+			ArmsPos_publisher.publish(ArmsPos);	
+			ROS_INFO("pos=%d hug=%d", ArmsPos.data, ArmsHug.data);
+			break;
+		}
+		case 'z':
+		{
+			ArmsPos.data--;
+			if (ArmsPos.data<0) ArmsPos.data=0;
+			ArmsPos_publisher.publish(ArmsPos);	
+			ROS_INFO("pos=%d hug=%d", ArmsPos.data, ArmsHug.data);
+			break;
+		}
+		case 's':
+		{
+			ArmsHug.data++;
+			if (ArmsHug.data>100) ArmsHug.data=100;
+			ArmsHug_publisher.publish(ArmsHug);	
+			ROS_INFO("pos=%d hug=%d", ArmsPos.data, ArmsHug.data);
+			break;
+		}
+		case 'x':
+		{
+			ArmsHug.data--;
+			if (ArmsHug.data<0) ArmsHug.data=0;
+			ArmsHug_publisher.publish(ArmsHug);	
+			ROS_INFO("pos=%d hug=%d", ArmsPos.data, ArmsHug.data);
+			break;
+		}
+		case '`':
+		{
+			ArmServoPower.data = !ArmServoPower.data;
+			
+			ROS_INFO("ARM Power :%d", ArmServoPower.data);
+			ArmServoPower_publisher.publish(ArmServoPower);
+			break;
+		}		
 		case 'l':
 		{
 			//disable();

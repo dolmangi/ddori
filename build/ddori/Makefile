@@ -164,6 +164,34 @@ _ddori_generate_messages_check_deps_ddori_sensor/fast:
 .PHONY : _ddori_generate_messages_check_deps_ddori_sensor/fast
 
 # Convenience name for target.
+ddori/CMakeFiles/_ddori_generate_messages_check_deps_motor_speed.dir/rule:
+	cd /home/dolmangi/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 ddori/CMakeFiles/_ddori_generate_messages_check_deps_motor_speed.dir/rule
+.PHONY : ddori/CMakeFiles/_ddori_generate_messages_check_deps_motor_speed.dir/rule
+
+# Convenience name for target.
+_ddori_generate_messages_check_deps_motor_speed: ddori/CMakeFiles/_ddori_generate_messages_check_deps_motor_speed.dir/rule
+.PHONY : _ddori_generate_messages_check_deps_motor_speed
+
+# fast build rule for target.
+_ddori_generate_messages_check_deps_motor_speed/fast:
+	cd /home/dolmangi/catkin_ws/build && $(MAKE) -f ddori/CMakeFiles/_ddori_generate_messages_check_deps_motor_speed.dir/build.make ddori/CMakeFiles/_ddori_generate_messages_check_deps_motor_speed.dir/build
+.PHONY : _ddori_generate_messages_check_deps_motor_speed/fast
+
+# Convenience name for target.
+ddori/CMakeFiles/_ddori_generate_messages_check_deps_servo_control.dir/rule:
+	cd /home/dolmangi/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 ddori/CMakeFiles/_ddori_generate_messages_check_deps_servo_control.dir/rule
+.PHONY : ddori/CMakeFiles/_ddori_generate_messages_check_deps_servo_control.dir/rule
+
+# Convenience name for target.
+_ddori_generate_messages_check_deps_servo_control: ddori/CMakeFiles/_ddori_generate_messages_check_deps_servo_control.dir/rule
+.PHONY : _ddori_generate_messages_check_deps_servo_control
+
+# fast build rule for target.
+_ddori_generate_messages_check_deps_servo_control/fast:
+	cd /home/dolmangi/catkin_ws/build && $(MAKE) -f ddori/CMakeFiles/_ddori_generate_messages_check_deps_servo_control.dir/build.make ddori/CMakeFiles/_ddori_generate_messages_check_deps_servo_control.dir/build
+.PHONY : _ddori_generate_messages_check_deps_servo_control/fast
+
+# Convenience name for target.
 ddori/CMakeFiles/ddori_gencpp.dir/rule:
 	cd /home/dolmangi/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 ddori/CMakeFiles/ddori_gencpp.dir/rule
 .PHONY : ddori/CMakeFiles/ddori_gencpp.dir/rule
@@ -432,6 +460,8 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... _ddori_generate_messages_check_deps_ddori_sensor"
+	@echo "... _ddori_generate_messages_check_deps_motor_speed"
+	@echo "... _ddori_generate_messages_check_deps_servo_control"
 	@echo "... ddori_gencpp"
 	@echo "... ddori_generate_messages"
 	@echo "... ddori_generate_messages_cpp"

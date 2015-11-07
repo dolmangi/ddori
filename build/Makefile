@@ -254,6 +254,32 @@ _ddori_generate_messages_check_deps_ddori_sensor/fast:
 .PHONY : _ddori_generate_messages_check_deps_ddori_sensor/fast
 
 #=============================================================================
+# Target rules for targets named _ddori_generate_messages_check_deps_motor_speed
+
+# Build rule for target.
+_ddori_generate_messages_check_deps_motor_speed: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 _ddori_generate_messages_check_deps_motor_speed
+.PHONY : _ddori_generate_messages_check_deps_motor_speed
+
+# fast build rule for target.
+_ddori_generate_messages_check_deps_motor_speed/fast:
+	$(MAKE) -f ddori/CMakeFiles/_ddori_generate_messages_check_deps_motor_speed.dir/build.make ddori/CMakeFiles/_ddori_generate_messages_check_deps_motor_speed.dir/build
+.PHONY : _ddori_generate_messages_check_deps_motor_speed/fast
+
+#=============================================================================
+# Target rules for targets named _ddori_generate_messages_check_deps_servo_control
+
+# Build rule for target.
+_ddori_generate_messages_check_deps_servo_control: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 _ddori_generate_messages_check_deps_servo_control
+.PHONY : _ddori_generate_messages_check_deps_servo_control
+
+# fast build rule for target.
+_ddori_generate_messages_check_deps_servo_control/fast:
+	$(MAKE) -f ddori/CMakeFiles/_ddori_generate_messages_check_deps_servo_control.dir/build.make ddori/CMakeFiles/_ddori_generate_messages_check_deps_servo_control.dir/build
+.PHONY : _ddori_generate_messages_check_deps_servo_control/fast
+
+#=============================================================================
 # Target rules for targets named ddori_gencpp
 
 # Build rule for target.
@@ -495,6 +521,8 @@ help:
 	@echo "... gtest"
 	@echo "... gtest_main"
 	@echo "... _ddori_generate_messages_check_deps_ddori_sensor"
+	@echo "... _ddori_generate_messages_check_deps_motor_speed"
+	@echo "... _ddori_generate_messages_check_deps_servo_control"
 	@echo "... ddori_gencpp"
 	@echo "... ddori_generate_messages"
 	@echo "... ddori_generate_messages_cpp"
