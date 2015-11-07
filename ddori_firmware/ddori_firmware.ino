@@ -37,6 +37,7 @@ const int power_led4_pin = 41;
 
 const int power_phone_pin = 28;
 const int power_camera_pin = 29;
+const int power_gassensor_pin = 32;
 
 const int encoder_r1_pin = 2;		//Encoder Input pin 
 const int encoder_r2_pin = 17;		//Encoder Input pin 
@@ -59,6 +60,9 @@ const int pwm_servo_output_power = 15;
 
 const int adc_battery_V_pin       = 0;    //Analog pin 0
 const int adc_battery_A_pin       = 1;    //Analog pin 1
+const int adc_gas_senror1_pin       = 2;    //Analog pin 2
+const int adc_gas_senror2_pin       = 3;    //Analog pin 3
+const int adc_gas_senror3_pin       = 4;    //Analog pin 4
 
 
 #define PWM0_LOW  150
@@ -71,7 +75,7 @@ const int adc_battery_A_pin       = 1;    //Analog pin 1
 #define PWM5_HIGH 420
 
 
-#define ONE_WIRE_BUS 34
+#define ONE_WIRE_BUS 35
 
 
 // Setup a oneWire instance to communicate with any OneWire devices 
@@ -177,6 +181,10 @@ void arms_hug_commandCb( const std_msgs::Int8& cmd)
 }
 
 void gassensor_power_commandCb( const std_msgs::Int8& cmd){
+  if (cmd.data)
+    digitalWrite(power_gassensor_pin, LOW);
+  else
+    digitalWrite(power_gassensor_pin, HIGH);
 }
 void phone_power_commandCb( const std_msgs::Int8& cmd){
 }
@@ -246,6 +254,9 @@ void setup() {
     analogRead(adc_battery_V_pin); 
     analogRead(adc_battery_A_pin); 
 
+    analogRead(adc_gas_senror1_pin); 
+    analogRead(adc_gas_senror2_pin); 
+    analogRead(adc_gas_senror3_pin); 
 
     pinMode(left_tr1_pin, OUTPUT);      
     pinMode(left_tr2_pin, OUTPUT);      
@@ -289,6 +300,9 @@ void setup() {
 
     pinMode(power_camera_pin, OUTPUT);    
     digitalWrite(power_camera_pin, HIGH);
+    
+    pinMode(power_gassensor_pin, OUTPUT);    
+    digitalWrite(power_gassensor_pin, HIGH);
 
     
     pinMode(pwm_servo_output_power, OUTPUT);    
@@ -408,7 +422,11 @@ void loop()
     sensor_msg_data.right_encoder=speed_act_r;
     sensor_msg_data.left_pwm=PWM_val_l;
     sensor_msg_data.right_pwm=PWM_val_r;
-    
+
+    sensor_msg_data.co=analogRead(adc_gas_senror1_pin); 
+    sensor_msg_data.gas=analogRead(adc_gas_senror2_pin); 
+    sensor_msg_data.air=analogRead(adc_gas_senror3_pin); 
+
     sensor_msg_data.pir = 0;
     sensor_msg_data.pir |= digitalRead(pir_det1_pin) ? 1 : 0;
     sensor_msg_data.pir |= digitalRead(pir_det2_pin) ? 2 : 0;

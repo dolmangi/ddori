@@ -74,17 +74,18 @@ void sensor_Callback(const ddori::ddori_sensor::ConstPtr& msg)
 {
 	char display=0;
 
-	if (msg->voltage*1.0 > prev.voltage*1.1 || msg->voltage*1.0 < prev.voltage*0.9)  display=1;
-	if (msg->current*1.0 > prev.current*1.1 || msg->current*1.0 < prev.current*0.9)  display=1;
+	if (msg->voltage*1.0 > prev.voltage*1.05 || msg->voltage*1.0 < prev.voltage*0.95)  display=1;
+	if (msg->current*1.0 > prev.current*1.05 || msg->current*1.0 < prev.current*0.95)  display=1;
 	if (msg->left_pwm != prev.left_pwm  || msg->right_pwm != prev.right_pwm ) display=1;
 	if (msg->left_encoder != prev.left_encoder  || msg->right_encoder != prev.right_encoder ) display=1;
 	if (msg->pir != prev.pir ) display=1;
 		
 	if (display) {
-		ROS_INFO("%d: %6.2f[V] %d[mA]   PIR:%d  pwm=%u,%u   enc=%d,%d    speed=%d,%d", msg->time_stamp, msg->voltage/100.0, msg->current, msg->pir, 
+		ROS_INFO("%d: %6.2f[V] %d[mA]   PIR:%d  pwm=%u,%u   enc=%d,%d    speed=%d,%d   CO=%d  GAS=%d  AIR=%d ", msg->time_stamp, msg->voltage/100.0, msg->current, msg->pir, 
 			(unsigned char)msg->left_pwm, (unsigned char)msg->right_pwm,
 			(char)msg->left_encoder, (char)msg->right_encoder,
-			(char)speed_left, (char)speed_right);
+			(char)speed_left, (char)speed_right,
+			msg->co, msg->gas, msg->air);
 	}
 
 	prev = *msg;
@@ -149,7 +150,7 @@ int main(int argc, char **argv)
 
 
 
-
+	GasSensorPower.data=0;
 	light_on.data=0;
 	ArmsPos.data=30;
 	ArmsHug.data=30;
@@ -199,6 +200,7 @@ void keyboardInputThread()
 	ROS_INFO("l : light on/off");
 	ROS_INFO("d : disable motors.");
 	ROS_INFO("e : enable motors.");
+	ROS_INFO("g : gas sensor power on/off.");
 	ROS_INFO("q : quit.");
 	char c;
 
@@ -359,6 +361,14 @@ void processKeyboardInput(char c)
 			
 			ROS_INFO("Light :%d", light_on.data);
 			light_control_publisher.publish(light_on);
+			break;
+		}		
+		case 'g':
+		{
+			GasSensorPower.data = !GasSensorPower.data;
+			
+			ROS_INFO("GAS Sensor Power :%d", GasSensorPower.data);
+			GasSensorPower_publisher.publish(GasSensorPower);
 			break;
 		}		
 		case 'e':
