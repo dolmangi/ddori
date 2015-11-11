@@ -14,8 +14,8 @@ namespace ddori
     public:
       uint16_t time_stamp;
       uint8_t bumper;
-      uint16_t left_encoder;
-      uint16_t right_encoder;
+      int16_t left_encoder;
+      int16_t right_encoder;
       int8_t left_pwm;
       int8_t right_pwm;
       uint8_t buttons;
@@ -69,11 +69,21 @@ namespace ddori
       offset += sizeof(this->time_stamp);
       *(outbuffer + offset + 0) = (this->bumper >> (8 * 0)) & 0xFF;
       offset += sizeof(this->bumper);
-      *(outbuffer + offset + 0) = (this->left_encoder >> (8 * 0)) & 0xFF;
-      *(outbuffer + offset + 1) = (this->left_encoder >> (8 * 1)) & 0xFF;
+      union {
+        int16_t real;
+        uint16_t base;
+      } u_left_encoder;
+      u_left_encoder.real = this->left_encoder;
+      *(outbuffer + offset + 0) = (u_left_encoder.base >> (8 * 0)) & 0xFF;
+      *(outbuffer + offset + 1) = (u_left_encoder.base >> (8 * 1)) & 0xFF;
       offset += sizeof(this->left_encoder);
-      *(outbuffer + offset + 0) = (this->right_encoder >> (8 * 0)) & 0xFF;
-      *(outbuffer + offset + 1) = (this->right_encoder >> (8 * 1)) & 0xFF;
+      union {
+        int16_t real;
+        uint16_t base;
+      } u_right_encoder;
+      u_right_encoder.real = this->right_encoder;
+      *(outbuffer + offset + 0) = (u_right_encoder.base >> (8 * 0)) & 0xFF;
+      *(outbuffer + offset + 1) = (u_right_encoder.base >> (8 * 1)) & 0xFF;
       offset += sizeof(this->right_encoder);
       union {
         int8_t real;
@@ -212,11 +222,23 @@ namespace ddori
       offset += sizeof(this->time_stamp);
       this->bumper =  ((uint8_t) (*(inbuffer + offset)));
       offset += sizeof(this->bumper);
-      this->left_encoder =  ((uint16_t) (*(inbuffer + offset)));
-      this->left_encoder |= ((uint16_t) (*(inbuffer + offset + 1))) << (8 * 1);
+      union {
+        int16_t real;
+        uint16_t base;
+      } u_left_encoder;
+      u_left_encoder.base = 0;
+      u_left_encoder.base |= ((uint16_t) (*(inbuffer + offset + 0))) << (8 * 0);
+      u_left_encoder.base |= ((uint16_t) (*(inbuffer + offset + 1))) << (8 * 1);
+      this->left_encoder = u_left_encoder.real;
       offset += sizeof(this->left_encoder);
-      this->right_encoder =  ((uint16_t) (*(inbuffer + offset)));
-      this->right_encoder |= ((uint16_t) (*(inbuffer + offset + 1))) << (8 * 1);
+      union {
+        int16_t real;
+        uint16_t base;
+      } u_right_encoder;
+      u_right_encoder.base = 0;
+      u_right_encoder.base |= ((uint16_t) (*(inbuffer + offset + 0))) << (8 * 0);
+      u_right_encoder.base |= ((uint16_t) (*(inbuffer + offset + 1))) << (8 * 1);
+      this->right_encoder = u_right_encoder.real;
       offset += sizeof(this->right_encoder);
       union {
         int8_t real;
@@ -364,7 +386,7 @@ namespace ddori
     }
 
     const char * getType(){ return "ddori/ddori_sensor"; };
-    const char * getMD5(){ return "19b6bb5c07861f2868728e7e06e515a5"; };
+    const char * getMD5(){ return "4c5db74731163a4f0137ab79e8204aea"; };
 
   };
 

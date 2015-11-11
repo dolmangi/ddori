@@ -177,7 +177,9 @@ void arms_pos_commandCb( const std_msgs::Int8& cmd)
 void arms_hug_commandCb( const std_msgs::Int8& cmd)
 {
     pwm.setPWM(1, 0, map(cmd.data,0,100,PWM1_LOW, PWM1_HIGH));
-    pwm.setPWM(5, 0, map(cmd.data,0,100,PWM5_HIGH, PWM5_LOW));        
+    pwm.setPWM(5, 0, map(cmd.data,0,100,PWM5_HIGH, PWM5_LOW));    
+    pwm.setPWM(2, 0, map(cmd.data,0,100,PWM1_LOW, PWM1_HIGH));
+    pwm.setPWM(6, 0, map(cmd.data,0,100,PWM1_LOW, PWM1_HIGH));       
 }
 
 void gassensor_power_commandCb( const std_msgs::Int8& cmd){
@@ -418,8 +420,8 @@ void loop()
     sensor_msg_data.current=get_battery_ma();
     
     sensor_msg_data.time_stamp=cur_millis;
-    sensor_msg_data.left_encoder=speed_act_l;
-    sensor_msg_data.right_encoder=speed_act_r;
+    sensor_msg_data.left_encoder=count_l;
+    sensor_msg_data.right_encoder=count_r;
     sensor_msg_data.left_pwm=PWM_val_l;
     sensor_msg_data.right_pwm=PWM_val_r;
 
@@ -460,68 +462,6 @@ void loop()
   delay(1);
 }
 
-#define  BAT_V_AVG_CNT  20
-#define  BAT_V_R1     6.2
-#define  BAT_V_R2     11
-#define  UNIT_VOLT   (5.0/1024)        
-#define  SENS_GAIN    50
-#define  SENS_R         0.05
-static int bat_v[BAT_V_AVG_CNT];
-static int bat_a[BAT_V_AVG_CNT];
-static int bat_v_pos=0;
-
-int check_battery()
-{
-    int pos=bat_v_pos++ % BAT_V_AVG_CNT;
-    bat_v[pos]=analogRead(adc_battery_V_pin); 
-    bat_a[pos]=analogRead(adc_battery_A_pin); 
-}
-
-
-///////////////****************************************************//////////////////
-int get_battery_mv()
-{
-    int i=0;
-    float tot=0.0;
-    float avg=0.0;
-    float vsens=0.0;
-    int vout=0;
-    int cnt= bat_v_pos > BAT_V_AVG_CNT ? BAT_V_AVG_CNT : bat_v_pos;
-    
-    if (cnt==0)
-        return 0;
-        
-    for (i=0;i<cnt;i++)
-        tot += bat_v[i];
-    
-    avg=tot/cnt;
-    vsens = avg * UNIT_VOLT;
-    vout = (int) (100 * vsens*(BAT_V_R1+BAT_V_R2)/BAT_V_R1);
-    return vout;    
-}
-
-int get_battery_ma()
-{
-    int i=0;
-    float tot=0.0;
-    float avg=0.0;
-    float vsens=0.0;
-    int iout=0;
-    int cnt= bat_v_pos > BAT_V_AVG_CNT ? BAT_V_AVG_CNT : bat_v_pos;
-    
-    if (cnt==0)
-        return 0;
-        
-    for (i=0;i<cnt;i++)
-        tot += bat_a[i];
-    
-    avg=tot/cnt;
-    vsens = avg * UNIT_VOLT / SENS_GAIN;
-    iout = (int) (1000 * vsens/SENS_R );
-    return iout;    
-}
-
-
 /*
 void getMotorData()  {                                                        // calculate speed, volts and Amps
 static long countAnt = 0;                                                   // last count
@@ -542,15 +482,15 @@ void getMotorData()
     static long prev_count_l=0;
     static long prev_count_r=0;
     
-	//Calculating the speed using encoder count
+  	//Calculating the speed using encoder count
     enc_cnt_diff_l=count_l-prev_count_l;
-	speed_act_l = (enc_cnt_diff_l*(60*(1000/LOOPTIME)))/(34*12);   
+    speed_act_l = (enc_cnt_diff_l*(60*(1000/LOOPTIME)))/(34*12);   
     prev_count_l = count_l;
-	//count_l = 0;                                           //setting count value to last count
+  	//count_l = 0;                                           //setting count value to last count
 
     enc_cnt_diff_r=count_r-prev_count_r;
-	speed_act_r  = (enc_cnt_diff_r*(60*(1000/LOOPTIME)))/(34*12);           
-	prev_count_r = count_r ;                                           //setting count value to last count
+    speed_act_r  = (enc_cnt_diff_r*(60*(1000/LOOPTIME)))/(34*12);           
+    prev_count_r = count_r ;                                           //setting count value to last count
 
 }
 
@@ -635,6 +575,68 @@ void rencoder_l1()  {         //Read Encoder
         count_l--;               
     }
 }
+
+#define  BAT_V_AVG_CNT  20
+#define  BAT_V_R1     6.2
+#define  BAT_V_R2     11
+#define  UNIT_VOLT   (5.0/1024)        
+#define  SENS_GAIN    50
+#define  SENS_R         0.05
+static int bat_v[BAT_V_AVG_CNT];
+static int bat_a[BAT_V_AVG_CNT];
+static int bat_v_pos=0;
+
+int check_battery()
+{
+    int pos=bat_v_pos++ % BAT_V_AVG_CNT;
+    bat_v[pos]=analogRead(adc_battery_V_pin); 
+    bat_a[pos]=analogRead(adc_battery_A_pin); 
+}
+
+
+///////////////****************************************************//////////////////
+int get_battery_mv()
+{
+    int i=0;
+    float tot=0.0;
+    float avg=0.0;
+    float vsens=0.0;
+    int vout=0;
+    int cnt= bat_v_pos > BAT_V_AVG_CNT ? BAT_V_AVG_CNT : bat_v_pos;
+    
+    if (cnt==0)
+        return 0;
+        
+    for (i=0;i<cnt;i++)
+        tot += bat_v[i];
+    
+    avg=tot/cnt;
+    vsens = avg * UNIT_VOLT;
+    vout = (int) (100 * vsens*(BAT_V_R1+BAT_V_R2)/BAT_V_R1);
+    return vout;    
+}
+
+int get_battery_ma()
+{
+    int i=0;
+    float tot=0.0;
+    float avg=0.0;
+    float vsens=0.0;
+    int iout=0;
+    int cnt= bat_v_pos > BAT_V_AVG_CNT ? BAT_V_AVG_CNT : bat_v_pos;
+    
+    if (cnt==0)
+        return 0;
+        
+    for (i=0;i<cnt;i++)
+        tot += bat_a[i];
+    
+    avg=tot/cnt;
+    vsens = avg * UNIT_VOLT / SENS_GAIN;
+    iout = (int) (1000 * vsens/SENS_R );
+    return iout;    
+}
+
 
 
 void stop()

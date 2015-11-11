@@ -61,6 +61,8 @@ std_msgs/String.h
 /home/dolmangi/catkin_ws/src/ddori/src/std_msgs/String.h
 std_msgs/Int8.h
 /home/dolmangi/catkin_ws/src/ddori/src/std_msgs/Int8.h
+std_msgs/Int16.h
+/home/dolmangi/catkin_ws/src/ddori/src/std_msgs/Int16.h
 std_msgs/UInt16.h
 /home/dolmangi/catkin_ws/src/ddori/src/std_msgs/UInt16.h
 ddori/ddori_sensor.h
@@ -1169,6 +1171,22 @@ ros/forwards.h
 /opt/ros/indigo/include/rosconsole/macros_generated.h
 
 /opt/ros/indigo/include/std_msgs/Header.h
+string
+-
+vector
+-
+map
+-
+ros/types.h
+-
+ros/serialization.h
+-
+ros/builtin_message_traits.h
+-
+ros/message_operations.h
+-
+
+/opt/ros/indigo/include/std_msgs/Int16.h
 string
 -
 vector

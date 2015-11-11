@@ -1,6 +1,7 @@
 #include "ros/ros.h"
 #include "std_msgs/String.h"
 #include "std_msgs/Int8.h"
+#include "std_msgs/Int16.h"
 #include "std_msgs/UInt16.h"
 #include "ddori/ddori_sensor.h"
 #include "ddori/servo_control.h"
@@ -83,8 +84,8 @@ void sensor_Callback(const ddori::ddori_sensor::ConstPtr& msg)
 	if (display) {
 		ROS_INFO("%d: %6.2f[V] %d[mA]   PIR:%d  pwm=%u,%u   enc=%d,%d    speed=%d,%d   CO=%d  GAS=%d  AIR=%d ", msg->time_stamp, msg->voltage/100.0, msg->current, msg->pir, 
 			(unsigned char)msg->left_pwm, (unsigned char)msg->right_pwm,
-			(char)msg->left_encoder, (char)msg->right_encoder,
-			(char)speed_left, (char)speed_right,
+			msg->left_encoder,msg->right_encoder,
+			speed_left,speed_right,
 			msg->co, msg->gas, msg->air);
 	}
 
@@ -93,6 +94,12 @@ void sensor_Callback(const ddori::ddori_sensor::ConstPtr& msg)
 }
 
 
+// Motor  37mm - 50 RPM, Tork=4.5Kg
+// encoder - 1 revolution  1050 tick
+// wheel radius 35mm(including TankTrack Thickness),  diameter - 70mm
+// circumference = 2 pi r = 2*3.14159*35 = 220mm 
+// 1 tick = 0.2095 mm
+         
 
 int main(int argc, char **argv)
 {

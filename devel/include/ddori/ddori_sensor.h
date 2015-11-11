@@ -80,10 +80,10 @@ struct ddori_sensor_
    typedef uint8_t _bumper_type;
   _bumper_type bumper;
 
-   typedef uint16_t _left_encoder_type;
+   typedef int16_t _left_encoder_type;
   _left_encoder_type left_encoder;
 
-   typedef uint16_t _right_encoder_type;
+   typedef int16_t _right_encoder_type;
   _right_encoder_type right_encoder;
 
    typedef int8_t _left_pwm_type;
@@ -217,12 +217,12 @@ struct MD5Sum< ::ddori::ddori_sensor_<ContainerAllocator> >
 {
   static const char* value()
   {
-    return "19b6bb5c07861f2868728e7e06e515a5";
+    return "4c5db74731163a4f0137ab79e8204aea";
   }
 
   static const char* value(const ::ddori::ddori_sensor_<ContainerAllocator>&) { return value(); }
-  static const uint64_t static_value1 = 0x19b6bb5c07861f28ULL;
-  static const uint64_t static_value2 = 0x68728e7e06e515a5ULL;
+  static const uint64_t static_value1 = 0x4c5db74731163a4fULL;
+  static const uint64_t static_value2 = 0x0137ab79e8204aeaULL;
 };
 
 template<class ContainerAllocator>
@@ -244,8 +244,8 @@ struct Definition< ::ddori::ddori_sensor_<ContainerAllocator> >
     return "\n\
 uint16 time_stamp      # milliseconds starting when turning on Kobuki (max. 65536, then starts from 0 again)\n\
 uint8  bumper          	# see bumper states\n\
-uint16 left_encoder    # accumulated ticks left wheel starting with turning on Kobuki (max. 65535)\n\
-uint16 right_encoder   # accumulated ticks right wheel starting with turning on Kobuki (max. 65535)\n\
+int16 left_encoder    # accumulated ticks left wheel starting with turning on Kobuki (max. 32767)\n\
+int16 right_encoder   # accumulated ticks right wheel starting with turning on Kobuki (max. 32767)\n\
 int8   left_pwm        	# % of applied maximum voltage left wheel: -100 (max. voltage backward) to +100 (max. voltage forward)\n\
 int8   right_pwm       # % of applied maximum voltage right wheel: -100 (max. voltage backward) to +100 (max. voltage forward)\n\
 uint8  buttons         # see button states\n\
@@ -337,9 +337,9 @@ struct Printer< ::ddori::ddori_sensor_<ContainerAllocator> >
     s << indent << "bumper: ";
     Printer<uint8_t>::stream(s, indent + "  ", v.bumper);
     s << indent << "left_encoder: ";
-    Printer<uint16_t>::stream(s, indent + "  ", v.left_encoder);
+    Printer<int16_t>::stream(s, indent + "  ", v.left_encoder);
     s << indent << "right_encoder: ";
-    Printer<uint16_t>::stream(s, indent + "  ", v.right_encoder);
+    Printer<int16_t>::stream(s, indent + "  ", v.right_encoder);
     s << indent << "left_pwm: ";
     Printer<int8_t>::stream(s, indent + "  ", v.left_pwm);
     s << indent << "right_pwm: ";
