@@ -14,6 +14,8 @@ namespace ddori
     public:
       uint16_t time_stamp;
       uint8_t bumper;
+      int16_t left_currentSpeed;
+      int16_t right_currentSpeed;
       int16_t left_encoder;
       int16_t right_encoder;
       int8_t left_pwm;
@@ -38,6 +40,8 @@ namespace ddori
     ddori_sensor():
       time_stamp(0),
       bumper(0),
+      left_currentSpeed(0),
+      right_currentSpeed(0),
       left_encoder(0),
       right_encoder(0),
       left_pwm(0),
@@ -69,6 +73,22 @@ namespace ddori
       offset += sizeof(this->time_stamp);
       *(outbuffer + offset + 0) = (this->bumper >> (8 * 0)) & 0xFF;
       offset += sizeof(this->bumper);
+      union {
+        int16_t real;
+        uint16_t base;
+      } u_left_currentSpeed;
+      u_left_currentSpeed.real = this->left_currentSpeed;
+      *(outbuffer + offset + 0) = (u_left_currentSpeed.base >> (8 * 0)) & 0xFF;
+      *(outbuffer + offset + 1) = (u_left_currentSpeed.base >> (8 * 1)) & 0xFF;
+      offset += sizeof(this->left_currentSpeed);
+      union {
+        int16_t real;
+        uint16_t base;
+      } u_right_currentSpeed;
+      u_right_currentSpeed.real = this->right_currentSpeed;
+      *(outbuffer + offset + 0) = (u_right_currentSpeed.base >> (8 * 0)) & 0xFF;
+      *(outbuffer + offset + 1) = (u_right_currentSpeed.base >> (8 * 1)) & 0xFF;
+      offset += sizeof(this->right_currentSpeed);
       union {
         int16_t real;
         uint16_t base;
@@ -222,6 +242,24 @@ namespace ddori
       offset += sizeof(this->time_stamp);
       this->bumper =  ((uint8_t) (*(inbuffer + offset)));
       offset += sizeof(this->bumper);
+      union {
+        int16_t real;
+        uint16_t base;
+      } u_left_currentSpeed;
+      u_left_currentSpeed.base = 0;
+      u_left_currentSpeed.base |= ((uint16_t) (*(inbuffer + offset + 0))) << (8 * 0);
+      u_left_currentSpeed.base |= ((uint16_t) (*(inbuffer + offset + 1))) << (8 * 1);
+      this->left_currentSpeed = u_left_currentSpeed.real;
+      offset += sizeof(this->left_currentSpeed);
+      union {
+        int16_t real;
+        uint16_t base;
+      } u_right_currentSpeed;
+      u_right_currentSpeed.base = 0;
+      u_right_currentSpeed.base |= ((uint16_t) (*(inbuffer + offset + 0))) << (8 * 0);
+      u_right_currentSpeed.base |= ((uint16_t) (*(inbuffer + offset + 1))) << (8 * 1);
+      this->right_currentSpeed = u_right_currentSpeed.real;
+      offset += sizeof(this->right_currentSpeed);
       union {
         int16_t real;
         uint16_t base;
@@ -386,7 +424,7 @@ namespace ddori
     }
 
     const char * getType(){ return "ddori/ddori_sensor"; };
-    const char * getMD5(){ return "4c5db74731163a4f0137ab79e8204aea"; };
+    const char * getMD5(){ return "2a2e66d6238d872ec6adc450437b5561"; };
 
   };
 

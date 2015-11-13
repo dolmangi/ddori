@@ -59,6 +59,8 @@ ros::Publisher Stop_publisher;
 ros::Publisher AllOff_publisher;
 ros::Publisher ArmsPos_publisher;
 ros::Publisher ArmsHug_publisher;
+ros::Publisher LeftPwm_publisher;
+ros::Publisher RightPwm_publisher;
 
 
 
@@ -69,12 +71,15 @@ struct termios original_terminal_state;
 void processKeyboardInput(char c);
 void keyboardInputThread();
 
-
+#define ONETICK_MM  ((2.0 * 3.1415926 * 35)  / (90.0*12) )
 ddori::ddori_sensor prev;
 void sensor_Callback(const ddori::ddori_sensor::ConstPtr& msg)
 {
 	char display=0;
-
+	uint16_t tick_diff=(msg->time_stamp - prev.time_stamp) & 0xffff;
+	float spd_l= ONETICK_MM * (msg->left_encoder-prev.left_encoder) * (1000.0/tick_diff);
+	float spd_r= ONETICK_MM * (msg->right_encoder-prev.right_encoder) * (1000.0/tick_diff);
+	
 	if (msg->voltage*1.0 > prev.voltage*1.05 || msg->voltage*1.0 < prev.voltage*0.95)  display=1;
 	if (msg->current*1.0 > prev.current*1.05 || msg->current*1.0 < prev.current*0.95)  display=1;
 	if (msg->left_pwm != prev.left_pwm  || msg->right_pwm != prev.right_pwm ) display=1;
@@ -82,11 +87,21 @@ void sensor_Callback(const ddori::ddori_sensor::ConstPtr& msg)
 	if (msg->pir != prev.pir ) display=1;
 		
 	if (display) {
+#if 0		
 		ROS_INFO("%d: %6.2f[V] %d[mA]   PIR:%d  pwm=%u,%u   enc=%d,%d    speed=%d,%d   CO=%d  GAS=%d  AIR=%d ", msg->time_stamp, msg->voltage/100.0, msg->current, msg->pir, 
 			(unsigned char)msg->left_pwm, (unsigned char)msg->right_pwm,
 			msg->left_encoder,msg->right_encoder,
 			speed_left,speed_right,
 			msg->co, msg->gas, msg->air);
+#else
+		ROS_INFO("%d: %6.2f[V] %d[mA]   PIR:%d  pwm=%u,%u   enc=%d(%d),%d(%d)    tgt_spd=%d,%d  cur_spd=%d,%d  tick_diff=%d  ", msg->time_stamp, msg->voltage/100.0, msg->current, msg->pir, 
+			(unsigned char)msg->left_pwm, (unsigned char)msg->right_pwm,
+			msg->left_encoder, msg->left_encoder-prev.left_encoder, msg->right_encoder, msg->right_encoder-prev.right_encoder,
+			speed_left,speed_right,
+			msg->left_currentSpeed, msg->right_currentSpeed,
+			tick_diff
+			);
+#endif
 	}
 
 	prev = *msg;
@@ -154,7 +169,8 @@ int main(int argc, char **argv)
 	WheelPWM_publisher		= n.advertise<ddori::motor_speed>("cmd_pwm", 1);
 	Stop_publisher				= n.advertise<std_msgs::Int8>("cmd_stop", 1);
 	AllOff_publisher			= n.advertise<std_msgs::Int8>("cmd_alloff", 1);
-
+	LeftPwm_publisher			= n.advertise<std_msgs::Int16>("cmd_lpwm", 1);
+	RightPwm_publisher		= n.advertise<std_msgs::Int16>("cmd_rpwm", 1);
 
 
 	GasSensorPower.data=0;
@@ -225,23 +241,8 @@ void keyboardInputThread()
 void send_speed(int left, int  right)
 {
 	ddori::motor_speed ms;
-	if (left<0) {
-		ms.left_speed=-left;
-		ms.left_dir=1;
-	}
-	else {
-		ms.left_speed=left;
-		ms.left_dir=0;
-	}
-
-	if (right<0) {
-		ms.right_speed=-right;
-		ms.right_dir=1;
-	}
-	else {
-		ms.right_speed=right;
-		ms.right_dir=0;
-	}
+	ms.left_speed=left;
+	ms.right_speed=right;
 	
 	WheelPWM_publisher.publish(ms);		
 	
@@ -378,6 +379,49 @@ void processKeyboardInput(char c)
 			GasSensorPower_publisher.publish(GasSensorPower);
 			break;
 		}		
+		case 'u':
+		{
+			speed_left+=10;
+			
+			std_msgs::Int16 spd; 
+			spd.data=speed_left;			
+			ROS_INFO("Left Speed :%d", spd.data);
+			LeftPwm_publisher.publish(spd);
+			break;
+		}
+		case 'j':
+		{
+			speed_left-=10;
+			
+			std_msgs::Int16 spd; 
+			spd.data=speed_left;
+			
+			ROS_INFO("Left Speed :%d", spd.data);
+			LeftPwm_publisher.publish(spd);
+			break;
+		}		
+		case 'i':
+		{
+			speed_right+=10;
+			
+			std_msgs::Int16 spd; 
+			spd.data=speed_right;
+			
+			ROS_INFO("Right Speed :%d", spd.data);
+			RightPwm_publisher.publish(spd);
+			break;
+		}
+		case 'k':
+		{
+			speed_right-=10;
+			
+			std_msgs::Int16 spd; 
+			spd.data=speed_right;
+			
+			ROS_INFO("Right Speed :%d", spd.data);
+			RightPwm_publisher.publish(spd);
+			break;
+		}	
 		case 'e':
 		{
 			//enable();

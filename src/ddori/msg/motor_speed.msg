@@ -1,5 +1,3 @@
 
-uint8 left_speed
-uint8 left_dir
-uint8 right_speed
-uint8 right_dir
+int16 left_speed
+int16 right_speed

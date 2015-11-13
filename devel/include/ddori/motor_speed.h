@@ -25,30 +25,20 @@ struct motor_speed_
 
   motor_speed_()
     : left_speed(0)
-    , left_dir(0)
-    , right_speed(0)
-    , right_dir(0)  {
+    , right_speed(0)  {
     }
   motor_speed_(const ContainerAllocator& _alloc)
     : left_speed(0)
-    , left_dir(0)
-    , right_speed(0)
-    , right_dir(0)  {
+    , right_speed(0)  {
     }
 
 
 
-   typedef uint8_t _left_speed_type;
+   typedef int16_t _left_speed_type;
   _left_speed_type left_speed;
 
-   typedef uint8_t _left_dir_type;
-  _left_dir_type left_dir;
-
-   typedef uint8_t _right_speed_type;
+   typedef int16_t _right_speed_type;
   _right_speed_type right_speed;
-
-   typedef uint8_t _right_dir_type;
-  _right_dir_type right_dir;
 
 
 
@@ -127,12 +117,12 @@ struct MD5Sum< ::ddori::motor_speed_<ContainerAllocator> >
 {
   static const char* value()
   {
-    return "621b34f25ac94b760c1ddd9f2c38ce75";
+    return "2a2b9f3363ceb5fe214f65d78ffc689d";
   }
 
   static const char* value(const ::ddori::motor_speed_<ContainerAllocator>&) { return value(); }
-  static const uint64_t static_value1 = 0x621b34f25ac94b76ULL;
-  static const uint64_t static_value2 = 0x0c1ddd9f2c38ce75ULL;
+  static const uint64_t static_value1 = 0x2a2b9f3363ceb5feULL;
+  static const uint64_t static_value2 = 0x214f65d78ffc689dULL;
 };
 
 template<class ContainerAllocator>
@@ -152,10 +142,8 @@ struct Definition< ::ddori::motor_speed_<ContainerAllocator> >
   static const char* value()
   {
     return "\n\
-uint8 left_speed\n\
-uint8 left_dir\n\
-uint8 right_speed\n\
-uint8 right_dir\n\
+int16 left_speed\n\
+int16 right_speed\n\
 ";
   }
 
@@ -175,9 +163,7 @@ namespace serialization
     template<typename Stream, typename T> inline static void allInOne(Stream& stream, T m)
     {
       stream.next(m.left_speed);
-      stream.next(m.left_dir);
       stream.next(m.right_speed);
-      stream.next(m.right_dir);
     }
 
     ROS_DECLARE_ALLINONE_SERIALIZER;
@@ -197,13 +183,9 @@ struct Printer< ::ddori::motor_speed_<ContainerAllocator> >
   template<typename Stream> static void stream(Stream& s, const std::string& indent, const ::ddori::motor_speed_<ContainerAllocator>& v)
   {
     s << indent << "left_speed: ";
-    Printer<uint8_t>::stream(s, indent + "  ", v.left_speed);
-    s << indent << "left_dir: ";
-    Printer<uint8_t>::stream(s, indent + "  ", v.left_dir);
+    Printer<int16_t>::stream(s, indent + "  ", v.left_speed);
     s << indent << "right_speed: ";
-    Printer<uint8_t>::stream(s, indent + "  ", v.right_speed);
-    s << indent << "right_dir: ";
-    Printer<uint8_t>::stream(s, indent + "  ", v.right_dir);
+    Printer<int16_t>::stream(s, indent + "  ", v.right_speed);
   }
 };
 

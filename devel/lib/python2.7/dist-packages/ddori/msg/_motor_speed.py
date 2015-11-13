@@ -6,18 +6,16 @@ import struct
 
 
 class motor_speed(genpy.Message):
-  _md5sum = "621b34f25ac94b760c1ddd9f2c38ce75"
+  _md5sum = "2a2b9f3363ceb5fe214f65d78ffc689d"
   _type = "ddori/motor_speed"
   _has_header = False #flag to mark the presence of a Header object
   _full_text = """
-uint8 left_speed
-uint8 left_dir
-uint8 right_speed
-uint8 right_dir
+int16 left_speed
+int16 right_speed
 
 """
-  __slots__ = ['left_speed','left_dir','right_speed','right_dir']
-  _slot_types = ['uint8','uint8','uint8','uint8']
+  __slots__ = ['left_speed','right_speed']
+  _slot_types = ['int16','int16']
 
   def __init__(self, *args, **kwds):
     """
@@ -27,7 +25,7 @@ uint8 right_dir
     changes.  You cannot mix in-order arguments and keyword arguments.
 
     The available fields are:
-       left_speed,left_dir,right_speed,right_dir
+       left_speed,right_speed
 
     :param args: complete set of field values, in .msg order
     :param kwds: use keyword arguments corresponding to message field names
@@ -38,17 +36,11 @@ uint8 right_dir
       #message fields cannot be None, assign default values for those that are
       if self.left_speed is None:
         self.left_speed = 0
-      if self.left_dir is None:
-        self.left_dir = 0
       if self.right_speed is None:
         self.right_speed = 0
-      if self.right_dir is None:
-        self.right_dir = 0
     else:
       self.left_speed = 0
-      self.left_dir = 0
       self.right_speed = 0
-      self.right_dir = 0
 
   def _get_types(self):
     """
@@ -63,7 +55,7 @@ uint8 right_dir
     """
     try:
       _x = self
-      buff.write(_struct_4B.pack(_x.left_speed, _x.left_dir, _x.right_speed, _x.right_dir))
+      buff.write(_struct_2h.pack(_x.left_speed, _x.right_speed))
     except struct.error as se: self._check_types(struct.error("%s: '%s' when writing '%s'" % (type(se), str(se), str(_x))))
     except TypeError as te: self._check_types(ValueError("%s: '%s' when writing '%s'" % (type(te), str(te), str(_x))))
 
@@ -77,7 +69,7 @@ uint8 right_dir
       _x = self
       start = end
       end += 4
-      (_x.left_speed, _x.left_dir, _x.right_speed, _x.right_dir,) = _struct_4B.unpack(str[start:end])
+      (_x.left_speed, _x.right_speed,) = _struct_2h.unpack(str[start:end])
       return self
     except struct.error as e:
       raise genpy.DeserializationError(e) #most likely buffer underfill
@@ -91,7 +83,7 @@ uint8 right_dir
     """
     try:
       _x = self
-      buff.write(_struct_4B.pack(_x.left_speed, _x.left_dir, _x.right_speed, _x.right_dir))
+      buff.write(_struct_2h.pack(_x.left_speed, _x.right_speed))
     except struct.error as se: self._check_types(struct.error("%s: '%s' when writing '%s'" % (type(se), str(se), str(_x))))
     except TypeError as te: self._check_types(ValueError("%s: '%s' when writing '%s'" % (type(te), str(te), str(_x))))
 
@@ -106,10 +98,10 @@ uint8 right_dir
       _x = self
       start = end
       end += 4
-      (_x.left_speed, _x.left_dir, _x.right_speed, _x.right_dir,) = _struct_4B.unpack(str[start:end])
+      (_x.left_speed, _x.right_speed,) = _struct_2h.unpack(str[start:end])
       return self
     except struct.error as e:
       raise genpy.DeserializationError(e) #most likely buffer underfill
 
 _struct_I = genpy.struct_I
-_struct_4B = struct.Struct("<4B")
+_struct_2h = struct.Struct("<2h")

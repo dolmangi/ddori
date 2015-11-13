@@ -26,6 +26,8 @@ struct ddori_sensor_
   ddori_sensor_()
     : time_stamp(0)
     , bumper(0)
+    , left_currentSpeed(0)
+    , right_currentSpeed(0)
     , left_encoder(0)
     , right_encoder(0)
     , left_pwm(0)
@@ -50,6 +52,8 @@ struct ddori_sensor_
   ddori_sensor_(const ContainerAllocator& _alloc)
     : time_stamp(0)
     , bumper(0)
+    , left_currentSpeed(0)
+    , right_currentSpeed(0)
     , left_encoder(0)
     , right_encoder(0)
     , left_pwm(0)
@@ -79,6 +83,12 @@ struct ddori_sensor_
 
    typedef uint8_t _bumper_type;
   _bumper_type bumper;
+
+   typedef int16_t _left_currentSpeed_type;
+  _left_currentSpeed_type left_currentSpeed;
+
+   typedef int16_t _right_currentSpeed_type;
+  _right_currentSpeed_type right_currentSpeed;
 
    typedef int16_t _left_encoder_type;
   _left_encoder_type left_encoder;
@@ -217,12 +227,12 @@ struct MD5Sum< ::ddori::ddori_sensor_<ContainerAllocator> >
 {
   static const char* value()
   {
-    return "4c5db74731163a4f0137ab79e8204aea";
+    return "2a2e66d6238d872ec6adc450437b5561";
   }
 
   static const char* value(const ::ddori::ddori_sensor_<ContainerAllocator>&) { return value(); }
-  static const uint64_t static_value1 = 0x4c5db74731163a4fULL;
-  static const uint64_t static_value2 = 0x0137ab79e8204aeaULL;
+  static const uint64_t static_value1 = 0x2a2e66d6238d872eULL;
+  static const uint64_t static_value2 = 0xc6adc450437b5561ULL;
 };
 
 template<class ContainerAllocator>
@@ -244,6 +254,8 @@ struct Definition< ::ddori::ddori_sensor_<ContainerAllocator> >
     return "\n\
 uint16 time_stamp      # milliseconds starting when turning on Kobuki (max. 65536, then starts from 0 again)\n\
 uint8  bumper          	# see bumper states\n\
+int16 left_currentSpeed\n\
+int16 right_currentSpeed\n\
 int16 left_encoder    # accumulated ticks left wheel starting with turning on Kobuki (max. 32767)\n\
 int16 right_encoder   # accumulated ticks right wheel starting with turning on Kobuki (max. 32767)\n\
 int8   left_pwm        	# % of applied maximum voltage left wheel: -100 (max. voltage backward) to +100 (max. voltage forward)\n\
@@ -294,6 +306,8 @@ namespace serialization
     {
       stream.next(m.time_stamp);
       stream.next(m.bumper);
+      stream.next(m.left_currentSpeed);
+      stream.next(m.right_currentSpeed);
       stream.next(m.left_encoder);
       stream.next(m.right_encoder);
       stream.next(m.left_pwm);
@@ -336,6 +350,10 @@ struct Printer< ::ddori::ddori_sensor_<ContainerAllocator> >
     Printer<uint16_t>::stream(s, indent + "  ", v.time_stamp);
     s << indent << "bumper: ";
     Printer<uint8_t>::stream(s, indent + "  ", v.bumper);
+    s << indent << "left_currentSpeed: ";
+    Printer<int16_t>::stream(s, indent + "  ", v.left_currentSpeed);
+    s << indent << "right_currentSpeed: ";
+    Printer<int16_t>::stream(s, indent + "  ", v.right_currentSpeed);
     s << indent << "left_encoder: ";
     Printer<int16_t>::stream(s, indent + "  ", v.left_encoder);
     s << indent << "right_encoder: ";
