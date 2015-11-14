@@ -256,6 +256,8 @@ uint16 time_stamp      # milliseconds starting when turning on Kobuki (max. 6553
 uint8  bumper          	# see bumper states\n\
 int16 left_currentSpeed\n\
 int16 right_currentSpeed\n\
+#int16 left_move\n\
+#int16 right_move\n\
 int16 left_encoder    # accumulated ticks left wheel starting with turning on Kobuki (max. 32767)\n\
 int16 right_encoder   # accumulated ticks right wheel starting with turning on Kobuki (max. 32767)\n\
 int8   left_pwm        	# % of applied maximum voltage left wheel: -100 (max. voltage backward) to +100 (max. voltage forward)\n\

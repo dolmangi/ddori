@@ -30,8 +30,8 @@ double linear_vel_step, linear_vel_max;
 char thread_run=1;
 
 unsigned char servo_pos[10]={0};
-int speed_left=0;
-int speed_right=0;
+float tgt_speed_left=0;
+float tgt_speed_right=0;
 
 std_msgs::Int8 light_on; 
 std_msgs::Int8 ArmServoPower ;
@@ -70,41 +70,108 @@ struct termios original_terminal_state;
 	
 void processKeyboardInput(char c);
 void keyboardInputThread();
+void send_speed(int left, int  right);
 
-#define ONETICK_MM  ((2.0 * 3.1415926 * 35)  / (90.0*12) )
+
+// Motor Spec : 50RPM , 4.5Kg tork
+// encoder ticks  - 14 ticks per 1 revolution
+// Gear Ratio 90:1
+// Wheel radius 36mm
+// circumference =(2.0 * 3.1415926 * 36) = 226.2 mm
+// mm per 1tick =  ((2.0 * 3.1415926 * 36)  / (90.0*14) ) = 0.17952
+
+
+#define ONETICK_MM  ((2.0 * 3.1415926 * 36)  / (90.0*14) )
 ddori::ddori_sensor prev;
+float spd_ms_l=0;
+float spd_ms_r=0;
+float last_err_l=0;
+float last_err_r=0;
+float Kp=500;
+float Kd=50;
+int16_t last_pwm_l=0;
+int16_t last_pwm_r=0;
+
+#define constrain(amt,low,high) ((amt)<(low)?(low):((amt)>(high)?(high):(amt)))
 void sensor_Callback(const ddori::ddori_sensor::ConstPtr& msg)
 {
 	char display=0;
 	uint16_t tick_diff=(msg->time_stamp - prev.time_stamp) & 0xffff;
-	float spd_l= ONETICK_MM * (msg->left_encoder-prev.left_encoder) * (1000.0/tick_diff);
-	float spd_r= ONETICK_MM * (msg->right_encoder-prev.right_encoder) * (1000.0/tick_diff);
+	int16_t diff_enc_l=msg->left_encoder-prev.left_encoder;
+	int16_t diff_enc_r=msg->right_encoder-prev.right_encoder;
+	float move_l=ONETICK_MM * diff_enc_l  ;
+	float move_r= ONETICK_MM * diff_enc_r;
+	float spd_l = move_l *  (1000.0/tick_diff); // mm /s
+	float spd_r = move_r *  (1000.0/tick_diff) ; // mm/s
+	
+	spd_ms_l =spd_l / 1000;	// m/s
+	spd_ms_r =spd_r / 1000;	// m/s
 	
 	if (msg->voltage*1.0 > prev.voltage*1.05 || msg->voltage*1.0 < prev.voltage*0.95)  display=1;
 	if (msg->current*1.0 > prev.current*1.05 || msg->current*1.0 < prev.current*0.95)  display=1;
-	if (msg->left_pwm != prev.left_pwm  || msg->right_pwm != prev.right_pwm ) display=1;
+//	if (msg->left_pwm != prev.left_pwm  || msg->right_pwm != prev.right_pwm ) display=1;
 	if (msg->left_encoder != prev.left_encoder  || msg->right_encoder != prev.right_encoder ) display=1;
 	if (msg->pir != prev.pir ) display=1;
+
+	float error, pidTerm;
+	int16_t pwm_l,pwm_r;
+
+	if (tgt_speed_left==0) 
+	{
+		pwm_l=0;
+	}
+	else
+	{
+		error = tgt_speed_left - spd_ms_l;
+		pidTerm = (Kp * error) + (Kd * (error -last_err_l));
+		pwm_l = constrain((int16_t)(last_pwm_l+pidTerm) , -255, 255);
+		last_err_l=error;
+	}
+
+
+	if (tgt_speed_left==0) 
+	{
+		pwm_r=0;
+	}
+	else
+	{
+		error = tgt_speed_right -spd_ms_r;
+		pidTerm = (Kp * error) + (Kd * (error -last_err_r));
+		pwm_r = constrain((int16_t)(last_pwm_r+pidTerm) , -255, 255);
+		last_err_r=error;
+	}
+	if (tgt_speed_left<0 && pwm_l>0  || tgt_speed_left>0 && pwm_l<0) pwm_l=0;
+	if (tgt_speed_right<0 && pwm_r>0  || tgt_speed_right>0 && pwm_r<0) pwm_r=0;
+	
+	send_speed(pwm_l , pwm_r );
 		
 	if (display) {
 #if 0		
 		ROS_INFO("%d: %6.2f[V] %d[mA]   PIR:%d  pwm=%u,%u   enc=%d,%d    speed=%d,%d   CO=%d  GAS=%d  AIR=%d ", msg->time_stamp, msg->voltage/100.0, msg->current, msg->pir, 
 			(unsigned char)msg->left_pwm, (unsigned char)msg->right_pwm,
 			msg->left_encoder,msg->right_encoder,
-			speed_left,speed_right,
+			tgt_speed_left,tgt_speed_right,
 			msg->co, msg->gas, msg->air);
 #else
-		ROS_INFO("%d: %6.2f[V] %d[mA]   PIR:%d  pwm=%u,%u   enc=%d(%d),%d(%d)    tgt_spd=%d,%d  cur_spd=%d,%d  tick_diff=%d  ", msg->time_stamp, msg->voltage/100.0, msg->current, msg->pir, 
-			(unsigned char)msg->left_pwm, (unsigned char)msg->right_pwm,
-			msg->left_encoder, msg->left_encoder-prev.left_encoder, msg->right_encoder, msg->right_encoder-prev.right_encoder,
-			speed_left,speed_right,
-			msg->left_currentSpeed, msg->right_currentSpeed,
+		ROS_INFO("%d: %6.2f[V] %d[mA]  PIR:%d pwm=%d,%d enc=%d(%d),%d(%d)  tgtspd=%6.3f,%6.3f  curspd=%6.3f,%6.3f  err=%6.3f,%6.3f  tickdiff=%d  ", 
+			msg->time_stamp, msg->voltage/100.0, msg->current, msg->pir, 
+			pwm_l, pwm_r,
+			msg->left_encoder,diff_enc_l, msg->right_encoder, diff_enc_r,
+			tgt_speed_left,tgt_speed_right,
+			spd_ms_l,spd_ms_r,
+			last_err_l,last_err_r,
 			tick_diff
 			);
+
 #endif
 	}
 
+
 	prev = *msg;
+	last_pwm_l=pwm_l;
+	last_pwm_r=pwm_r;
+
+	
 
 }
 
@@ -114,6 +181,9 @@ void sensor_Callback(const ddori::ddori_sensor::ConstPtr& msg)
 // wheel radius 35mm(including TankTrack Thickness),  diameter - 70mm
 // circumference = 2 pi r = 2*3.14159*35 = 220mm 
 // 1 tick = 0.2095 mm
+
+
+void sendMotorPwm();
          
 
 int main(int argc, char **argv)
@@ -184,14 +254,18 @@ int main(int argc, char **argv)
 	thread.start(&keyboardInputThread);
 
 
-	/**
-	* ros::spin() will enter a loop, pumping callbacks.  With this version, all
-	* callbacks will be called from within this thread (the main one).  ros::spin()
-	* will exit when Ctrl-C is pressed, or the node is shutdown by the master.
-	*/
-	ros::spin();
-
-	
+	ros::Rate r(10); // 10 hz
+	while (ros::ok() && thread_run)
+	{
+		sendMotorPwm();
+		/**
+		* ros::spin() will enter a loop, pumping callbacks.  With this version, all
+		* callbacks will be called from within this thread (the main one).  ros::spin()
+		* will exit when Ctrl-C is pressed, or the node is shutdown by the master.
+		*/		
+		ros::spinOnce();
+		r.sleep();	
+	}
 	thread_run=0;
 	thread.cancel();
 	thread.join();
@@ -201,6 +275,11 @@ int main(int argc, char **argv)
 	return 0;
 }
 
+void sendMotorPwm()
+{
+
+
+}
 
 void keyboardInputThread()
 {
@@ -261,9 +340,8 @@ void processKeyboardInput(char c)
 	{
 		case KeyCode_Left:
 		{
-			if (speed_left >-120) speed_left-=10;
-			if (speed_right<120) speed_right+=10;
-			send_speed(speed_left,speed_right);
+			if (tgt_speed_left >-0.1) tgt_speed_left-=0.01;
+			if (tgt_speed_right<0.1) tgt_speed_right+=0.01;
 			//incrementAngularVelocity();
 			ROS_INFO("incrementAngularVelocity");
 			break;
@@ -271,9 +349,8 @@ void processKeyboardInput(char c)
 		
 		case KeyCode_Right:
 		{
-			if (speed_left <120) speed_left+=10;
-			if (speed_right>-120) speed_right-=10;
-			send_speed(speed_left,speed_right);
+			if (tgt_speed_left <0.1) tgt_speed_left+=0.01;
+			if (tgt_speed_right>-0.1) tgt_speed_right-=0.01;
 
 			//decrementAngularVelocity();
 			ROS_INFO("decrementAngularVelocity");
@@ -281,9 +358,8 @@ void processKeyboardInput(char c)
 		}
 		case KeyCode_Up:
 		{
-			if (speed_left <120) speed_left+=10;
-			if (speed_right<120) speed_right+=10;
-			send_speed(speed_left,speed_right);
+			if (tgt_speed_left <0.1) tgt_speed_left+=0.01;
+			if (tgt_speed_right<0.1) tgt_speed_right+=0.01;
 
 			//incrementLinearVelocity();
 			ROS_INFO("incrementLinearVelocity");
@@ -291,9 +367,8 @@ void processKeyboardInput(char c)
 		}
 		case KeyCode_Down:
 		{
-			if (speed_left >-120) speed_left-=10;
-			if (speed_right>-120) speed_right-=10;
-			send_speed(speed_left,speed_right);
+			if (tgt_speed_left >-0.1) tgt_speed_left-=0.01;
+			if (tgt_speed_right>-0.1) tgt_speed_right-=0.01;
 			//decrementLinearVelocity();
 			ROS_INFO("decrementLinearVelocity");
 			break;
@@ -302,7 +377,8 @@ void processKeyboardInput(char c)
 		{
 			std_msgs::Int8 Stop; 
 			Stop.data=0;
-			speed_left = speed_right = 0;
+			tgt_speed_left = tgt_speed_right = 0;
+			send_speed(0,0 );
 			//resetVelocity();
 			ROS_INFO("resetVelocity");
 			Stop_publisher.publish(Stop);			
@@ -381,20 +457,20 @@ void processKeyboardInput(char c)
 		}		
 		case 'u':
 		{
-			speed_left+=10;
+			tgt_speed_left+=1;
 			
 			std_msgs::Int16 spd; 
-			spd.data=speed_left;			
+			spd.data=tgt_speed_left;			
 			ROS_INFO("Left Speed :%d", spd.data);
 			LeftPwm_publisher.publish(spd);
 			break;
 		}
 		case 'j':
 		{
-			speed_left-=10;
+			tgt_speed_left-=1;
 			
 			std_msgs::Int16 spd; 
-			spd.data=speed_left;
+			spd.data=tgt_speed_left;
 			
 			ROS_INFO("Left Speed :%d", spd.data);
 			LeftPwm_publisher.publish(spd);
@@ -402,10 +478,10 @@ void processKeyboardInput(char c)
 		}		
 		case 'i':
 		{
-			speed_right+=10;
+			tgt_speed_right+=1;
 			
 			std_msgs::Int16 spd; 
-			spd.data=speed_right;
+			spd.data=tgt_speed_right;
 			
 			ROS_INFO("Right Speed :%d", spd.data);
 			RightPwm_publisher.publish(spd);
@@ -413,10 +489,10 @@ void processKeyboardInput(char c)
 		}
 		case 'k':
 		{
-			speed_right-=10;
+			tgt_speed_right-=1;
 			
 			std_msgs::Int16 spd; 
-			spd.data=speed_right;
+			spd.data=tgt_speed_right;
 			
 			ROS_INFO("Right Speed :%d", spd.data);
 			RightPwm_publisher.publish(spd);

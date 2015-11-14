@@ -16,6 +16,9 @@
 #include <OneWire.h>
 #include <DallasTemperature.h>
 
+
+#define ROS
+
 typedef enum _MOTOR {
 	MOTOR_LEFT=0,
 	MOTOR_RIGHT
@@ -30,9 +33,9 @@ typedef enum _MOTOR_DIRECTION {
 typedef struct _motor_data
 {
 	int pwm;
-	int currentSpeed;
-	int targetSpeed;
-	int last_error;
+	float currentSpeed;
+	float targetSpeed;
+	float last_error;
 	long prev_cnt;
 } MotorData;
 
@@ -133,8 +136,8 @@ volatile long count_l = 0; // revolution counter
 volatile long count_r = 0; // revolution counter
 
 
-float Kp = 0.1;          //setting Kp  
-float Kd = 1;            //setting Kd
+float Kp = 2;          //setting Kp  
+float Kd = 5;            //setting Kd
 
 
 #define  BAT_V_AVG_CNT  20
@@ -155,7 +158,7 @@ int off_flag = 0;
 unsigned long last_arm_milli = 0;
 
 
-
+#ifdef ROS
 void ros_init();
 void light_commandCb(const std_msgs::Int8& light_cmd);
 void armservo_power_commandCb(const std_msgs::Int8& cmd);
@@ -171,6 +174,8 @@ void wheel_stop_commandCb(const std_msgs::Int8& cmd);
 void alloff_commandCb(const std_msgs::Int8& cmd);
 void leftpwm_commandCb(const std_msgs::Int16& cmd);
 void rightpwm_commandCb(const std_msgs::Int16& cmd);
+#endif
+
 void InitPWM();
 
 
@@ -184,6 +189,7 @@ DallasTemperature temp_sensors(&oneWire);
 // called this way, it uses the default address 0x40
 Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
 
+#ifdef ROS
 //////////////////////////////////////////////////////////////////////////////////////////////
 // ROS Initialization
 ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -211,7 +217,6 @@ ros::Subscriber<std_msgs::Int8> subArmsHug_cmd("cmd_armshug", arms_hug_commandCb
 ros::Subscriber<std_msgs::Int8> subArmsPos_cmd("cmd_armspos", arms_pos_commandCb);
 ros::Subscriber<std_msgs::Int16> subLeftPwm_cmd("cmd_lpwm", leftpwm_commandCb);
 ros::Subscriber<std_msgs::Int16> subRightPwm_cmd("cmd_rpwm", rightpwm_commandCb);
-
 
 
 
@@ -264,39 +269,13 @@ void camservo_pos_commandCb(const std_msgs::Int8& cmd)
 {
 }
 
-void SetMotorDirection(MotorSelect m, MotorDirection dir)
-{
-	if (m == MOTOR_LEFT)
-	{
-		if (dir == MOTOR_BACKWARD)
-		{
-			digitalWrite(left_tr1_pin, LOW);
-			digitalWrite(left_tr2_pin, HIGH);
-		}
-		else
-		{
-			digitalWrite(left_tr1_pin, HIGH);
-			digitalWrite(left_tr2_pin, LOW);
-		}
-	}
-	else
-	{
-		if (dir == MOTOR_BACKWARD)
-		{
-			digitalWrite(right_tr1_pin, LOW);
-			digitalWrite(right_tr2_pin, HIGH);
-		}
-		else
-		{
-			digitalWrite(right_tr1_pin, HIGH);
-			digitalWrite(right_tr2_pin, LOW);
-		}
-
-	}
-}
 
 void wheel_pwm_commandCb(const ddori::motor_speed& cmd)
 {
+	m_l.pwm = abs(cmd.left_speed);
+	m_r.pwm = abs(cmd.right_speed);
+	SetMotorPWM(m_l.pwm, m_r.pwm);
+
 	if (cmd.left_speed<0) SetMotorDirection(MOTOR_LEFT, MOTOR_BACKWARD);
 	else SetMotorDirection(MOTOR_LEFT, MOTOR_FORWARD);
 
@@ -309,14 +288,14 @@ void wheel_pwm_commandCb(const ddori::motor_speed& cmd)
 }
 
 void wheel_stop_commandCb(const std_msgs::Int8& cmd) {
-	m_l.targetSpeed = 0;
-	m_r.targetSpeed = 0;
+	m_l.pwm = 0;
+	m_r.pwm = 0;
 	stop();
 }
 
 void alloff_commandCb(const std_msgs::Int8& cmd) {
-	m_l.targetSpeed = 0;
-	m_r.targetSpeed = 0;
+	m_l.pwm = 0;
+	m_r.pwm = 0;
 	stop();
 	powerled_onoff(2, 0);
 	digitalWrite(pwm_servo_output_power, HIGH);
@@ -324,20 +303,23 @@ void alloff_commandCb(const std_msgs::Int8& cmd) {
 
 void leftpwm_commandCb(const std_msgs::Int16& cmd)
 {
-	m_l.targetSpeed = cmd.data;
-
-	if (m_l.targetSpeed < 0) SetMotorDirection(MOTOR_LEFT, MOTOR_BACKWARD);
+	//m_l.targetSpeed = cmd.data;
+	m_l.pwm = cmd.data;
+	SetMotorPWM(m_l.pwm, m_r.pwm);
+	if (cmd.data < 0) SetMotorDirection(MOTOR_LEFT, MOTOR_BACKWARD);
 	else SetMotorDirection(MOTOR_LEFT, MOTOR_FORWARD);
 }
 
 void rightpwm_commandCb(const std_msgs::Int16& cmd)
 {
-	m_r.targetSpeed = cmd.data;
-
-	if (m_r.targetSpeed < 0) SetMotorDirection(MOTOR_RIGHT, MOTOR_BACKWARD);
+	//m_r.targetSpeed = cmd.data;
+	m_r.pwm = cmd.data;
+	SetMotorPWM(m_l.pwm, m_r.pwm);
+	if (cmd.data < 0) SetMotorDirection(MOTOR_RIGHT, MOTOR_BACKWARD);
 	else SetMotorDirection(MOTOR_RIGHT, MOTOR_FORWARD);
 }
 
+#endif
 
 //=======================================
 // SETUP
@@ -425,6 +407,7 @@ void setup() {
 	digitalWrite(right_tr2_pin, LOW);
 
 	InitPWM();
+	SetMotorPWM(0, 0);
 
 
 	//Init servo
@@ -434,10 +417,12 @@ void setup() {
 	// Start up the library
 	temp_sensors.begin(); // IC Default 9 bit. If you have troubles consider upping it 12. Ups the delay giving the IC more time to process the temperature measurement
 
+#ifdef ROS
 	ros_init();
-
-	//	Serial1.begin(57600);
-	//Serial1.println("ddori starting...");	
+#else
+	Serial1.begin(115200);
+	Serial1.println("ddori starting...");	
+#endif
 }
 
 
@@ -445,10 +430,10 @@ void setup() {
 
 
 
+#ifdef ROS
 
 void ros_init()
 {
-
 	//////////////////////////////////////////////////////////////////////////////////////////////
 	// ROS 
 	////////////////////////////////////////////////////////////////////////////////////////////////
@@ -506,6 +491,7 @@ void ros_report(unsigned long cur_millis)
 	pub_ddori_sensor.publish(&sensor_msg_data);
 }
 
+#endif
 
 //=======================================
 // LOOP
@@ -513,7 +499,9 @@ void ros_report(unsigned long cur_millis)
 void loop()
 {
 	unsigned long cur_millis = millis();
-	//getParam();                                                                 // check keyboard
+#ifndef ROS
+	getParam();                                                                 // check keyboard
+#endif
 
 	if (arm_power_on && (cur_millis - last_arm_milli >= 10))
 	{
@@ -524,6 +512,7 @@ void loop()
 	{                                                                                 // enter timed loop
 		lastMilli = cur_millis;
 
+#if 0
 		getMotorData();                                                          // calculate current speed
 
 		updatePid(m_l);         // compute PWM value
@@ -531,12 +520,24 @@ void loop()
 
 		OCR2B = m_l.pwm; 		// send PWM to motor
 		OCR2A = m_r.pwm;		// send PWM to motor
-
+#endif
 
 		// display data
 		check_battery();
+#ifdef ROS
 		ros_report(cur_millis);
-
+		nh.spinOnce();
+#else
+		Serial1.print("SP:");			Serial1.print(m_l.targetSpeed);  	Serial1.print(",");		Serial1.print(m_r.targetSpeed);
+		Serial1.print("  SPD:");		Serial1.print(m_l.currentSpeed);		Serial1.print(",");		Serial1.print(m_r.currentSpeed);
+		Serial1.print("  PWM:");		Serial1.print(m_l.pwm);   	Serial1.print(",");		Serial1.print(m_r.pwm);
+		Serial1.print("  ERR:");		Serial1.print(m_l.last_error);   	Serial1.print(",");		Serial1.print(m_r.last_error);
+		Serial1.print("  ENC:");		Serial1.print(count_l - m_l.prev_cnt);  		Serial1.print(",");		Serial1.print(count_r - m_r.prev_cnt);
+		//Serial1.print("  DIR:");	Serial1.print(ld==1?"F":"B");  		Serial1.print(",");		Serial1.print(rd==1?"F":"B");
+		Serial1.print("  kp:");			Serial1.print(Kp);
+		Serial1.print("  kd:");			Serial1.println(Kd);
+		//        printMotorInfo();
+#endif
 
 		/*
 
@@ -546,33 +547,21 @@ void loop()
 			Serial1.print("Temperature for Device 1 is: ");
 			Serial1.print(temp_sensors.getTempCByIndex(0)); // Why "byIndex"? You can have more than one IC on the same bus. 0 refers to the first IC on the wire
 		*/
-		/*
-			Serial1.print("SP:");			Serial1.print(m_l.targetSpeed);  	Serial1.print(",");		Serial1.print(m_r.targetSpeed);
-			Serial1.print("  RPM:");		Serial1.print(speed_act_l);		Serial1.print(",");		Serial1.print(speed_act_r);
-			Serial1.print("  PWM:");		Serial1.print(PWM_val_l);   	Serial1.print(",");		Serial1.print(PWM_val_r);
-			Serial1.print("  ENC:");	Serial1.print(enc_cnt_diff_l);  		Serial1.print(",");		Serial1.print(enc_cnt_diff_r);
-			Serial1.print("  DIR:");	Serial1.print(ld==1?"F":"B");  		Serial1.print(",");		Serial1.print(rd==1?"F":"B");
-			Serial1.print("  kp:");			Serial1.print(Kp);
-			Serial1.print("  kd:");			Serial1.println(Kd);
-			//        printMotorInfo();
-		*/
+		
+	
+		
 
 	}
+#ifdef ROS
 	nh.spinOnce();
+#endif
+
 	delay(1);
 }
 
-/*
-void getMotorData()  {                                                        // calculate speed, volts and Amps
-static long countAnt = 0;                                                   // last count
-  speed_act = ((count - countAnt)*(60*(1000/LOOPTIME)))/(16*29);          // 16 pulses X 29 gear ratio = 464 counts per output shaft rev
-  countAnt = count;
-  voltage = int(analogRead(Vpin) * 3.22 * 12.2/2.2);                          // battery voltage: mV=ADC*3300/1024, voltage divider 10K+2K
-  current = int(analogRead(Apin) * 3.22 * .77 *(1000.0/132.0));               // motor current - output: 130mV per Amp
-  current = digital_smooth(current, readings);                                // remove signal noise
-}
-*/
 
+
+#define ONETICK_MM  ((2.0 * 3.1415926 * 36)  / (90.0*14) )
 
 //encoder 12 counts per revolution
 //gear Ratio 90:1
@@ -583,14 +572,15 @@ void getMotorData()
 	long cnt_l = count_l;
 	long cnt_r = count_r;
 
+
 	//Calculating the speed using encoder count
 	diff = cnt_l - m_l.prev_cnt;
-	m_l.currentSpeed = (diff *(60 * (1000 / LOOPTIME))) / (90 * 12);
+	m_l.currentSpeed = ONETICK_MM * diff *  (1000.0 / LOOPTIME) / 1000; // m /s
+	//m_l.currentSpeed = (diff *(60 * (1000 / LOOPTIME))) / (90 * 12);
 	m_l.prev_cnt = cnt_l;
-	//count_l = 0;                                           //setting count value to last count
 
 	diff = cnt_r - m_r.prev_cnt;
-	m_r.currentSpeed = (diff*(60 * (1000 / LOOPTIME))) / (90 * 12);
+	m_r.currentSpeed = ONETICK_MM * diff *  (1000.0 / LOOPTIME) / 1000; // m /s
 	m_r.prev_cnt = cnt_r;                                           //setting count value to last count
 
 }
@@ -599,7 +589,7 @@ void updatePid(MotorData &m)
 {
 
 	float pidTerm = 0;                                                           // PID correction
-	int error = 0;
+	float error = 0;
 
 	error = abs(m.targetSpeed) - abs(m.currentSpeed);
 	pidTerm = (Kp * error) + (Kd * (error - m.last_error));
@@ -611,24 +601,6 @@ void updatePid(MotorData &m)
 
 }
 
-
-void printMotorInfo()
-{                                                     // display data
-//	if((millis()-lastMilliPrint) >= LOOPTIME)   
-//	{                     
-//		lastMilliPrint = millis();
-//		int pwm_value = PWM_val_l;
-//		pwm_value = map(pwm_value, 0, 255, 0, 100);
-
-	Serial1.print("SP:");			Serial1.print(m_l.targetSpeed);  	Serial1.print(",");		Serial1.print(m_r.targetSpeed);
-	// Serial1.print("  RPM:");		Serial1.print(speed_act_l);		Serial1.print(",");		Serial1.print(speed_act_r); 
-	// Serial1.print("  PWM:");		Serial1.print(PWM_val_l);   	Serial1.print(",");		Serial1.print(PWM_val_r); 
-	// Serial1.print("  ENC:");	Serial1.print(count_l);  		Serial1.print(",");		Serial1.print(count_r); 
-	// Serial1.print("  DIR:");	Serial1.print(ld==1?"F":"B");  		Serial1.print(",");		Serial1.print(rd==1?"F":"B"); 
-	// Serial1.print("  kp:");			Serial1.print(z`);
-	// Serial1.print("  kd:");			Serial1.println(Kd);            
-//	}
-}
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -714,8 +686,7 @@ void stop()
 	digitalWrite(right_tr2_pin, LOW);
 	m_l.targetSpeed = 0;
 	m_r.targetSpeed = 0;
-	OCR2A = 0;		// send PWM to motor
-	OCR2B = 0; 		// send PWM to motor
+	SetMotorPWM(0, 0); // send PWM to motor
 	Serial1.println("stop motor");
 }
 
@@ -737,6 +708,43 @@ void powerled_onoff(int ledno, int onoff)
 		break;
 	}
 }
+
+
+
+void SetMotorDirection(MotorSelect m, MotorDirection dir)
+{
+	if (m == MOTOR_LEFT)
+	{
+		if (dir == MOTOR_BACKWARD)
+		{
+			digitalWrite(left_tr1_pin, LOW);
+			digitalWrite(left_tr2_pin, HIGH);
+		}
+		else
+		{
+			digitalWrite(left_tr1_pin, HIGH);
+			digitalWrite(left_tr2_pin, LOW);
+		}
+	}
+	else
+	{
+		if (dir == MOTOR_BACKWARD)
+		{
+			digitalWrite(right_tr1_pin, LOW);
+			digitalWrite(right_tr2_pin, HIGH);
+		}
+		else
+		{
+			digitalWrite(right_tr1_pin, HIGH);
+			digitalWrite(right_tr2_pin, LOW);
+		}
+
+	}
+}
+
+
+
+
 int last_dir = 0;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -749,18 +757,16 @@ int getParam()
 	// and add it to the string:
 	if (inChar == 'i') {
 		if (last_dir != 1) {
-			digitalWrite(left_tr1_pin, LOW);
-			digitalWrite(left_tr2_pin, HIGH);
-			digitalWrite(right_tr1_pin, LOW);
-			digitalWrite(right_tr2_pin, HIGH);
+			SetMotorDirection(MOTOR_LEFT, MOTOR_FORWARD);
+			SetMotorDirection(MOTOR_RIGHT, MOTOR_FORWARD);
 			m_l.targetSpeed = 0;
 			m_r.targetSpeed = 0;
 		}
 		else {
-			m_l.targetSpeed = m_l.targetSpeed + 10;
+			m_l.targetSpeed = m_l.targetSpeed + 1;
 			if (m_l.targetSpeed > 255)
 				m_l.targetSpeed = 255;
-			m_r.targetSpeed = m_r.targetSpeed + 10;
+			m_r.targetSpeed = m_r.targetSpeed + 1;
 			if (m_r.targetSpeed > 255)
 				m_r.targetSpeed = 255;
 
@@ -769,19 +775,17 @@ int getParam()
 	}
 	else if (inChar == 'm') {
 		if (last_dir != 2) {
-			digitalWrite(left_tr1_pin, HIGH);
-			digitalWrite(left_tr2_pin, LOW);
-			digitalWrite(right_tr1_pin, HIGH);
-			digitalWrite(right_tr2_pin, LOW);
+			SetMotorDirection(MOTOR_LEFT, MOTOR_BACKWARD);
+			SetMotorDirection(MOTOR_RIGHT, MOTOR_BACKWARD);
 			m_l.targetSpeed = 0;
 			m_r.targetSpeed = 0;
 		}
 		else {
-			m_l.targetSpeed = m_l.targetSpeed - 10;
+			m_l.targetSpeed = m_l.targetSpeed - 1;
 			if (m_l.targetSpeed < -255)
 				m_l.targetSpeed = -255;
 
-			m_r.targetSpeed = m_r.targetSpeed - 10;
+			m_r.targetSpeed = m_r.targetSpeed - 1;
 			if (m_r.targetSpeed < -255)
 				m_r.targetSpeed = -255;
 		}
@@ -789,19 +793,17 @@ int getParam()
 	}
 	else if (inChar == 'k') {
 		if (last_dir != 3) {
-			digitalWrite(left_tr1_pin, LOW);
-			digitalWrite(left_tr2_pin, HIGH);
-			digitalWrite(right_tr1_pin, HIGH);
-			digitalWrite(right_tr2_pin, LOW);
+			SetMotorDirection(MOTOR_LEFT, MOTOR_FORWARD);
+			SetMotorDirection(MOTOR_RIGHT, MOTOR_BACKWARD);
 			m_l.targetSpeed = 0;
 			m_r.targetSpeed = 0;
 		}
 		else {
-			m_l.targetSpeed = m_l.targetSpeed - 10;
+			m_l.targetSpeed = m_l.targetSpeed - 1;
 			if (m_l.targetSpeed < -255)
 				m_l.targetSpeed = -255;
 
-			m_r.targetSpeed = m_r.targetSpeed + 10;
+			m_r.targetSpeed = m_r.targetSpeed + 1;
 			if (m_r.targetSpeed > 255)
 				m_r.targetSpeed = 255;
 		}
@@ -809,25 +811,23 @@ int getParam()
 	}
 	else if (inChar == 'j') {
 		if (last_dir != 4) {
-			digitalWrite(left_tr1_pin, HIGH);
-			digitalWrite(left_tr2_pin, LOW);
-			digitalWrite(right_tr1_pin, LOW);
-			digitalWrite(right_tr2_pin, HIGH);
+			SetMotorDirection(MOTOR_LEFT, MOTOR_BACKWARD);
+			SetMotorDirection(MOTOR_RIGHT, MOTOR_FORWARD);
 			m_l.targetSpeed = 0;
 			m_r.targetSpeed = 0;
 		}
 		else {
-			m_l.targetSpeed = m_l.targetSpeed + 10;
+			m_l.targetSpeed = m_l.targetSpeed + 1;
 			if (m_l.targetSpeed > 255)
 				m_l.targetSpeed = 255;
 
-			m_r.targetSpeed = m_r.targetSpeed - 10;
+			m_r.targetSpeed = m_r.targetSpeed - 1;
 			if (m_r.targetSpeed < -255)
 				m_r.targetSpeed = -255;
 		}
 		last_dir = 4;
 	}
-	/*
+	
 	else if (inChar=='a') {
 		Kd=Kd+0.01;
 	}
@@ -840,7 +840,7 @@ int getParam()
 	else if (inChar=='Z') {
 		Kp=Kp-0.01;
 	}
-	*/
+	
 	else if (inChar == 'l') {
 		light_on = !light_on;
 		if (light_on) {
@@ -854,6 +854,7 @@ int getParam()
 
 
 	}
+/*
 	else if (inChar == '`') {
 		Serial1.println("SERVO Power On!");
 		digitalWrite(pwm_servo_output_power, LOW);
@@ -950,7 +951,7 @@ int getParam()
 		pwm.setPWM(1, 0, map(arm_hug, 0, 100, PWM1_LOW, PWM1_HIGH));
 		pwm.setPWM(5, 0, map(arm_hug, 0, 100, PWM5_HIGH, PWM5_LOW));
 	}
-
+*/
 	else {
 		m_l.targetSpeed = 0;
 		m_r.targetSpeed = 0;
@@ -986,4 +987,10 @@ void InitPWM()
 	int myPrescaler = 1;         // this could be a number in [1 , 6]. In this case, 3 corresponds in binary to 011.   
 	TCCR2B |= myPrescaler;  //this operation (OR), replaces the last three bits in TCCR2B with our new value 011
 
+}
+
+void SetMotorPWM(byte left, byte right)
+{
+	OCR2B = left; 		// send PWM to motor
+	OCR2A = right;		// send PWM to motor
 }
