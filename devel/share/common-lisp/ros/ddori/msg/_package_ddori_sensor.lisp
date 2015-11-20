@@ -3,18 +3,10 @@
           TIME_STAMP
           BUMPER-VAL
           BUMPER
-          LEFT_CURRENTSPEED-VAL
-          LEFT_CURRENTSPEED
-          RIGHT_CURRENTSPEED-VAL
-          RIGHT_CURRENTSPEED
           LEFT_ENCODER-VAL
           LEFT_ENCODER
           RIGHT_ENCODER-VAL
           RIGHT_ENCODER
-          LEFT_PWM-VAL
-          LEFT_PWM
-          RIGHT_PWM-VAL
-          RIGHT_PWM
           BUTTONS-VAL
           BUTTONS
           CHARGER-VAL

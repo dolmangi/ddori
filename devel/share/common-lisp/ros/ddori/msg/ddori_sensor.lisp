@@ -17,16 +17,6 @@
     :initarg :bumper
     :type cl:fixnum
     :initform 0)
-   (left_currentSpeed
-    :reader left_currentSpeed
-    :initarg :left_currentSpeed
-    :type cl:fixnum
-    :initform 0)
-   (right_currentSpeed
-    :reader right_currentSpeed
-    :initarg :right_currentSpeed
-    :type cl:fixnum
-    :initform 0)
    (left_encoder
     :reader left_encoder
     :initarg :left_encoder
@@ -35,16 +25,6 @@
    (right_encoder
     :reader right_encoder
     :initarg :right_encoder
-    :type cl:fixnum
-    :initform 0)
-   (left_pwm
-    :reader left_pwm
-    :initarg :left_pwm
-    :type cl:fixnum
-    :initform 0)
-   (right_pwm
-    :reader right_pwm
-    :initarg :right_pwm
     :type cl:fixnum
     :initform 0)
    (buttons
@@ -147,16 +127,6 @@
   (roslisp-msg-protocol:msg-deprecation-warning "Using old-style slot reader ddori-msg:bumper-val is deprecated.  Use ddori-msg:bumper instead.")
   (bumper m))
 
-(cl:ensure-generic-function 'left_currentSpeed-val :lambda-list '(m))
-(cl:defmethod left_currentSpeed-val ((m <ddori_sensor>))
-  (roslisp-msg-protocol:msg-deprecation-warning "Using old-style slot reader ddori-msg:left_currentSpeed-val is deprecated.  Use ddori-msg:left_currentSpeed instead.")
-  (left_currentSpeed m))
-
-(cl:ensure-generic-function 'right_currentSpeed-val :lambda-list '(m))
-(cl:defmethod right_currentSpeed-val ((m <ddori_sensor>))
-  (roslisp-msg-protocol:msg-deprecation-warning "Using old-style slot reader ddori-msg:right_currentSpeed-val is deprecated.  Use ddori-msg:right_currentSpeed instead.")
-  (right_currentSpeed m))
-
 (cl:ensure-generic-function 'left_encoder-val :lambda-list '(m))
 (cl:defmethod left_encoder-val ((m <ddori_sensor>))
   (roslisp-msg-protocol:msg-deprecation-warning "Using old-style slot reader ddori-msg:left_encoder-val is deprecated.  Use ddori-msg:left_encoder instead.")
@@ -166,16 +136,6 @@
 (cl:defmethod right_encoder-val ((m <ddori_sensor>))
   (roslisp-msg-protocol:msg-deprecation-warning "Using old-style slot reader ddori-msg:right_encoder-val is deprecated.  Use ddori-msg:right_encoder instead.")
   (right_encoder m))
-
-(cl:ensure-generic-function 'left_pwm-val :lambda-list '(m))
-(cl:defmethod left_pwm-val ((m <ddori_sensor>))
-  (roslisp-msg-protocol:msg-deprecation-warning "Using old-style slot reader ddori-msg:left_pwm-val is deprecated.  Use ddori-msg:left_pwm instead.")
-  (left_pwm m))
-
-(cl:ensure-generic-function 'right_pwm-val :lambda-list '(m))
-(cl:defmethod right_pwm-val ((m <ddori_sensor>))
-  (roslisp-msg-protocol:msg-deprecation-warning "Using old-style slot reader ddori-msg:right_pwm-val is deprecated.  Use ddori-msg:right_pwm instead.")
-  (right_pwm m))
 
 (cl:ensure-generic-function 'buttons-val :lambda-list '(m))
 (cl:defmethod buttons-val ((m <ddori_sensor>))
@@ -261,14 +221,6 @@
   (cl:write-byte (cl:ldb (cl:byte 8 0) (cl:slot-value msg 'time_stamp)) ostream)
   (cl:write-byte (cl:ldb (cl:byte 8 8) (cl:slot-value msg 'time_stamp)) ostream)
   (cl:write-byte (cl:ldb (cl:byte 8 0) (cl:slot-value msg 'bumper)) ostream)
-  (cl:let* ((signed (cl:slot-value msg 'left_currentSpeed)) (unsigned (cl:if (cl:< signed 0) (cl:+ signed 65536) signed)))
-    (cl:write-byte (cl:ldb (cl:byte 8 0) unsigned) ostream)
-    (cl:write-byte (cl:ldb (cl:byte 8 8) unsigned) ostream)
-    )
-  (cl:let* ((signed (cl:slot-value msg 'right_currentSpeed)) (unsigned (cl:if (cl:< signed 0) (cl:+ signed 65536) signed)))
-    (cl:write-byte (cl:ldb (cl:byte 8 0) unsigned) ostream)
-    (cl:write-byte (cl:ldb (cl:byte 8 8) unsigned) ostream)
-    )
   (cl:let* ((signed (cl:slot-value msg 'left_encoder)) (unsigned (cl:if (cl:< signed 0) (cl:+ signed 65536) signed)))
     (cl:write-byte (cl:ldb (cl:byte 8 0) unsigned) ostream)
     (cl:write-byte (cl:ldb (cl:byte 8 8) unsigned) ostream)
@@ -276,12 +228,6 @@
   (cl:let* ((signed (cl:slot-value msg 'right_encoder)) (unsigned (cl:if (cl:< signed 0) (cl:+ signed 65536) signed)))
     (cl:write-byte (cl:ldb (cl:byte 8 0) unsigned) ostream)
     (cl:write-byte (cl:ldb (cl:byte 8 8) unsigned) ostream)
-    )
-  (cl:let* ((signed (cl:slot-value msg 'left_pwm)) (unsigned (cl:if (cl:< signed 0) (cl:+ signed 256) signed)))
-    (cl:write-byte (cl:ldb (cl:byte 8 0) unsigned) ostream)
-    )
-  (cl:let* ((signed (cl:slot-value msg 'right_pwm)) (unsigned (cl:if (cl:< signed 0) (cl:+ signed 256) signed)))
-    (cl:write-byte (cl:ldb (cl:byte 8 0) unsigned) ostream)
     )
   (cl:write-byte (cl:ldb (cl:byte 8 0) (cl:slot-value msg 'buttons)) ostream)
   (cl:write-byte (cl:ldb (cl:byte 8 0) (cl:slot-value msg 'charger)) ostream)
@@ -346,25 +292,11 @@
     (cl:let ((unsigned 0))
       (cl:setf (cl:ldb (cl:byte 8 0) unsigned) (cl:read-byte istream))
       (cl:setf (cl:ldb (cl:byte 8 8) unsigned) (cl:read-byte istream))
-      (cl:setf (cl:slot-value msg 'left_currentSpeed) (cl:if (cl:< unsigned 32768) unsigned (cl:- unsigned 65536))))
-    (cl:let ((unsigned 0))
-      (cl:setf (cl:ldb (cl:byte 8 0) unsigned) (cl:read-byte istream))
-      (cl:setf (cl:ldb (cl:byte 8 8) unsigned) (cl:read-byte istream))
-      (cl:setf (cl:slot-value msg 'right_currentSpeed) (cl:if (cl:< unsigned 32768) unsigned (cl:- unsigned 65536))))
-    (cl:let ((unsigned 0))
-      (cl:setf (cl:ldb (cl:byte 8 0) unsigned) (cl:read-byte istream))
-      (cl:setf (cl:ldb (cl:byte 8 8) unsigned) (cl:read-byte istream))
       (cl:setf (cl:slot-value msg 'left_encoder) (cl:if (cl:< unsigned 32768) unsigned (cl:- unsigned 65536))))
     (cl:let ((unsigned 0))
       (cl:setf (cl:ldb (cl:byte 8 0) unsigned) (cl:read-byte istream))
       (cl:setf (cl:ldb (cl:byte 8 8) unsigned) (cl:read-byte istream))
       (cl:setf (cl:slot-value msg 'right_encoder) (cl:if (cl:< unsigned 32768) unsigned (cl:- unsigned 65536))))
-    (cl:let ((unsigned 0))
-      (cl:setf (cl:ldb (cl:byte 8 0) unsigned) (cl:read-byte istream))
-      (cl:setf (cl:slot-value msg 'left_pwm) (cl:if (cl:< unsigned 128) unsigned (cl:- unsigned 256))))
-    (cl:let ((unsigned 0))
-      (cl:setf (cl:ldb (cl:byte 8 0) unsigned) (cl:read-byte istream))
-      (cl:setf (cl:slot-value msg 'right_pwm) (cl:if (cl:< unsigned 128) unsigned (cl:- unsigned 256))))
     (cl:setf (cl:ldb (cl:byte 8 0) (cl:slot-value msg 'buttons)) (cl:read-byte istream))
     (cl:setf (cl:ldb (cl:byte 8 0) (cl:slot-value msg 'charger)) (cl:read-byte istream))
     (cl:let ((unsigned 0))
@@ -429,26 +361,22 @@
   "ddori/ddori_sensor")
 (cl:defmethod roslisp-msg-protocol:md5sum ((type (cl:eql '<ddori_sensor>)))
   "Returns md5sum for a message object of type '<ddori_sensor>"
-  "2a2e66d6238d872ec6adc450437b5561")
+  "3676e7aa50bcd8c89f9c5ae2f526915b")
 (cl:defmethod roslisp-msg-protocol:md5sum ((type (cl:eql 'ddori_sensor)))
   "Returns md5sum for a message object of type 'ddori_sensor"
-  "2a2e66d6238d872ec6adc450437b5561")
+  "3676e7aa50bcd8c89f9c5ae2f526915b")
 (cl:defmethod roslisp-msg-protocol:message-definition ((type (cl:eql '<ddori_sensor>)))
   "Returns full string definition for message of type '<ddori_sensor>"
-  (cl:format cl:nil "~%uint16 time_stamp      # milliseconds starting when turning on Kobuki (max. 65536, then starts from 0 again)~%uint8  bumper          	# see bumper states~%int16 left_currentSpeed~%int16 right_currentSpeed~%#int16 left_move~%#int16 right_move~%int16 left_encoder    # accumulated ticks left wheel starting with turning on Kobuki (max. 32767)~%int16 right_encoder   # accumulated ticks right wheel starting with turning on Kobuki (max. 32767)~%int8   left_pwm        	# % of applied maximum voltage left wheel: -100 (max. voltage backward) to +100 (max. voltage forward)~%int8   right_pwm       # % of applied maximum voltage right wheel: -100 (max. voltage backward) to +100 (max. voltage forward)~%uint8  buttons         # see button states~%uint8  charger         # see charger states~%int16  voltage         # Battery voltage ~%int16  current         # Load currnet(Power consumption)~%~%int16 temp1 			#Temperature Sensor 1~%int16 temp2			#Temperature Sensor 1~%int16 temp3			#Temperature Sensor 1~%~%int16 co				#CO gas sensor~%int16 gas				#Butan Gas Sensor~%int16 air				#Air Quality Sensor~%~%int16 barometer	#Air Pressure Sensor~%~%int8 pir					#Human body detector~%~%int8 prx_1				#proximity sensor~%int8 prx_2				#proximity sensor~%int8 prx_3				#proximity sensor~%~%int16 als				#Ambient Light Sensor~%~%~%#uint8  wheel_drop      # see wheel drop sensor states~%#uint8  cliff           # see cliff sensor states~%~%~%"))
+  (cl:format cl:nil "~%uint16 time_stamp      # milliseconds starting when turning on Kobuki (max. 65536, then starts from 0 again)~%uint8  bumper          	# see bumper states~%int16 left_encoder    # accumulated ticks left wheel starting with turning on Kobuki (max. 32767)~%int16 right_encoder   # accumulated ticks right wheel starting with turning on Kobuki (max. 32767)~%uint8  buttons         # see button states~%uint8  charger         # see charger states~%int16  voltage         # Battery voltage ~%int16  current         # Load currnet(Power consumption)~%~%int16 temp1 			#Temperature Sensor 1~%int16 temp2			#Temperature Sensor 1~%int16 temp3			#Temperature Sensor 1~%~%int16 co				#CO gas sensor~%int16 gas				#Butan Gas Sensor~%int16 air				#Air Quality Sensor~%~%int16 barometer	#Air Pressure Sensor~%~%int8 pir					#Human body detector~%~%int8 prx_1				#proximity sensor~%int8 prx_2				#proximity sensor~%int8 prx_3				#proximity sensor~%~%int16 als				#Ambient Light Sensor~%~%~%#uint8  wheel_drop      # see wheel drop sensor states~%#uint8  cliff           # see cliff sensor states~%~%~%"))
 (cl:defmethod roslisp-msg-protocol:message-definition ((type (cl:eql 'ddori_sensor)))
   "Returns full string definition for message of type 'ddori_sensor"
-  (cl:format cl:nil "~%uint16 time_stamp      # milliseconds starting when turning on Kobuki (max. 65536, then starts from 0 again)~%uint8  bumper          	# see bumper states~%int16 left_currentSpeed~%int16 right_currentSpeed~%#int16 left_move~%#int16 right_move~%int16 left_encoder    # accumulated ticks left wheel starting with turning on Kobuki (max. 32767)~%int16 right_encoder   # accumulated ticks right wheel starting with turning on Kobuki (max. 32767)~%int8   left_pwm        	# % of applied maximum voltage left wheel: -100 (max. voltage backward) to +100 (max. voltage forward)~%int8   right_pwm       # % of applied maximum voltage right wheel: -100 (max. voltage backward) to +100 (max. voltage forward)~%uint8  buttons         # see button states~%uint8  charger         # see charger states~%int16  voltage         # Battery voltage ~%int16  current         # Load currnet(Power consumption)~%~%int16 temp1 			#Temperature Sensor 1~%int16 temp2			#Temperature Sensor 1~%int16 temp3			#Temperature Sensor 1~%~%int16 co				#CO gas sensor~%int16 gas				#Butan Gas Sensor~%int16 air				#Air Quality Sensor~%~%int16 barometer	#Air Pressure Sensor~%~%int8 pir					#Human body detector~%~%int8 prx_1				#proximity sensor~%int8 prx_2				#proximity sensor~%int8 prx_3				#proximity sensor~%~%int16 als				#Ambient Light Sensor~%~%~%#uint8  wheel_drop      # see wheel drop sensor states~%#uint8  cliff           # see cliff sensor states~%~%~%"))
+  (cl:format cl:nil "~%uint16 time_stamp      # milliseconds starting when turning on Kobuki (max. 65536, then starts from 0 again)~%uint8  bumper          	# see bumper states~%int16 left_encoder    # accumulated ticks left wheel starting with turning on Kobuki (max. 32767)~%int16 right_encoder   # accumulated ticks right wheel starting with turning on Kobuki (max. 32767)~%uint8  buttons         # see button states~%uint8  charger         # see charger states~%int16  voltage         # Battery voltage ~%int16  current         # Load currnet(Power consumption)~%~%int16 temp1 			#Temperature Sensor 1~%int16 temp2			#Temperature Sensor 1~%int16 temp3			#Temperature Sensor 1~%~%int16 co				#CO gas sensor~%int16 gas				#Butan Gas Sensor~%int16 air				#Air Quality Sensor~%~%int16 barometer	#Air Pressure Sensor~%~%int8 pir					#Human body detector~%~%int8 prx_1				#proximity sensor~%int8 prx_2				#proximity sensor~%int8 prx_3				#proximity sensor~%~%int16 als				#Ambient Light Sensor~%~%~%#uint8  wheel_drop      # see wheel drop sensor states~%#uint8  cliff           # see cliff sensor states~%~%~%"))
 (cl:defmethod roslisp-msg-protocol:serialization-length ((msg <ddori_sensor>))
   (cl:+ 0
      2
      1
      2
      2
-     2
-     2
-     1
-     1
      1
      1
      2
@@ -471,12 +399,8 @@
   (cl:list 'ddori_sensor
     (cl:cons ':time_stamp (time_stamp msg))
     (cl:cons ':bumper (bumper msg))
-    (cl:cons ':left_currentSpeed (left_currentSpeed msg))
-    (cl:cons ':right_currentSpeed (right_currentSpeed msg))
     (cl:cons ':left_encoder (left_encoder msg))
     (cl:cons ':right_encoder (right_encoder msg))
-    (cl:cons ':left_pwm (left_pwm msg))
-    (cl:cons ':right_pwm (right_pwm msg))
     (cl:cons ':buttons (buttons msg))
     (cl:cons ':charger (charger msg))
     (cl:cons ':voltage (voltage msg))

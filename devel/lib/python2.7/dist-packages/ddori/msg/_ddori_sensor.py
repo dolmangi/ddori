@@ -6,20 +6,14 @@ import struct
 
 
 class ddori_sensor(genpy.Message):
-  _md5sum = "2a2e66d6238d872ec6adc450437b5561"
+  _md5sum = "3676e7aa50bcd8c89f9c5ae2f526915b"
   _type = "ddori/ddori_sensor"
   _has_header = False #flag to mark the presence of a Header object
   _full_text = """
 uint16 time_stamp      # milliseconds starting when turning on Kobuki (max. 65536, then starts from 0 again)
 uint8  bumper          	# see bumper states
-int16 left_currentSpeed
-int16 right_currentSpeed
-#int16 left_move
-#int16 right_move
 int16 left_encoder    # accumulated ticks left wheel starting with turning on Kobuki (max. 32767)
 int16 right_encoder   # accumulated ticks right wheel starting with turning on Kobuki (max. 32767)
-int8   left_pwm        	# % of applied maximum voltage left wheel: -100 (max. voltage backward) to +100 (max. voltage forward)
-int8   right_pwm       # % of applied maximum voltage right wheel: -100 (max. voltage backward) to +100 (max. voltage forward)
 uint8  buttons         # see button states
 uint8  charger         # see charger states
 int16  voltage         # Battery voltage 
@@ -48,8 +42,8 @@ int16 als				#Ambient Light Sensor
 #uint8  cliff           # see cliff sensor states
 
 """
-  __slots__ = ['time_stamp','bumper','left_currentSpeed','right_currentSpeed','left_encoder','right_encoder','left_pwm','right_pwm','buttons','charger','voltage','current','temp1','temp2','temp3','co','gas','air','barometer','pir','prx_1','prx_2','prx_3','als']
-  _slot_types = ['uint16','uint8','int16','int16','int16','int16','int8','int8','uint8','uint8','int16','int16','int16','int16','int16','int16','int16','int16','int16','int8','int8','int8','int8','int16']
+  __slots__ = ['time_stamp','bumper','left_encoder','right_encoder','buttons','charger','voltage','current','temp1','temp2','temp3','co','gas','air','barometer','pir','prx_1','prx_2','prx_3','als']
+  _slot_types = ['uint16','uint8','int16','int16','uint8','uint8','int16','int16','int16','int16','int16','int16','int16','int16','int16','int8','int8','int8','int8','int16']
 
   def __init__(self, *args, **kwds):
     """
@@ -59,7 +53,7 @@ int16 als				#Ambient Light Sensor
     changes.  You cannot mix in-order arguments and keyword arguments.
 
     The available fields are:
-       time_stamp,bumper,left_currentSpeed,right_currentSpeed,left_encoder,right_encoder,left_pwm,right_pwm,buttons,charger,voltage,current,temp1,temp2,temp3,co,gas,air,barometer,pir,prx_1,prx_2,prx_3,als
+       time_stamp,bumper,left_encoder,right_encoder,buttons,charger,voltage,current,temp1,temp2,temp3,co,gas,air,barometer,pir,prx_1,prx_2,prx_3,als
 
     :param args: complete set of field values, in .msg order
     :param kwds: use keyword arguments corresponding to message field names
@@ -72,18 +66,10 @@ int16 als				#Ambient Light Sensor
         self.time_stamp = 0
       if self.bumper is None:
         self.bumper = 0
-      if self.left_currentSpeed is None:
-        self.left_currentSpeed = 0
-      if self.right_currentSpeed is None:
-        self.right_currentSpeed = 0
       if self.left_encoder is None:
         self.left_encoder = 0
       if self.right_encoder is None:
         self.right_encoder = 0
-      if self.left_pwm is None:
-        self.left_pwm = 0
-      if self.right_pwm is None:
-        self.right_pwm = 0
       if self.buttons is None:
         self.buttons = 0
       if self.charger is None:
@@ -119,12 +105,8 @@ int16 als				#Ambient Light Sensor
     else:
       self.time_stamp = 0
       self.bumper = 0
-      self.left_currentSpeed = 0
-      self.right_currentSpeed = 0
       self.left_encoder = 0
       self.right_encoder = 0
-      self.left_pwm = 0
-      self.right_pwm = 0
       self.buttons = 0
       self.charger = 0
       self.voltage = 0
@@ -155,7 +137,7 @@ int16 als				#Ambient Light Sensor
     """
     try:
       _x = self
-      buff.write(_struct_HB4h2b2B9h4bh.pack(_x.time_stamp, _x.bumper, _x.left_currentSpeed, _x.right_currentSpeed, _x.left_encoder, _x.right_encoder, _x.left_pwm, _x.right_pwm, _x.buttons, _x.charger, _x.voltage, _x.current, _x.temp1, _x.temp2, _x.temp3, _x.co, _x.gas, _x.air, _x.barometer, _x.pir, _x.prx_1, _x.prx_2, _x.prx_3, _x.als))
+      buff.write(_struct_HB2h2B9h4bh.pack(_x.time_stamp, _x.bumper, _x.left_encoder, _x.right_encoder, _x.buttons, _x.charger, _x.voltage, _x.current, _x.temp1, _x.temp2, _x.temp3, _x.co, _x.gas, _x.air, _x.barometer, _x.pir, _x.prx_1, _x.prx_2, _x.prx_3, _x.als))
     except struct.error as se: self._check_types(struct.error("%s: '%s' when writing '%s'" % (type(se), str(se), str(_x))))
     except TypeError as te: self._check_types(ValueError("%s: '%s' when writing '%s'" % (type(te), str(te), str(_x))))
 
@@ -168,8 +150,8 @@ int16 als				#Ambient Light Sensor
       end = 0
       _x = self
       start = end
-      end += 39
-      (_x.time_stamp, _x.bumper, _x.left_currentSpeed, _x.right_currentSpeed, _x.left_encoder, _x.right_encoder, _x.left_pwm, _x.right_pwm, _x.buttons, _x.charger, _x.voltage, _x.current, _x.temp1, _x.temp2, _x.temp3, _x.co, _x.gas, _x.air, _x.barometer, _x.pir, _x.prx_1, _x.prx_2, _x.prx_3, _x.als,) = _struct_HB4h2b2B9h4bh.unpack(str[start:end])
+      end += 33
+      (_x.time_stamp, _x.bumper, _x.left_encoder, _x.right_encoder, _x.buttons, _x.charger, _x.voltage, _x.current, _x.temp1, _x.temp2, _x.temp3, _x.co, _x.gas, _x.air, _x.barometer, _x.pir, _x.prx_1, _x.prx_2, _x.prx_3, _x.als,) = _struct_HB2h2B9h4bh.unpack(str[start:end])
       return self
     except struct.error as e:
       raise genpy.DeserializationError(e) #most likely buffer underfill
@@ -183,7 +165,7 @@ int16 als				#Ambient Light Sensor
     """
     try:
       _x = self
-      buff.write(_struct_HB4h2b2B9h4bh.pack(_x.time_stamp, _x.bumper, _x.left_currentSpeed, _x.right_currentSpeed, _x.left_encoder, _x.right_encoder, _x.left_pwm, _x.right_pwm, _x.buttons, _x.charger, _x.voltage, _x.current, _x.temp1, _x.temp2, _x.temp3, _x.co, _x.gas, _x.air, _x.barometer, _x.pir, _x.prx_1, _x.prx_2, _x.prx_3, _x.als))
+      buff.write(_struct_HB2h2B9h4bh.pack(_x.time_stamp, _x.bumper, _x.left_encoder, _x.right_encoder, _x.buttons, _x.charger, _x.voltage, _x.current, _x.temp1, _x.temp2, _x.temp3, _x.co, _x.gas, _x.air, _x.barometer, _x.pir, _x.prx_1, _x.prx_2, _x.prx_3, _x.als))
     except struct.error as se: self._check_types(struct.error("%s: '%s' when writing '%s'" % (type(se), str(se), str(_x))))
     except TypeError as te: self._check_types(ValueError("%s: '%s' when writing '%s'" % (type(te), str(te), str(_x))))
 
@@ -197,11 +179,11 @@ int16 als				#Ambient Light Sensor
       end = 0
       _x = self
       start = end
-      end += 39
-      (_x.time_stamp, _x.bumper, _x.left_currentSpeed, _x.right_currentSpeed, _x.left_encoder, _x.right_encoder, _x.left_pwm, _x.right_pwm, _x.buttons, _x.charger, _x.voltage, _x.current, _x.temp1, _x.temp2, _x.temp3, _x.co, _x.gas, _x.air, _x.barometer, _x.pir, _x.prx_1, _x.prx_2, _x.prx_3, _x.als,) = _struct_HB4h2b2B9h4bh.unpack(str[start:end])
+      end += 33
+      (_x.time_stamp, _x.bumper, _x.left_encoder, _x.right_encoder, _x.buttons, _x.charger, _x.voltage, _x.current, _x.temp1, _x.temp2, _x.temp3, _x.co, _x.gas, _x.air, _x.barometer, _x.pir, _x.prx_1, _x.prx_2, _x.prx_3, _x.als,) = _struct_HB2h2B9h4bh.unpack(str[start:end])
       return self
     except struct.error as e:
       raise genpy.DeserializationError(e) #most likely buffer underfill
 
 _struct_I = genpy.struct_I
-_struct_HB4h2b2B9h4bh = struct.Struct("<HB4h2b2B9h4bh")
+_struct_HB2h2B9h4bh = struct.Struct("<HB2h2B9h4bh")

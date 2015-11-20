@@ -4,4 +4,8 @@
 		<param name="baud" value="115200"/>
 	</node>
 	<node pkg="ddori" type="ddori_main" name="main"/>
+	<node pkg="ddori_keyop" type="keyop" name="keyop">
+	    <remap from="keyop/motor_power" to="motor_power"/>	
+	    <remap from="keyop/cmd_vel" to="cmd_vel"/>	
+	</node>
 </launch>

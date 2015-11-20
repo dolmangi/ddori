@@ -48,12 +48,13 @@ find_package(catkin REQUIRED COMPONENTS
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
- add_message_files(
-   FILES
-   ddori_sensor.msg
-   servo_control.msg
-   motor_speed.msg
- )
+#add_message_files(
+#   FILES
+#   ddori_sensor.msg
+#   servo_control.msg
+#   motor_speed.msg
+#   MotorPower.msg
+# )
 
 ## Generate services in the 'srv' folder
 # add_service_files(
@@ -70,10 +71,10 @@ find_package(catkin REQUIRED COMPONENTS
 # )
 
 ## Generate added messages and services with any dependencies listed here
- generate_messages(
-   DEPENDENCIES
-   std_msgs
- )
+# generate_messages(
+#   DEPENDENCIES
+#   std_msgs
+# )
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
@@ -128,6 +129,9 @@ add_executable(ddori_main src/ddori_main.cpp)
 target_link_libraries(ddori_main ${catkin_LIBRARIES})
 add_dependencies(ddori_main ddori_generate_messages_cpp)
 
+#add_executable(ddori_keyop src/ddori_keyop.cpp)
+#target_link_libraries(ddori_keyop ${catkin_LIBRARIES})
+#add_dependencies(ddori_keyop ddori_generate_messages_cpp)
 
 
 ## Declare a C++ library

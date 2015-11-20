@@ -1,0 +1,451 @@
+#include "ros/ros.h"
+#include "std_msgs/String.h"
+#include "std_msgs/Int8.h"
+#include "std_msgs/Int16.h"
+#include "std_msgs/UInt16.h"
+#include "ddori/servo_control.h"
+#include "ddori/motor_speed.h"
+#include <signal.h>
+
+#include <termios.h> // for keyboard input
+#include <ecl/threads.hpp>
+#include <geometry_msgs/Twist.h>  // for velocity commands
+#include <geometry_msgs/TwistStamped.h>  // for velocity commands
+
+
+#define  KeyCode_Right		67	//     # 0x43
+#define  KeyCode_Left		68	 //    # 0x44
+#define  KeyCode_Up		65 	 //   # 0x41
+#define  KeyCode_Down		66   //  # 0x42
+#define  KeyCode_Space		32    // # 0x20
+#define  KeyCode_Enable	101   // # 0x65, 'e'
+#define  KeyCode_Disable	100   // # 0x64, 'd'
+
+
+char power_status=1;
+geometry_msgs::TwistPtr cmd;
+geometry_msgs::TwistStampedPtr cmd_stamped;
+char thread_run=1;
+
+unsigned char servo_pos[10]={0};
+
+std_msgs::Int8 light_on; 
+std_msgs::Int8 ArmServoPower ;
+std_msgs::Int8 GasSensorPower; 
+std_msgs::Int8 PhonePower; 
+std_msgs::Int8 FoscamPower; 
+std_msgs::Int8 CamServoPos; 
+std_msgs::Int8 ArmsPos; 
+std_msgs::Int8 ArmsHug; 
+
+
+float linear_vel_step= 0.01;
+float linear_vel_max= 0.1;
+float angular_vel_step= 0.01;
+float angular_vel_max=0.1 ;
+
+ros::Publisher velocity_publisher;
+ros::Publisher light_control_publisher;
+ros::Publisher WheelPWM_publisher;
+ros::Publisher ArmServoPower_publisher;
+ros::Publisher ArmServoPos_publisher;
+ros::Publisher GasSensorPower_publisher;
+ros::Publisher PhonePower_publisher;
+ros::Publisher FoscamPower_publisher;
+ros::Publisher CamServoPos_publisher;
+ros::Publisher Stop_publisher;
+ros::Publisher AllOff_publisher;
+ros::Publisher ArmsPos_publisher;
+ros::Publisher ArmsHug_publisher;
+ros::Publisher LeftPwm_publisher;
+ros::Publisher RightPwm_publisher;
+
+
+  void incrementLinearVelocity();
+  void decrementLinearVelocity();
+  void incrementAngularVelocity();
+  void decrementAngularVelocity();
+  void resetVelocity();
+
+
+bool init=false;
+ecl::Thread thread;
+int key_file_descriptor=0;
+struct termios original_terminal_state;
+	
+void processKeyboardInput(char c);
+void keyboardInputThread();
+
+
+         
+void mySigintHandler(int sig)
+{
+	if (init)
+		tcsetattr(key_file_descriptor, TCSANOW, &original_terminal_state);
+  	ROS_INFO("Good Bye!");
+	
+  // All the default sigint handler does is call shutdown()
+  ros::shutdown();
+}
+int main(int argc, char **argv)
+{
+	/**
+	* The ros::init() function needs to see argc and argv so that it can perform
+	* any ROS arguments and name remapping that were provided at the command line.
+	* For programmatic remappings you can use a different version of init() which takes
+	* remappings directly, but for most command-line programs, passing argc and argv is
+	* the easiest way to do it.  The third argument to init() is the name of the node.
+	*
+	* You must call one of the versions of ros::init() before using any other
+	* part of the ROS system.
+	*/
+	ros::init(argc, argv, "ddori_keyop");
+
+	/**
+	* NodeHandle is the main access point to communications with the ROS system.
+	* The first NodeHandle constructed will fully initialize this node, and the last
+	* NodeHandle destructed will close down the node.
+	*/
+	ros::NodeHandle n;
+
+	/**
+	* The subscribe() call is how you tell ROS that you want to receive messages
+	* on a given topic.  This invokes a call to the ROS
+	* master node, which keeps a registry of who is publishing and who
+	* is subscribing.  Messages are passed to a callback function, here
+	* called chatterCallback.  subscribe() returns a Subscriber object that you
+	* must hold on to until you want to unsubscribe.  When all copies of the Subscriber
+	* object go out of scope, this callback will automatically be unsubscribed from
+	* this topic.
+	*
+	* The second parameter to the subscribe() function is the size of the message
+	* queue.  If messages are arriving faster than they are being processed, this
+	* is the number of messages that will be buffered up before beginning to throw
+	* away the oldest ones.
+	*/
+	velocity_publisher = n.advertise<geometry_msgs::Twist>("cmd_vel", 1);
+	light_control_publisher = n.advertise<std_msgs::Int8>("cmd_light", 1);
+
+	ArmServoPower_publisher	= n.advertise<std_msgs::Int8>("cmd_armservo_power", 1);
+	ArmServoPos_publisher	= n.advertise<ddori::servo_control>("cmd_armservo_pos", 1);
+	ArmsPos_publisher			= n.advertise<std_msgs::Int8>("cmd_armspos", 1);
+	ArmsHug_publisher		= n.advertise<std_msgs::Int8>("cmd_armshug", 1);
+	
+	GasSensorPower_publisher= n.advertise<std_msgs::Int8>("cmd_gassesnsor_power", 1);
+	PhonePower_publisher		= n.advertise<std_msgs::Int8>("cmd_phone_power", 1);
+	FoscamPower_publisher	= n.advertise<std_msgs::Int8>("cmd_foscam_power", 1);
+	
+	CamServoPos_publisher	= n.advertise<std_msgs::Int8>("cmd_camservo_pos", 1);
+	WheelPWM_publisher		= n.advertise<ddori::motor_speed>("cmd_pwm", 1);
+	Stop_publisher				= n.advertise<std_msgs::Int8>("cmd_stop", 1);
+	AllOff_publisher			= n.advertise<std_msgs::Int8>("cmd_alloff", 1);
+	LeftPwm_publisher			= n.advertise<std_msgs::Int16>("cmd_lpwm", 1);
+	RightPwm_publisher		= n.advertise<std_msgs::Int16>("cmd_rpwm", 1);
+
+
+	GasSensorPower.data=0;
+	light_on.data=0;
+	ArmsPos.data=30;
+	ArmsHug.data=30;
+	
+	cmd.reset(new geometry_msgs::Twist());
+	signal(SIGINT, mySigintHandler);
+
+	
+	tcgetattr(key_file_descriptor, &original_terminal_state); // get terminal properties
+	init=true;
+	
+	thread.start(&keyboardInputThread);
+
+
+	ros::Rate r(10); // 10 hz
+	while (ros::ok() && thread_run)
+	{
+		/**
+		* ros::spin() will enter a loop, pumping callbacks.  With this version, all
+		* callbacks will be called from within this thread (the main one).  ros::spin()
+		* will exit when Ctrl-C is pressed, or the node is shutdown by the master.
+		*/		
+		ros::spinOnce();
+		r.sleep();	
+	}
+	thread_run=0;
+	thread.cancel();
+	thread.join();
+	tcsetattr(key_file_descriptor, TCSANOW, &original_terminal_state);
+
+
+	return 0;
+}
+
+
+void keyboardInputThread()
+{
+	struct termios raw;
+	memcpy(&raw, &original_terminal_state, sizeof(struct termios));
+	ros::Rate loop_rate(100);		//100Hz
+
+	raw.c_lflag &= ~(ICANON | ECHO);
+	
+	// Setting a new line, then end of file
+	raw.c_cc[VEOL] = 1;
+	raw.c_cc[VEOF] = 2;
+	tcsetattr(key_file_descriptor, TCSANOW, &raw);
+
+	ROS_INFO("Reading from keyboard");
+	ROS_INFO("---------------------------");
+	ROS_INFO("Forward/back arrows : linear velocity incr/decr.");
+	ROS_INFO("Right/left arrows : angular velocity incr/decr.");
+	ROS_INFO("Spacebar : reset linear/angular velocities.");
+	ROS_INFO("l : light on/off");
+	ROS_INFO("d : disable motors.");
+	ROS_INFO("e : enable motors.");
+	ROS_INFO("g : gas sensor power on/off.");
+	ROS_INFO("q : quit.");
+	char c;
+
+	while (ros::ok() && thread_run)
+	{
+		if (read(key_file_descriptor, &c, 1) < 0)
+		{
+			ROS_ERROR("read char failed():");
+			return;
+		}
+		processKeyboardInput(c);
+		loop_rate.sleep();
+	}
+}
+
+void send_speed(int left, int  right)
+{
+	ddori::motor_speed ms;
+	ms.left_speed=left;
+	ms.right_speed=right;
+	
+	WheelPWM_publisher.publish(ms);		
+	
+}
+
+
+
+void processKeyboardInput(char c)
+{
+	/*
+	* Arrow keys are a bit special, they are escape characters - meaning they
+	* trigger a sequence of keycodes. In this case, 'esc-[-Keycode_xxx'. We
+	* ignore the esc-[ and just parse the last one. So long as we avoid using
+	* the last one for its actual purpose (e.g. left arrow corresponds to
+	* esc-[-D) we can keep the parsing simple.
+	*/
+	switch (c)
+	{
+		case KeyCode_Left:
+		{
+			incrementAngularVelocity();
+			ROS_INFO("incrementAngularVelocity");
+			break;
+		}
+		
+		case KeyCode_Right:
+		{
+			decrementAngularVelocity();
+			ROS_INFO("decrementAngularVelocity");
+			break;
+		}
+		case KeyCode_Up:
+		{
+			incrementLinearVelocity();
+			ROS_INFO("incrementLinearVelocity");
+			break;
+		}
+		case KeyCode_Down:
+		{
+			decrementLinearVelocity();
+			ROS_INFO("decrementLinearVelocity");
+			break;
+		}
+		case KeyCode_Space:
+		{
+			std_msgs::Int8 Stop; 
+			Stop.data=0;
+			send_speed(0,0 );
+			resetVelocity();
+			ROS_INFO("resetVelocity");
+			Stop_publisher.publish(Stop);			
+			break;
+		}
+		case 'q':
+		{
+			thread_run = 0;
+			std_msgs::Int8 AllOff; 
+			AllOff.data=0;
+			ROS_INFO("quit_requested");
+			AllOff_publisher.publish(AllOff);
+			break;
+		}
+		case 'd':
+		{
+			ROS_INFO("disable");
+			break;
+		}
+		case 'a':
+		{
+			ArmsPos.data++;
+			if (ArmsPos.data>100) ArmsPos.data=100;
+			ArmsPos_publisher.publish(ArmsPos);	
+			ROS_INFO("pos=%d hug=%d", ArmsPos.data, ArmsHug.data);
+			break;
+		}
+		case 'z':
+		{
+			ArmsPos.data--;
+			if (ArmsPos.data<0) ArmsPos.data=0;
+			ArmsPos_publisher.publish(ArmsPos);	
+			ROS_INFO("pos=%d hug=%d", ArmsPos.data, ArmsHug.data);
+			break;
+		}
+		case 's':
+		{
+			ArmsHug.data++;
+			if (ArmsHug.data>100) ArmsHug.data=100;
+			ArmsHug_publisher.publish(ArmsHug);	
+			ROS_INFO("pos=%d hug=%d", ArmsPos.data, ArmsHug.data);
+			break;
+		}
+		case 'x':
+		{
+			ArmsHug.data--;
+			if (ArmsHug.data<0) ArmsHug.data=0;
+			ArmsHug_publisher.publish(ArmsHug);	
+			ROS_INFO("pos=%d hug=%d", ArmsPos.data, ArmsHug.data);
+			break;
+		}
+		case '`':
+		{
+			ArmServoPower.data = !ArmServoPower.data;
+			
+			ROS_INFO("ARM Power :%d", ArmServoPower.data);
+			ArmServoPower_publisher.publish(ArmServoPower);
+			break;
+		}		
+		case 'l':
+		{
+			//disable();
+			light_on.data = !light_on.data;
+			
+			ROS_INFO("Light :%d", light_on.data);
+			light_control_publisher.publish(light_on);
+			break;
+		}		
+		case 'g':
+		{
+			GasSensorPower.data = !GasSensorPower.data;
+			
+			ROS_INFO("GAS Sensor Power :%d", GasSensorPower.data);
+			GasSensorPower_publisher.publish(GasSensorPower);
+			break;
+		}		
+		case 'e':
+		{
+			//enable();
+			ROS_INFO("enable");
+			break;
+		}
+		default:
+		{
+			break;
+		}
+	}
+}
+
+
+/**
+ * @brief If not already maxxed, increment the command velocities..
+ */
+void incrementLinearVelocity()
+{
+  if (power_status)
+  {
+    if (cmd->linear.x <= linear_vel_max)
+    {
+      cmd->linear.x += linear_vel_step;
+    }
+    ROS_INFO_STREAM("KeyOp: linear  velocity incremented [" << cmd->linear.x << "|" << cmd->angular.z << "]");
+  }
+  else
+  {
+    ROS_WARN_STREAM("KeyOp: motors are not yet powered up.");
+  }
+}
+
+/**
+ * @brief If not already minned, decrement the linear velocities..
+ */
+void decrementLinearVelocity()
+{
+  if (power_status)
+  {
+    if (cmd->linear.x >= -linear_vel_max)
+    {
+      cmd->linear.x -= linear_vel_step;
+    }
+    ROS_INFO_STREAM("KeyOp: linear  velocity decremented [" << cmd->linear.x << "|" << cmd->angular.z << "]");
+  }
+  else
+  {
+    ROS_WARN_STREAM("KeyOp: motors are not yet powered up.");
+  }
+}
+
+/**
+ * @brief If not already maxxed, increment the angular velocities..
+ */
+void incrementAngularVelocity()
+{
+  if (power_status)
+  {
+    if (cmd->angular.z <= angular_vel_max)
+    {
+      cmd->angular.z += angular_vel_step;
+    }
+    ROS_INFO_STREAM("KeyOp: angular velocity incremented [" << cmd->linear.x << "|" << cmd->angular.z << "]");
+  }
+  else
+  {
+    ROS_WARN_STREAM("KeyOp: motors are not yet powered up.");
+  }
+}
+
+/**
+ * @brief If not already mined, decrement the angular velocities..
+ */
+void decrementAngularVelocity()
+{
+  if (power_status)
+  {
+    if (cmd->angular.z >= -angular_vel_max)
+    {
+      cmd->angular.z -= angular_vel_step;
+    }
+    ROS_INFO_STREAM("KeyOp: angular velocity decremented [" << cmd->linear.x << "|" << cmd->angular.z << "]");
+  }
+  else
+  {
+    ROS_WARN_STREAM("KeyOp: motors are not yet powered up.");
+  }
+}
+
+void resetVelocity()
+{
+  if (power_status)
+  {
+    cmd->angular.z = 0.0;
+    cmd->linear.x = 0.0;
+    ROS_INFO_STREAM("KeyOp: reset linear/angular velocities.");
+  }
+  else
+  {
+    ROS_WARN_STREAM("KeyOp: motors are not yet powered up.");
+  }
+}
+

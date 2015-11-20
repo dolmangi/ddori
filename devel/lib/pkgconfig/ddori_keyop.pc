@@ -1,0 +1,8 @@
+prefix=/home/dolmangi/catkin_ws/devel
+
+Name: ddori_keyop
+Description: Description of ddori_keyop
+Version: 0.0.1
+Cflags: -I/home/dolmangi/catkin_ws/src/ddori_keyop/include
+Libs: -L/home/dolmangi/catkin_ws/devel/lib -lddori
+Requires: geometry_msgs std_srvs std_msgs roscpp ecl_exceptions ecl_threads ecl_time ddori_msgs

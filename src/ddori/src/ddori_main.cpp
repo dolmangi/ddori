@@ -3,16 +3,16 @@
 #include "std_msgs/Int8.h"
 #include "std_msgs/Int16.h"
 #include "std_msgs/UInt16.h"
-#include "ddori/ddori_sensor.h"
-#include "ddori/servo_control.h"
-#include "ddori/motor_speed.h"
+#include "ddori_msgs/ddori_sensor.h"
+#include "ddori_msgs/servo_control.h"
+#include "ddori_msgs/motor_speed.h"
 
 
 #include <termios.h> // for keyboard input
 #include <ecl/threads.hpp>
 #include <geometry_msgs/Twist.h>  // for velocity commands
 #include <geometry_msgs/TwistStamped.h>  // for velocity commands
-
+#include <ddori_msgs/MotorPower.h>
 
 #define  KeyCode_Right		67	//     # 0x43
 #define  KeyCode_Left		68	 //    # 0x44
@@ -22,16 +22,17 @@
 #define  KeyCode_Enable	101   // # 0x65, 'e'
 #define  KeyCode_Disable	100   // # 0x64, 'd'
 
-
+#define ROBOT_WIDTH		0.2		//20cm
 
 geometry_msgs::TwistPtr cmd;
 geometry_msgs::TwistStampedPtr cmd_stamped;
 double linear_vel_step, linear_vel_max;
 char thread_run=1;
+double tgt_speed_left=0;
+double tgt_speed_right=0;
+bool motor_on=false;
 
 unsigned char servo_pos[10]={0};
-float tgt_speed_left=0;
-float tgt_speed_right=0;
 
 std_msgs::Int8 light_on; 
 std_msgs::Int8 ArmServoPower ;
@@ -45,8 +46,10 @@ std_msgs::Int8 ArmsHug;
 
 
 ros::Subscriber sensor_subscriber;
-ros::Publisher velocity_publisher;
+ros::Subscriber velocity_subscriber;
+ ros::Subscriber motor_power_subscriber_;
 
+  
 ros::Publisher light_control_publisher;
 ros::Publisher WheelPWM_publisher;
 ros::Publisher ArmServoPower_publisher;
@@ -82,69 +85,66 @@ void send_speed(int left, int  right);
 
 
 #define ONETICK_MM  ((2.0 * 3.1415926 * 36)  / (90.0*14) )
-ddori::ddori_sensor prev;
-float spd_ms_l=0;
-float spd_ms_r=0;
-float last_err_l=0;
-float last_err_r=0;
-float Kp=500;
-float Kd=50;
+ddori_msgs::ddori_sensor prev;
+double spd_ms_l=0;
+double spd_ms_r=0;
+double last_err_l=0;
+double last_err_r=0;
+double Kp=50;
+double Kd=5;
 int16_t last_pwm_l=0;
 int16_t last_pwm_r=0;
 
 #define constrain(amt,low,high) ((amt)<(low)?(low):((amt)>(high)?(high):(amt)))
-void sensor_Callback(const ddori::ddori_sensor::ConstPtr& msg)
+void sensor_Callback(const ddori_msgs::ddori_sensor::ConstPtr& msg)
 {
 	char display=0;
 	uint16_t tick_diff=(msg->time_stamp - prev.time_stamp) & 0xffff;
 	int16_t diff_enc_l=msg->left_encoder-prev.left_encoder;
 	int16_t diff_enc_r=msg->right_encoder-prev.right_encoder;
-	float move_l=ONETICK_MM * diff_enc_l  ;
-	float move_r= ONETICK_MM * diff_enc_r;
-	float spd_l = move_l *  (1000.0/tick_diff); // mm /s
-	float spd_r = move_r *  (1000.0/tick_diff) ; // mm/s
+	double move_l=ONETICK_MM * diff_enc_l  ;
+	double move_r= ONETICK_MM * diff_enc_r;
+	double spd_l = move_l *  (1000.0/tick_diff); // mm /s
+	double spd_r = move_r *  (1000.0/tick_diff) ; // mm/s
 	
 	spd_ms_l =spd_l / 1000;	// m/s
 	spd_ms_r =spd_r / 1000;	// m/s
 	
-	if (msg->voltage*1.0 > prev.voltage*1.05 || msg->voltage*1.0 < prev.voltage*0.95)  display=1;
-	if (msg->current*1.0 > prev.current*1.05 || msg->current*1.0 < prev.current*0.95)  display=1;
-//	if (msg->left_pwm != prev.left_pwm  || msg->right_pwm != prev.right_pwm ) display=1;
-	if (msg->left_encoder != prev.left_encoder  || msg->right_encoder != prev.right_encoder ) display=1;
-	if (msg->pir != prev.pir ) display=1;
 
-	float error, pidTerm;
-	int16_t pwm_l,pwm_r;
+	double error, pidTerm;
+	int16_t pwm_l=0;
+	int16_t pwm_r=0;
 
-	if (tgt_speed_left==0) 
+	if (motor_on && (tgt_speed_left !=0  || tgt_speed_right !=0 ))
 	{
-		pwm_l=0;
-	}
-	else
-	{
+
 		error = tgt_speed_left - spd_ms_l;
 		pidTerm = (Kp * error) + (Kd * (error -last_err_l));
 		pwm_l = constrain((int16_t)(last_pwm_l+pidTerm) , -255, 255);
 		last_err_l=error;
-	}
 
 
-	if (tgt_speed_left==0) 
-	{
-		pwm_r=0;
-	}
-	else
-	{
 		error = tgt_speed_right -spd_ms_r;
 		pidTerm = (Kp * error) + (Kd * (error -last_err_r));
 		pwm_r = constrain((int16_t)(last_pwm_r+pidTerm) , -255, 255);
 		last_err_r=error;
-	}
-	if (tgt_speed_left<0 && pwm_l>0  || tgt_speed_left>0 && pwm_l<0) pwm_l=0;
-	if (tgt_speed_right<0 && pwm_r>0  || tgt_speed_right>0 && pwm_r<0) pwm_r=0;
-	
-	send_speed(pwm_l , pwm_r );
+
+		//if (tgt_speed_left<0 && pwm_l>0  || tgt_speed_left>0 && pwm_l<0) pwm_l=0;
+		//if (tgt_speed_right<0 && pwm_r>0  || tgt_speed_right>0 && pwm_r<0) pwm_r=0;
 		
+		send_speed(pwm_l , pwm_r );
+
+
+
+	}
+	else 
+	{
+
+			send_speed(0 , 0 );
+
+	}
+		
+/*
 	if (display) {
 #if 0		
 		ROS_INFO("%d: %6.2f[V] %d[mA]   PIR:%d  pwm=%u,%u   enc=%d,%d    speed=%d,%d   CO=%d  GAS=%d  AIR=%d ", msg->time_stamp, msg->voltage/100.0, msg->current, msg->pir, 
@@ -153,11 +153,10 @@ void sensor_Callback(const ddori::ddori_sensor::ConstPtr& msg)
 			tgt_speed_left,tgt_speed_right,
 			msg->co, msg->gas, msg->air);
 #else
-		ROS_INFO("%d: %6.2f[V] %d[mA]  PIR:%d pwm=%d,%d enc=%d(%d),%d(%d)  tgtspd=%6.3f,%6.3f  curspd=%6.3f,%6.3f  err=%6.3f,%6.3f  tickdiff=%d  ", 
+		ROS_INFO("%d: %6.2f[V] %d[mA]  PIR:%d pwm=%d,%d enc=%d(%d),%d(%d)  curspd=%6.3f,%6.3f  err=%6.3f,%6.3f  tickdiff=%d  ", 
 			msg->time_stamp, msg->voltage/100.0, msg->current, msg->pir, 
 			pwm_l, pwm_r,
 			msg->left_encoder,diff_enc_l, msg->right_encoder, diff_enc_r,
-			tgt_speed_left,tgt_speed_right,
 			spd_ms_l,spd_ms_r,
 			last_err_l,last_err_r,
 			tick_diff
@@ -165,13 +164,55 @@ void sensor_Callback(const ddori::ddori_sensor::ConstPtr& msg)
 
 #endif
 	}
-
-
+*/
 	prev = *msg;
 	last_pwm_l=pwm_l;
 	last_pwm_r=pwm_r;
 
 	
+
+}
+
+void velocity_Callback(const geometry_msgs::Twist::ConstPtr& msg)
+{
+
+	tgt_speed_left = msg->linear.x - msg->angular.z*ROBOT_WIDTH/2 ;
+	tgt_speed_right = msg->linear.x + msg->angular.z*ROBOT_WIDTH/2;
+	ROS_INFO_STREAM("ddori : target_speed left=" <<tgt_speed_left << "    rigght=" << tgt_speed_right);
+}
+
+void motorPower_Callback(const ddori_msgs::MotorPower::ConstPtr& msg)
+{
+	if (msg->state == ddori_msgs::MotorPower::ON)
+	{
+		ROS_INFO("ddori : Firing up the motors. [ ]");
+		motor_on=true;
+		//kobuki.enable();
+		//odometry.resetTimeout();
+	}
+	else if (msg->state == ddori_msgs::MotorPower::OFF)
+	{
+		//kobuki.disable();
+		ROS_INFO("ddori : Shutting down the motors. [] ");
+		motor_on=false;
+		send_speed(0,0);
+		//odometry.resetTimeout();
+	}
+	else
+	{
+		ROS_ERROR_STREAM("ddori : Motor power command specifies unknown state '" << (unsigned int)msg->state
+		<< "'. []");
+	}
+}
+
+
+void send_speed(int left, int  right)
+{
+       ddori_msgs::motor_speed ms;
+       ms.left_speed=left;
+       ms.right_speed=right;
+
+       WheelPWM_publisher.publish(ms);
 
 }
 
@@ -183,7 +224,7 @@ void sensor_Callback(const ddori::ddori_sensor::ConstPtr& msg)
 // 1 tick = 0.2095 mm
 
 
-void sendMotorPwm();
+//void sendMotorPwm();
          
 
 int main(int argc, char **argv)
@@ -223,41 +264,20 @@ int main(int argc, char **argv)
 	* away the oldest ones.
 	*/
 	sensor_subscriber = n.subscribe("ddori_sensor", 1000, sensor_Callback);
-	velocity_publisher = n.advertise<geometry_msgs::Twist>("cmd_vel", 1);
-	light_control_publisher = n.advertise<std_msgs::Int8>("cmd_light", 1);
-
-	ArmServoPower_publisher	= n.advertise<std_msgs::Int8>("cmd_armservo_power", 1);
-	ArmServoPos_publisher	= n.advertise<ddori::servo_control>("cmd_armservo_pos", 1);
-	ArmsPos_publisher			= n.advertise<std_msgs::Int8>("cmd_armspos", 1);
-	ArmsHug_publisher		= n.advertise<std_msgs::Int8>("cmd_armshug", 1);
+	velocity_subscriber = n.subscribe("cmd_vel", 1, velocity_Callback);
+	motor_power_subscriber_= n.subscribe("motor_power", 1, motorPower_Callback);
 	
-	GasSensorPower_publisher= n.advertise<std_msgs::Int8>("cmd_gassesnsor_power", 1);
-	PhonePower_publisher		= n.advertise<std_msgs::Int8>("cmd_phone_power", 1);
-	FoscamPower_publisher	= n.advertise<std_msgs::Int8>("cmd_foscam_power", 1);
-	
-	CamServoPos_publisher	= n.advertise<std_msgs::Int8>("cmd_camservo_pos", 1);
-	WheelPWM_publisher		= n.advertise<ddori::motor_speed>("cmd_pwm", 1);
-	Stop_publisher				= n.advertise<std_msgs::Int8>("cmd_stop", 1);
-	AllOff_publisher			= n.advertise<std_msgs::Int8>("cmd_alloff", 1);
-	LeftPwm_publisher			= n.advertise<std_msgs::Int16>("cmd_lpwm", 1);
-	RightPwm_publisher		= n.advertise<std_msgs::Int16>("cmd_rpwm", 1);
-
+	WheelPWM_publisher        = n.advertise<ddori_msgs::motor_speed>("cmd_pwm", 1);
 
 	GasSensorPower.data=0;
 	light_on.data=0;
 	ArmsPos.data=30;
 	ArmsHug.data=30;
 
-	
-	tcgetattr(key_file_descriptor, &original_terminal_state); // get terminal properties
-
-	thread.start(&keyboardInputThread);
-
-
 	ros::Rate r(10); // 10 hz
 	while (ros::ok() && thread_run)
 	{
-		sendMotorPwm();
+		//sendMotorPwm();
 		/**
 		* ros::spin() will enter a loop, pumping callbacks.  With this version, all
 		* callbacks will be called from within this thread (the main one).  ros::spin()
@@ -266,249 +286,10 @@ int main(int argc, char **argv)
 		ros::spinOnce();
 		r.sleep();	
 	}
-	thread_run=0;
-	thread.cancel();
-	thread.join();
-	tcsetattr(key_file_descriptor, TCSANOW, &original_terminal_state);
 
 	ROS_INFO("Good Bye!");
 	return 0;
 }
 
-void sendMotorPwm()
-{
-
-
-}
-
-void keyboardInputThread()
-{
-	struct termios raw;
-	memcpy(&raw, &original_terminal_state, sizeof(struct termios));
-	ros::Rate loop_rate(100);		//100Hz
-
-	raw.c_lflag &= ~(ICANON | ECHO);
-	
-	// Setting a new line, then end of file
-	raw.c_cc[VEOL] = 1;
-	raw.c_cc[VEOF] = 2;
-	tcsetattr(key_file_descriptor, TCSANOW, &raw);
-
-	ROS_INFO("Reading from keyboard");
-	ROS_INFO("---------------------------");
-	ROS_INFO("Forward/back arrows : linear velocity incr/decr.");
-	ROS_INFO("Right/left arrows : angular velocity incr/decr.");
-	ROS_INFO("Spacebar : reset linear/angular velocities.");
-	ROS_INFO("l : light on/off");
-	ROS_INFO("d : disable motors.");
-	ROS_INFO("e : enable motors.");
-	ROS_INFO("g : gas sensor power on/off.");
-	ROS_INFO("q : quit.");
-	char c;
-
-	while (ros::ok() && thread_run)
-	{
-		if (read(key_file_descriptor, &c, 1) < 0)
-		{
-			ROS_ERROR("read char failed():");
-			return;
-		}
-		processKeyboardInput(c);
-		loop_rate.sleep();
-	}
-}
-void send_speed(int left, int  right)
-{
-	ddori::motor_speed ms;
-	ms.left_speed=left;
-	ms.right_speed=right;
-	
-	WheelPWM_publisher.publish(ms);		
-	
-}
-
-void processKeyboardInput(char c)
-{
-	/*
-	* Arrow keys are a bit special, they are escape characters - meaning they
-	* trigger a sequence of keycodes. In this case, 'esc-[-Keycode_xxx'. We
-	* ignore the esc-[ and just parse the last one. So long as we avoid using
-	* the last one for its actual purpose (e.g. left arrow corresponds to
-	* esc-[-D) we can keep the parsing simple.
-	*/
-	switch (c)
-	{
-		case KeyCode_Left:
-		{
-			if (tgt_speed_left >-0.1) tgt_speed_left-=0.01;
-			if (tgt_speed_right<0.1) tgt_speed_right+=0.01;
-			//incrementAngularVelocity();
-			ROS_INFO("incrementAngularVelocity");
-			break;
-		}
-		
-		case KeyCode_Right:
-		{
-			if (tgt_speed_left <0.1) tgt_speed_left+=0.01;
-			if (tgt_speed_right>-0.1) tgt_speed_right-=0.01;
-
-			//decrementAngularVelocity();
-			ROS_INFO("decrementAngularVelocity");
-			break;
-		}
-		case KeyCode_Up:
-		{
-			if (tgt_speed_left <0.1) tgt_speed_left+=0.01;
-			if (tgt_speed_right<0.1) tgt_speed_right+=0.01;
-
-			//incrementLinearVelocity();
-			ROS_INFO("incrementLinearVelocity");
-			break;
-		}
-		case KeyCode_Down:
-		{
-			if (tgt_speed_left >-0.1) tgt_speed_left-=0.01;
-			if (tgt_speed_right>-0.1) tgt_speed_right-=0.01;
-			//decrementLinearVelocity();
-			ROS_INFO("decrementLinearVelocity");
-			break;
-		}
-		case KeyCode_Space:
-		{
-			std_msgs::Int8 Stop; 
-			Stop.data=0;
-			tgt_speed_left = tgt_speed_right = 0;
-			send_speed(0,0 );
-			//resetVelocity();
-			ROS_INFO("resetVelocity");
-			Stop_publisher.publish(Stop);			
-			break;
-		}
-		case 'q':
-		{
-			thread_run = 0;
-			std_msgs::Int8 AllOff; 
-			AllOff.data=0;
-			ROS_INFO("quit_requested");
-			AllOff_publisher.publish(AllOff);
-			break;
-		}
-		case 'd':
-		{
-			ROS_INFO("disable");
-			break;
-		}
-		case 'a':
-		{
-			ArmsPos.data++;
-			if (ArmsPos.data>100) ArmsPos.data=100;
-			ArmsPos_publisher.publish(ArmsPos);	
-			ROS_INFO("pos=%d hug=%d", ArmsPos.data, ArmsHug.data);
-			break;
-		}
-		case 'z':
-		{
-			ArmsPos.data--;
-			if (ArmsPos.data<0) ArmsPos.data=0;
-			ArmsPos_publisher.publish(ArmsPos);	
-			ROS_INFO("pos=%d hug=%d", ArmsPos.data, ArmsHug.data);
-			break;
-		}
-		case 's':
-		{
-			ArmsHug.data++;
-			if (ArmsHug.data>100) ArmsHug.data=100;
-			ArmsHug_publisher.publish(ArmsHug);	
-			ROS_INFO("pos=%d hug=%d", ArmsPos.data, ArmsHug.data);
-			break;
-		}
-		case 'x':
-		{
-			ArmsHug.data--;
-			if (ArmsHug.data<0) ArmsHug.data=0;
-			ArmsHug_publisher.publish(ArmsHug);	
-			ROS_INFO("pos=%d hug=%d", ArmsPos.data, ArmsHug.data);
-			break;
-		}
-		case '`':
-		{
-			ArmServoPower.data = !ArmServoPower.data;
-			
-			ROS_INFO("ARM Power :%d", ArmServoPower.data);
-			ArmServoPower_publisher.publish(ArmServoPower);
-			break;
-		}		
-		case 'l':
-		{
-			//disable();
-			light_on.data = !light_on.data;
-			
-			ROS_INFO("Light :%d", light_on.data);
-			light_control_publisher.publish(light_on);
-			break;
-		}		
-		case 'g':
-		{
-			GasSensorPower.data = !GasSensorPower.data;
-			
-			ROS_INFO("GAS Sensor Power :%d", GasSensorPower.data);
-			GasSensorPower_publisher.publish(GasSensorPower);
-			break;
-		}		
-		case 'u':
-		{
-			tgt_speed_left+=1;
-			
-			std_msgs::Int16 spd; 
-			spd.data=tgt_speed_left;			
-			ROS_INFO("Left Speed :%d", spd.data);
-			LeftPwm_publisher.publish(spd);
-			break;
-		}
-		case 'j':
-		{
-			tgt_speed_left-=1;
-			
-			std_msgs::Int16 spd; 
-			spd.data=tgt_speed_left;
-			
-			ROS_INFO("Left Speed :%d", spd.data);
-			LeftPwm_publisher.publish(spd);
-			break;
-		}		
-		case 'i':
-		{
-			tgt_speed_right+=1;
-			
-			std_msgs::Int16 spd; 
-			spd.data=tgt_speed_right;
-			
-			ROS_INFO("Right Speed :%d", spd.data);
-			RightPwm_publisher.publish(spd);
-			break;
-		}
-		case 'k':
-		{
-			tgt_speed_right-=1;
-			
-			std_msgs::Int16 spd; 
-			spd.data=tgt_speed_right;
-			
-			ROS_INFO("Right Speed :%d", spd.data);
-			RightPwm_publisher.publish(spd);
-			break;
-		}	
-		case 'e':
-		{
-			//enable();
-			ROS_INFO("enable");
-			break;
-		}
-		default:
-		{
-			break;
-		}
-	}
-}
 
 

@@ -10,7 +10,6 @@
 #include <ddori/ddori_sensor.h>
 #include <ddori/servo_control.h>
 #include <ddori/motor_speed.h>
-//#include <Servo.h> 
 #include <Wire.h>
 #include <Adafruit_PWMServoDriver.h>
 #include <OneWire.h>
@@ -33,7 +32,6 @@ typedef enum _MOTOR_DIRECTION {
 typedef struct _motor_data
 {
 	int pwm;
-	float currentSpeed;
 	float targetSpeed;
 	float last_error;
 	long prev_cnt;
@@ -151,14 +149,9 @@ static int bat_a[BAT_V_AVG_CNT];
 static int bat_v_pos = 0;
 
 unsigned long lastMilli = 0;
-unsigned long lastMilliPrint = 0;
-static int ld = 0;
-static int rd = 0;
-int off_flag = 0;
 unsigned long last_arm_milli = 0;
 
 
-#ifdef ROS
 void ros_init();
 void light_commandCb(const std_msgs::Int8& light_cmd);
 void armservo_power_commandCb(const std_msgs::Int8& cmd);
@@ -174,7 +167,6 @@ void wheel_stop_commandCb(const std_msgs::Int8& cmd);
 void alloff_commandCb(const std_msgs::Int8& cmd);
 void leftpwm_commandCb(const std_msgs::Int16& cmd);
 void rightpwm_commandCb(const std_msgs::Int16& cmd);
-#endif
 
 void InitPWM();
 
@@ -189,7 +181,6 @@ DallasTemperature temp_sensors(&oneWire);
 // called this way, it uses the default address 0x40
 Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
 
-#ifdef ROS
 //////////////////////////////////////////////////////////////////////////////////////////////
 // ROS Initialization
 ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -283,8 +274,6 @@ void wheel_pwm_commandCb(const ddori::motor_speed& cmd)
 	else SetMotorDirection(MOTOR_RIGHT, MOTOR_FORWARD);
 
 
-	m_l.targetSpeed = cmd.left_speed;
-	m_r.targetSpeed = cmd.right_speed;
 }
 
 void wheel_stop_commandCb(const std_msgs::Int8& cmd) {
@@ -303,7 +292,6 @@ void alloff_commandCb(const std_msgs::Int8& cmd) {
 
 void leftpwm_commandCb(const std_msgs::Int16& cmd)
 {
-	//m_l.targetSpeed = cmd.data;
 	m_l.pwm = cmd.data;
 	SetMotorPWM(m_l.pwm, m_r.pwm);
 	if (cmd.data < 0) SetMotorDirection(MOTOR_LEFT, MOTOR_BACKWARD);
@@ -312,28 +300,21 @@ void leftpwm_commandCb(const std_msgs::Int16& cmd)
 
 void rightpwm_commandCb(const std_msgs::Int16& cmd)
 {
-	//m_r.targetSpeed = cmd.data;
 	m_r.pwm = cmd.data;
 	SetMotorPWM(m_l.pwm, m_r.pwm);
 	if (cmd.data < 0) SetMotorDirection(MOTOR_RIGHT, MOTOR_BACKWARD);
 	else SetMotorDirection(MOTOR_RIGHT, MOTOR_FORWARD);
 }
 
-#endif
+
 
 //=======================================
 // SETUP
 //=======================================
 void setup() {
 	// set the digital pin as output:
-	m_l.targetSpeed = 0;
-	m_l.last_error = 0;
-	m_l.prev_cnt = 0;
 	m_l.pwm = 0;
 	
-	m_r.targetSpeed = 0;
-	m_r.last_error = 0;
-	m_r.prev_cnt = 0;
 	m_r.pwm = 0;
 
 	analogRead(adc_battery_V_pin);
@@ -416,13 +397,9 @@ void setup() {
 
 	// Start up the library
 	temp_sensors.begin(); // IC Default 9 bit. If you have troubles consider upping it 12. Ups the delay giving the IC more time to process the temperature measurement
-
-#ifdef ROS
+	
 	ros_init();
-#else
-	Serial1.begin(115200);
-	Serial1.println("ddori starting...");	
-#endif
+
 }
 
 
@@ -430,7 +407,6 @@ void setup() {
 
 
 
-#ifdef ROS
 
 void ros_init()
 {
@@ -471,11 +447,6 @@ void ros_report(unsigned long cur_millis)
 	sensor_msg_data.time_stamp = cur_millis;
 	sensor_msg_data.left_encoder = count_l;
 	sensor_msg_data.right_encoder = count_r;
-	sensor_msg_data.left_pwm = m_l.pwm;
-	sensor_msg_data.right_pwm = m_r.pwm;
-
-	sensor_msg_data.left_currentSpeed = m_l.currentSpeed;
-	sensor_msg_data.right_currentSpeed = m_r.currentSpeed;
 
 	sensor_msg_data.co = analogRead(adc_gas_senror1_pin);
 	sensor_msg_data.gas = analogRead(adc_gas_senror2_pin);
@@ -491,7 +462,6 @@ void ros_report(unsigned long cur_millis)
 	pub_ddori_sensor.publish(&sensor_msg_data);
 }
 
-#endif
 
 //=======================================
 // LOOP
@@ -512,95 +482,18 @@ void loop()
 	{                                                                                 // enter timed loop
 		lastMilli = cur_millis;
 
-#if 0
-		getMotorData();                                                          // calculate current speed
-
-		updatePid(m_l);         // compute PWM value
-		updatePid(m_r);         // compute PWM value
-
-		OCR2B = m_l.pwm; 		// send PWM to motor
-		OCR2A = m_r.pwm;		// send PWM to motor
-#endif
 
 		// display data
 		check_battery();
-#ifdef ROS
+
 		ros_report(cur_millis);
 		nh.spinOnce();
-#else
-		Serial1.print("SP:");			Serial1.print(m_l.targetSpeed);  	Serial1.print(",");		Serial1.print(m_r.targetSpeed);
-		Serial1.print("  SPD:");		Serial1.print(m_l.currentSpeed);		Serial1.print(",");		Serial1.print(m_r.currentSpeed);
-		Serial1.print("  PWM:");		Serial1.print(m_l.pwm);   	Serial1.print(",");		Serial1.print(m_r.pwm);
-		Serial1.print("  ERR:");		Serial1.print(m_l.last_error);   	Serial1.print(",");		Serial1.print(m_r.last_error);
-		Serial1.print("  ENC:");		Serial1.print(count_l - m_l.prev_cnt);  		Serial1.print(",");		Serial1.print(count_r - m_r.prev_cnt);
-		//Serial1.print("  DIR:");	Serial1.print(ld==1?"F":"B");  		Serial1.print(",");		Serial1.print(rd==1?"F":"B");
-		Serial1.print("  kp:");			Serial1.print(Kp);
-		Serial1.print("  kd:");			Serial1.println(Kd);
-		//        printMotorInfo();
-#endif
-
-		/*
-
-			Serial1.print("Requesting temperatures...");
-			temp_sensors.requestTemperatures();         // Send the command to get temperatures
-			Serial1.println("DONE");
-			Serial1.print("Temperature for Device 1 is: ");
-			Serial1.print(temp_sensors.getTempCByIndex(0)); // Why "byIndex"? You can have more than one IC on the same bus. 0 refers to the first IC on the wire
-		*/
-		
-	
-		
 
 	}
-#ifdef ROS
-	nh.spinOnce();
-#endif
 
+	nh.spinOnce();
 	delay(1);
 }
-
-
-
-#define ONETICK_MM  ((2.0 * 3.1415926 * 36)  / (90.0*14) )
-
-//encoder 12 counts per revolution
-//gear Ratio 90:1
-void getMotorData()
-{                                       // calculate speed
-
-	long diff;
-	long cnt_l = count_l;
-	long cnt_r = count_r;
-
-
-	//Calculating the speed using encoder count
-	diff = cnt_l - m_l.prev_cnt;
-	m_l.currentSpeed = ONETICK_MM * diff *  (1000.0 / LOOPTIME) / 1000; // m /s
-	//m_l.currentSpeed = (diff *(60 * (1000 / LOOPTIME))) / (90 * 12);
-	m_l.prev_cnt = cnt_l;
-
-	diff = cnt_r - m_r.prev_cnt;
-	m_r.currentSpeed = ONETICK_MM * diff *  (1000.0 / LOOPTIME) / 1000; // m /s
-	m_r.prev_cnt = cnt_r;                                           //setting count value to last count
-
-}
-
-void updatePid(MotorData &m)
-{
-
-	float pidTerm = 0;                                                           // PID correction
-	float error = 0;
-
-	error = abs(m.targetSpeed) - abs(m.currentSpeed);
-	pidTerm = (Kp * error) + (Kd * (error - m.last_error));
-	m.last_error = error;
-
-	m.pwm = constrain(m.pwm + int(pidTerm), 0, 255);
-	if (m.targetSpeed == 0 )
-		m.pwm = 0;
-
-}
-
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -684,10 +577,7 @@ void stop()
 	digitalWrite(left_tr2_pin, LOW);
 	digitalWrite(right_tr1_pin, LOW);
 	digitalWrite(right_tr2_pin, LOW);
-	m_l.targetSpeed = 0;
-	m_r.targetSpeed = 0;
 	SetMotorPWM(0, 0); // send PWM to motor
-	Serial1.println("stop motor");
 }
 
 void powerled_onoff(int ledno, int onoff)
@@ -741,227 +631,6 @@ void SetMotorDirection(MotorSelect m, MotorDirection dir)
 
 	}
 }
-
-
-
-
-int last_dir = 0;
-////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-int getParam()
-{
-	char param, cmd;
-	if (!Serial1.available())    return 0;
-	int inChar = Serial1.read();
-	// convert the incoming byte to a char 
-	// and add it to the string:
-	if (inChar == 'i') {
-		if (last_dir != 1) {
-			SetMotorDirection(MOTOR_LEFT, MOTOR_FORWARD);
-			SetMotorDirection(MOTOR_RIGHT, MOTOR_FORWARD);
-			m_l.targetSpeed = 0;
-			m_r.targetSpeed = 0;
-		}
-		else {
-			m_l.targetSpeed = m_l.targetSpeed + 1;
-			if (m_l.targetSpeed > 255)
-				m_l.targetSpeed = 255;
-			m_r.targetSpeed = m_r.targetSpeed + 1;
-			if (m_r.targetSpeed > 255)
-				m_r.targetSpeed = 255;
-
-		}
-		last_dir = 1;
-	}
-	else if (inChar == 'm') {
-		if (last_dir != 2) {
-			SetMotorDirection(MOTOR_LEFT, MOTOR_BACKWARD);
-			SetMotorDirection(MOTOR_RIGHT, MOTOR_BACKWARD);
-			m_l.targetSpeed = 0;
-			m_r.targetSpeed = 0;
-		}
-		else {
-			m_l.targetSpeed = m_l.targetSpeed - 1;
-			if (m_l.targetSpeed < -255)
-				m_l.targetSpeed = -255;
-
-			m_r.targetSpeed = m_r.targetSpeed - 1;
-			if (m_r.targetSpeed < -255)
-				m_r.targetSpeed = -255;
-		}
-		last_dir = 2;
-	}
-	else if (inChar == 'k') {
-		if (last_dir != 3) {
-			SetMotorDirection(MOTOR_LEFT, MOTOR_FORWARD);
-			SetMotorDirection(MOTOR_RIGHT, MOTOR_BACKWARD);
-			m_l.targetSpeed = 0;
-			m_r.targetSpeed = 0;
-		}
-		else {
-			m_l.targetSpeed = m_l.targetSpeed - 1;
-			if (m_l.targetSpeed < -255)
-				m_l.targetSpeed = -255;
-
-			m_r.targetSpeed = m_r.targetSpeed + 1;
-			if (m_r.targetSpeed > 255)
-				m_r.targetSpeed = 255;
-		}
-		last_dir = 3;
-	}
-	else if (inChar == 'j') {
-		if (last_dir != 4) {
-			SetMotorDirection(MOTOR_LEFT, MOTOR_BACKWARD);
-			SetMotorDirection(MOTOR_RIGHT, MOTOR_FORWARD);
-			m_l.targetSpeed = 0;
-			m_r.targetSpeed = 0;
-		}
-		else {
-			m_l.targetSpeed = m_l.targetSpeed + 1;
-			if (m_l.targetSpeed > 255)
-				m_l.targetSpeed = 255;
-
-			m_r.targetSpeed = m_r.targetSpeed - 1;
-			if (m_r.targetSpeed < -255)
-				m_r.targetSpeed = -255;
-		}
-		last_dir = 4;
-	}
-	
-	else if (inChar=='a') {
-		Kd=Kd+0.01;
-	}
-	else if (inChar=='A') {
-		Kd=Kd-0.01;
-	}
-	else if (inChar=='z') {
-		Kp=Kp+0.01;
-	}
-	else if (inChar=='Z') {
-		Kp=Kp-0.01;
-	}
-	
-	else if (inChar == 'l') {
-		light_on = !light_on;
-		if (light_on) {
-			powerled_onoff(2, 1);
-			Serial1.println("Light On!");
-		}
-		else {
-			powerled_onoff(2, 0);
-			Serial1.println("Light Off!");
-		}
-
-
-	}
-/*
-	else if (inChar == '`') {
-		Serial1.println("SERVO Power On!");
-		digitalWrite(pwm_servo_output_power, LOW);
-	}
-	else if (inChar == '~') {
-		Serial1.println("SERVO Power OFF");
-		digitalWrite(pwm_servo_output_power, HIGH);
-	}
-	else if (inChar == '1') {
-		servo_pos[0] += 10;
-		if (servo_pos[0] > 600) servo_pos[0] = 600;
-		Serial1.print("Servo[0]");    Serial1.println(servo_pos[0]);
-		pwm.setPWM(0, 0, servo_pos[0]);
-	}
-	else if (inChar == '!') {
-		servo_pos[0] -= 10;
-		if (servo_pos[0] < 150) servo_pos[0] = 150;
-		Serial1.print("Servo[0]");    Serial1.println(servo_pos[0]);
-		pwm.setPWM(0, 0, servo_pos[0]);
-	}
-	else if (inChar == '2') {
-		servo_pos[1] += 10;
-		if (servo_pos[1] > 600) servo_pos[1] = 600;
-		Serial1.print("Servo[1]");    Serial1.println(servo_pos[1]);
-		pwm.setPWM(1, 0, servo_pos[1]);
-	}
-	else if (inChar == '@') {
-		servo_pos[1] -= 10;
-		if (servo_pos[1] < 150) servo_pos[1] = 150;
-		Serial1.print("Servo[1]");    Serial1.println(servo_pos[1]);
-		pwm.setPWM(1, 0, servo_pos[1]);
-	}
-	else if (inChar == '3') {
-		servo_pos[2] += 10;
-		if (servo_pos[2] > 600) servo_pos[2] = 600;
-		Serial1.print("Servo[4]");    Serial1.println(servo_pos[2]);
-		pwm.setPWM(4, 0, servo_pos[2]);
-	}
-	else if (inChar == '#') {
-		servo_pos[2] -= 10;
-		if (servo_pos[2] < 150) servo_pos[2] = 150;
-		Serial1.print("Servo[4]");    Serial1.println(servo_pos[2]);
-		pwm.setPWM(4, 0, servo_pos[2]);
-	}
-	else if (inChar == '4') {
-		servo_pos[3] += 10;
-		if (servo_pos[3] > 600) servo_pos[3] = 600;
-		Serial1.print("Servo[5]");    Serial1.println(servo_pos[3]);
-		pwm.setPWM(5, 0, servo_pos[3]);
-	}
-	else if (inChar == '$') {
-		servo_pos[3] -= 10;
-		if (servo_pos[3] < 150) servo_pos[3] = 150;
-		Serial1.print("Servo[5]");    Serial1.println(servo_pos[3]);
-		pwm.setPWM(5, 0, servo_pos[3]);
-	}
-	else if (inChar == '5') {
-		eye_position -= 10;
-		if (eye_position < 150)  eye_position = 150;
-		pwm.setPWM(8, 0, eye_position);
-		Serial1.print("CAMERA POS : ");  Serial1.println(eye_position);
-	}
-	else if (inChar == '%') {
-		eye_position += 10;
-		if (eye_position > 500)  eye_position = 500;
-		pwm.setPWM(8, 0, eye_position);
-		Serial1.print("CAMERA POS : ");  Serial1.println(eye_position);
-	}
-	else if (inChar == 'a') {
-		arm_pos += 1;
-		if (arm_pos > 100)  arm_pos = 100;
-		Serial1.print("ARM POS : ");  Serial1.println(arm_pos);
-		pwm.setPWM(0, 0, map(arm_pos, 0, 100, PWM0_LOW, PWM0_HIGH));
-		pwm.setPWM(4, 0, map(arm_pos, 0, 100, PWM4_HIGH, PWM4_LOW));
-	}
-	else if (inChar == 'z') {
-		arm_pos -= 1;
-		if (arm_pos < 0)  arm_pos = 0;
-		Serial1.print("ARM POS : ");  Serial1.println(arm_pos);
-		pwm.setPWM(0, 0, map(arm_pos, 0, 100, PWM0_LOW, PWM0_HIGH));
-		pwm.setPWM(4, 0, map(arm_pos, 0, 100, PWM4_HIGH, PWM4_LOW));
-	}
-	else if (inChar == 's') {
-		arm_hug += 1;
-		if (arm_hug > 100)  arm_hug = 100;
-		Serial1.print("ARM HUG : ");  Serial1.println(arm_hug);
-		pwm.setPWM(1, 0, map(arm_hug, 0, 100, PWM1_LOW, PWM1_HIGH));
-		pwm.setPWM(5, 0, map(arm_hug, 0, 100, PWM5_HIGH, PWM5_LOW));
-	}
-	else if (inChar == 'x') {
-		arm_hug -= 1;
-		if (arm_hug < 0)  arm_hug = 0;
-		Serial1.print("ARM HUG : ");  Serial1.println(arm_hug);
-		pwm.setPWM(1, 0, map(arm_hug, 0, 100, PWM1_LOW, PWM1_HIGH));
-		pwm.setPWM(5, 0, map(arm_hug, 0, 100, PWM5_HIGH, PWM5_LOW));
-	}
-*/
-	else {
-		m_l.targetSpeed = 0;
-		m_r.targetSpeed = 0;
-		last_dir = 0;
-
-	}
-}
-
-
-
 
 void InitPWM()
 {

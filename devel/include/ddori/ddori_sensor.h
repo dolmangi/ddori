@@ -26,12 +26,8 @@ struct ddori_sensor_
   ddori_sensor_()
     : time_stamp(0)
     , bumper(0)
-    , left_currentSpeed(0)
-    , right_currentSpeed(0)
     , left_encoder(0)
     , right_encoder(0)
-    , left_pwm(0)
-    , right_pwm(0)
     , buttons(0)
     , charger(0)
     , voltage(0)
@@ -52,12 +48,8 @@ struct ddori_sensor_
   ddori_sensor_(const ContainerAllocator& _alloc)
     : time_stamp(0)
     , bumper(0)
-    , left_currentSpeed(0)
-    , right_currentSpeed(0)
     , left_encoder(0)
     , right_encoder(0)
-    , left_pwm(0)
-    , right_pwm(0)
     , buttons(0)
     , charger(0)
     , voltage(0)
@@ -84,23 +76,11 @@ struct ddori_sensor_
    typedef uint8_t _bumper_type;
   _bumper_type bumper;
 
-   typedef int16_t _left_currentSpeed_type;
-  _left_currentSpeed_type left_currentSpeed;
-
-   typedef int16_t _right_currentSpeed_type;
-  _right_currentSpeed_type right_currentSpeed;
-
    typedef int16_t _left_encoder_type;
   _left_encoder_type left_encoder;
 
    typedef int16_t _right_encoder_type;
   _right_encoder_type right_encoder;
-
-   typedef int8_t _left_pwm_type;
-  _left_pwm_type left_pwm;
-
-   typedef int8_t _right_pwm_type;
-  _right_pwm_type right_pwm;
 
    typedef uint8_t _buttons_type;
   _buttons_type buttons;
@@ -227,12 +207,12 @@ struct MD5Sum< ::ddori::ddori_sensor_<ContainerAllocator> >
 {
   static const char* value()
   {
-    return "2a2e66d6238d872ec6adc450437b5561";
+    return "3676e7aa50bcd8c89f9c5ae2f526915b";
   }
 
   static const char* value(const ::ddori::ddori_sensor_<ContainerAllocator>&) { return value(); }
-  static const uint64_t static_value1 = 0x2a2e66d6238d872eULL;
-  static const uint64_t static_value2 = 0xc6adc450437b5561ULL;
+  static const uint64_t static_value1 = 0x3676e7aa50bcd8c8ULL;
+  static const uint64_t static_value2 = 0x9f9c5ae2f526915bULL;
 };
 
 template<class ContainerAllocator>
@@ -254,14 +234,8 @@ struct Definition< ::ddori::ddori_sensor_<ContainerAllocator> >
     return "\n\
 uint16 time_stamp      # milliseconds starting when turning on Kobuki (max. 65536, then starts from 0 again)\n\
 uint8  bumper          	# see bumper states\n\
-int16 left_currentSpeed\n\
-int16 right_currentSpeed\n\
-#int16 left_move\n\
-#int16 right_move\n\
 int16 left_encoder    # accumulated ticks left wheel starting with turning on Kobuki (max. 32767)\n\
 int16 right_encoder   # accumulated ticks right wheel starting with turning on Kobuki (max. 32767)\n\
-int8   left_pwm        	# % of applied maximum voltage left wheel: -100 (max. voltage backward) to +100 (max. voltage forward)\n\
-int8   right_pwm       # % of applied maximum voltage right wheel: -100 (max. voltage backward) to +100 (max. voltage forward)\n\
 uint8  buttons         # see button states\n\
 uint8  charger         # see charger states\n\
 int16  voltage         # Battery voltage \n\
@@ -308,12 +282,8 @@ namespace serialization
     {
       stream.next(m.time_stamp);
       stream.next(m.bumper);
-      stream.next(m.left_currentSpeed);
-      stream.next(m.right_currentSpeed);
       stream.next(m.left_encoder);
       stream.next(m.right_encoder);
-      stream.next(m.left_pwm);
-      stream.next(m.right_pwm);
       stream.next(m.buttons);
       stream.next(m.charger);
       stream.next(m.voltage);
@@ -352,18 +322,10 @@ struct Printer< ::ddori::ddori_sensor_<ContainerAllocator> >
     Printer<uint16_t>::stream(s, indent + "  ", v.time_stamp);
     s << indent << "bumper: ";
     Printer<uint8_t>::stream(s, indent + "  ", v.bumper);
-    s << indent << "left_currentSpeed: ";
-    Printer<int16_t>::stream(s, indent + "  ", v.left_currentSpeed);
-    s << indent << "right_currentSpeed: ";
-    Printer<int16_t>::stream(s, indent + "  ", v.right_currentSpeed);
     s << indent << "left_encoder: ";
     Printer<int16_t>::stream(s, indent + "  ", v.left_encoder);
     s << indent << "right_encoder: ";
     Printer<int16_t>::stream(s, indent + "  ", v.right_encoder);
-    s << indent << "left_pwm: ";
-    Printer<int8_t>::stream(s, indent + "  ", v.left_pwm);
-    s << indent << "right_pwm: ";
-    Printer<int8_t>::stream(s, indent + "  ", v.right_pwm);
     s << indent << "buttons: ";
     Printer<uint8_t>::stream(s, indent + "  ", v.buttons);
     s << indent << "charger: ";

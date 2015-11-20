@@ -14,12 +14,8 @@ namespace ddori
     public:
       uint16_t time_stamp;
       uint8_t bumper;
-      int16_t left_currentSpeed;
-      int16_t right_currentSpeed;
       int16_t left_encoder;
       int16_t right_encoder;
-      int8_t left_pwm;
-      int8_t right_pwm;
       uint8_t buttons;
       uint8_t charger;
       int16_t voltage;
@@ -40,12 +36,8 @@ namespace ddori
     ddori_sensor():
       time_stamp(0),
       bumper(0),
-      left_currentSpeed(0),
-      right_currentSpeed(0),
       left_encoder(0),
       right_encoder(0),
-      left_pwm(0),
-      right_pwm(0),
       buttons(0),
       charger(0),
       voltage(0),
@@ -76,22 +68,6 @@ namespace ddori
       union {
         int16_t real;
         uint16_t base;
-      } u_left_currentSpeed;
-      u_left_currentSpeed.real = this->left_currentSpeed;
-      *(outbuffer + offset + 0) = (u_left_currentSpeed.base >> (8 * 0)) & 0xFF;
-      *(outbuffer + offset + 1) = (u_left_currentSpeed.base >> (8 * 1)) & 0xFF;
-      offset += sizeof(this->left_currentSpeed);
-      union {
-        int16_t real;
-        uint16_t base;
-      } u_right_currentSpeed;
-      u_right_currentSpeed.real = this->right_currentSpeed;
-      *(outbuffer + offset + 0) = (u_right_currentSpeed.base >> (8 * 0)) & 0xFF;
-      *(outbuffer + offset + 1) = (u_right_currentSpeed.base >> (8 * 1)) & 0xFF;
-      offset += sizeof(this->right_currentSpeed);
-      union {
-        int16_t real;
-        uint16_t base;
       } u_left_encoder;
       u_left_encoder.real = this->left_encoder;
       *(outbuffer + offset + 0) = (u_left_encoder.base >> (8 * 0)) & 0xFF;
@@ -105,20 +81,6 @@ namespace ddori
       *(outbuffer + offset + 0) = (u_right_encoder.base >> (8 * 0)) & 0xFF;
       *(outbuffer + offset + 1) = (u_right_encoder.base >> (8 * 1)) & 0xFF;
       offset += sizeof(this->right_encoder);
-      union {
-        int8_t real;
-        uint8_t base;
-      } u_left_pwm;
-      u_left_pwm.real = this->left_pwm;
-      *(outbuffer + offset + 0) = (u_left_pwm.base >> (8 * 0)) & 0xFF;
-      offset += sizeof(this->left_pwm);
-      union {
-        int8_t real;
-        uint8_t base;
-      } u_right_pwm;
-      u_right_pwm.real = this->right_pwm;
-      *(outbuffer + offset + 0) = (u_right_pwm.base >> (8 * 0)) & 0xFF;
-      offset += sizeof(this->right_pwm);
       *(outbuffer + offset + 0) = (this->buttons >> (8 * 0)) & 0xFF;
       offset += sizeof(this->buttons);
       *(outbuffer + offset + 0) = (this->charger >> (8 * 0)) & 0xFF;
@@ -245,24 +207,6 @@ namespace ddori
       union {
         int16_t real;
         uint16_t base;
-      } u_left_currentSpeed;
-      u_left_currentSpeed.base = 0;
-      u_left_currentSpeed.base |= ((uint16_t) (*(inbuffer + offset + 0))) << (8 * 0);
-      u_left_currentSpeed.base |= ((uint16_t) (*(inbuffer + offset + 1))) << (8 * 1);
-      this->left_currentSpeed = u_left_currentSpeed.real;
-      offset += sizeof(this->left_currentSpeed);
-      union {
-        int16_t real;
-        uint16_t base;
-      } u_right_currentSpeed;
-      u_right_currentSpeed.base = 0;
-      u_right_currentSpeed.base |= ((uint16_t) (*(inbuffer + offset + 0))) << (8 * 0);
-      u_right_currentSpeed.base |= ((uint16_t) (*(inbuffer + offset + 1))) << (8 * 1);
-      this->right_currentSpeed = u_right_currentSpeed.real;
-      offset += sizeof(this->right_currentSpeed);
-      union {
-        int16_t real;
-        uint16_t base;
       } u_left_encoder;
       u_left_encoder.base = 0;
       u_left_encoder.base |= ((uint16_t) (*(inbuffer + offset + 0))) << (8 * 0);
@@ -278,22 +222,6 @@ namespace ddori
       u_right_encoder.base |= ((uint16_t) (*(inbuffer + offset + 1))) << (8 * 1);
       this->right_encoder = u_right_encoder.real;
       offset += sizeof(this->right_encoder);
-      union {
-        int8_t real;
-        uint8_t base;
-      } u_left_pwm;
-      u_left_pwm.base = 0;
-      u_left_pwm.base |= ((uint8_t) (*(inbuffer + offset + 0))) << (8 * 0);
-      this->left_pwm = u_left_pwm.real;
-      offset += sizeof(this->left_pwm);
-      union {
-        int8_t real;
-        uint8_t base;
-      } u_right_pwm;
-      u_right_pwm.base = 0;
-      u_right_pwm.base |= ((uint8_t) (*(inbuffer + offset + 0))) << (8 * 0);
-      this->right_pwm = u_right_pwm.real;
-      offset += sizeof(this->right_pwm);
       this->buttons =  ((uint8_t) (*(inbuffer + offset)));
       offset += sizeof(this->buttons);
       this->charger =  ((uint8_t) (*(inbuffer + offset)));
@@ -424,7 +352,7 @@ namespace ddori
     }
 
     const char * getType(){ return "ddori/ddori_sensor"; };
-    const char * getMD5(){ return "2a2e66d6238d872ec6adc450437b5561"; };
+    const char * getMD5(){ return "3676e7aa50bcd8c89f9c5ae2f526915b"; };
 
   };
 

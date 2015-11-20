@@ -5,6 +5,8 @@
    "SERVO_CONTROL"
    "<MOTOR_SPEED>"
    "MOTOR_SPEED"
+   "<MOTORPOWER>"
+   "MOTORPOWER"
    "<DDORI_SENSOR>"
    "DDORI_SENSOR"
   ))
