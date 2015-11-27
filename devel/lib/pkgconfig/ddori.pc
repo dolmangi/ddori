@@ -1,8 +1,0 @@
-prefix=/home/dolmangi/catkin_ws/devel
-
-Name: ddori
-Description: Description of ddori
-Version: 0.0.0
-Cflags: 
-Libs: -L/home/dolmangi/catkin_ws/devel/lib 
-Requires: roscpp rospy std_msgs ecl_exceptions ecl_threads ecl_time

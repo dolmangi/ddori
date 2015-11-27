@@ -1,7 +1,0 @@
-set(_CATKIN_CURRENT_PACKAGE "ddori_msgs")
-set(ddori_msgs_MAINTAINER "dolmangi <dolmangi@naver.com>")
-set(ddori_msgs_DEPRECATED "")
-set(ddori_msgs_VERSION "0.0.1")
-set(ddori_msgs_BUILD_DEPENDS "std_msgs" "actionlib_msgs" "message_generation")
-set(ddori_msgs_RUN_DEPENDS "std_msgs" "actionlib_msgs" "message_runtime")
-set(ddori_msgs_BUILDTOOL_DEPENDS "catkin")
