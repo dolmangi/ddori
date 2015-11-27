@@ -7,9 +7,9 @@
 #include <std_msgs/UInt16.h>
 #include <std_msgs/UInt32.h>
 #include <std_msgs/Int32.h>
-#include <ddori/ddori_sensor.h>
-#include <ddori/servo_control.h>
-#include <ddori/motor_speed.h>
+#include <ddori_msgs/ddori_sensor.h>
+#include <ddori_msgs/servo_control.h>
+#include <ddori_msgs/motor_speed.h>
 #include <Wire.h>
 #include <Adafruit_PWMServoDriver.h>
 #include <OneWire.h>
@@ -155,14 +155,14 @@ unsigned long last_arm_milli = 0;
 void ros_init();
 void light_commandCb(const std_msgs::Int8& light_cmd);
 void armservo_power_commandCb(const std_msgs::Int8& cmd);
-void armservo_pos_commandCb(const ddori::servo_control& cmd);
+void armservo_pos_commandCb(const ddori_msgs::servo_control& cmd);
 void arms_pos_commandCb(const std_msgs::Int8& cmd);
 void gassensor_power_commandCb(const std_msgs::Int8& cmd);
 void arms_hug_commandCb(const std_msgs::Int8& cmd);
 void phone_power_commandCb(const std_msgs::Int8& cmd);
 void foscam_power_commandCb(const std_msgs::Int8& cmd);
 void camservo_pos_commandCb(const std_msgs::Int8& cmd);
-void wheel_pwm_commandCb(const ddori::motor_speed& cmd);
+void wheel_pwm_commandCb(const ddori_msgs::motor_speed& cmd);
 void wheel_stop_commandCb(const std_msgs::Int8& cmd);
 void alloff_commandCb(const std_msgs::Int8& cmd);
 void leftpwm_commandCb(const std_msgs::Int16& cmd);
@@ -190,18 +190,18 @@ public:
 	NewHardware() :ArduinoHardware(&Serial1, 115200) {};
 };
 ros::NodeHandle_<NewHardware>  nh;
-ddori::ddori_sensor  sensor_msg_data;
+ddori_msgs::ddori_sensor  sensor_msg_data;
 
 ros::Publisher pub_ddori_sensor("ddori_sensor", &sensor_msg_data);
 
 ros::Subscriber<std_msgs::Int8> subLight_cmd("cmd_light", light_commandCb);
 ros::Subscriber<std_msgs::Int8> subArmServoPower_cmd("cmd_armservo_power", armservo_power_commandCb);
-ros::Subscriber<ddori::servo_control> subArmServoPos_cmd("cmd_armservo_pos", armservo_pos_commandCb);
+ros::Subscriber<ddori_msgs::servo_control> subArmServoPos_cmd("cmd_armservo_pos", armservo_pos_commandCb);
 ros::Subscriber<std_msgs::Int8> subGasSensorPower_cmd("cmd_gassesnsor_power", gassensor_power_commandCb);
 ros::Subscriber<std_msgs::Int8> subPhonePower_cmd("cmd_phone_power", phone_power_commandCb);
 ros::Subscriber<std_msgs::Int8> subFoscamPower_cmd("cmd_foscam_power", foscam_power_commandCb);
 ros::Subscriber<std_msgs::Int8> subCamservoPos_cmd("cmd_camservo_pos", camservo_pos_commandCb);
-ros::Subscriber<ddori::motor_speed> subPWM_cmd("cmd_pwm", wheel_pwm_commandCb);
+ros::Subscriber<ddori_msgs::motor_speed> subPWM_cmd("cmd_pwm", wheel_pwm_commandCb);
 ros::Subscriber<std_msgs::Int8> subStop_cmd("cmd_stop", wheel_stop_commandCb);
 ros::Subscriber<std_msgs::Int8> subAllOff_cmd("cmd_alloff", alloff_commandCb);
 ros::Subscriber<std_msgs::Int8> subArmsHug_cmd("cmd_armshug", arms_hug_commandCb);
@@ -226,7 +226,7 @@ void armservo_power_commandCb(const std_msgs::Int8& cmd)
 	else             digitalWrite(pwm_servo_output_power, HIGH);
 }
 
-void armservo_pos_commandCb(const ddori::servo_control& cmd)
+void armservo_pos_commandCb(const ddori_msgs::servo_control& cmd)
 {
 	pwm.setPWM(cmd.no, 0, cmd.pos);
 }
@@ -261,7 +261,7 @@ void camservo_pos_commandCb(const std_msgs::Int8& cmd)
 }
 
 
-void wheel_pwm_commandCb(const ddori::motor_speed& cmd)
+void wheel_pwm_commandCb(const ddori_msgs::motor_speed& cmd)
 {
 	m_l.pwm = abs(cmd.left_speed);
 	m_r.pwm = abs(cmd.right_speed);
