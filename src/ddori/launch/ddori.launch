@@ -8,4 +8,7 @@
 	    <remap from="keyop/motor_power" to="motor_power"/>	
 	    <remap from="keyop/cmd_vel" to="cmd_vel"/>	
 	</node>
+	<node pkg="mpu_6050" type="mpu_6050_node" name="mpu_6050_node"/>
+	<node pkg="imu_offset" type="imu_yaw_offset" name="imu_yaw_offset"/>
+	<node pkg="bmp085" type="bmp085_node" name="bmp085_node"/>
 </launch>
