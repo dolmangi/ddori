@@ -34,9 +34,7 @@ bool motor_on=false;
 
 unsigned char servo_pos[10]={0};
 
-std_msgs::Int8 light_on; 
-std_msgs::Int8 ArmServoPower ;
-std_msgs::Int8 GasSensorPower; 
+
 std_msgs::Int8 PhonePower; 
 std_msgs::Int8 FoscamPower; 
 std_msgs::Int8 CamServoPos; 
@@ -173,6 +171,7 @@ void sensor_Callback(const ddori_msgs::ddori_sensor::ConstPtr& msg)
 
 }
 
+
 void velocity_Callback(const geometry_msgs::Twist::ConstPtr& msg)
 {
 
@@ -269,8 +268,6 @@ int main(int argc, char **argv)
 	
 	WheelPWM_publisher        = n.advertise<ddori_msgs::motor_speed>("cmd_pwm", 1);
 
-	GasSensorPower.data=0;
-	light_on.data=0;
 	ArmsPos.data=30;
 	ArmsHug.data=30;
 

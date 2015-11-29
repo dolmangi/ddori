@@ -51,6 +51,7 @@
 #include <geometry_msgs/Twist.h>  // for velocity commands
 #include <geometry_msgs/TwistStamped.h>  // for velocity commands
 #include <ddori_msgs/KeyboardInput.h> // keycodes from remote teleops.
+#include <std_msgs/Int8.h>
 
 /*****************************************************************************
  ** Namespaces
@@ -95,6 +96,16 @@ private:
   double angular_vel_step, angular_vel_max;
   std::string name;
 
+
+  ros::Publisher lightonoff_publisher_;
+  ros::Publisher gasens_onoff_publisher_;
+  
+  std_msgs::Int8 light_on; 
+  std_msgs::Int8 ArmServoPower ;
+  std_msgs::Int8 GasSensorPower; 
+
+
+
   /*********************
    ** Commands
    **********************/
@@ -105,6 +116,8 @@ private:
   void incrementAngularVelocity();
   void decrementAngularVelocity();
   void resetVelocity();
+  void enableLight();
+  void enableGasSensor();
 
   /*********************
    ** Keylogging

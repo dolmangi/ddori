@@ -113,7 +113,11 @@ bool KeyOpCore::init()
    **********************/
   velocity_publisher_ = nh.advertise<geometry_msgs::Twist>("cmd_vel", 1);
   motor_power_publisher_ = nh.advertise<ddori_msgs::MotorPower>("motor_power", 1);
+  
+  lightonoff_publisher_ = nh.advertise<std_msgs::Int8>("cmd_light", 1);
+  gasens_onoff_publisher_ = nh.advertise<std_msgs::Int8>("cmd_gassesnsor_power", 1);
 
+  
   /*********************
    ** Velocities
    **********************/
@@ -123,6 +127,11 @@ bool KeyOpCore::init()
   cmd->angular.x = 0.0;
   cmd->angular.y = 0.0;
   cmd->angular.z = 0.0;
+
+
+  GasSensorPower.data=0;
+  light_on.data=0;
+
 
   /*********************
    ** Wait for connection
@@ -253,6 +262,7 @@ void KeyOpCore::keyboardInputLoop()
   puts("Spacebar : reset linear/angular velocities.");
   puts("d : disable motors.");
   puts("e : enable motors.");
+  puts("l : turn on/off light");
   puts("q : quit.");
   char c;
   while (!quit_requested)
@@ -330,6 +340,18 @@ void KeyOpCore::processKeyboardInput(char c)
       enable();
       break;
     }
+
+    case 'l':
+    {
+      enableLight();
+      break;
+    }
+
+    case 'g':
+    {
+        enableGasSensor();
+      break;
+    }
     default:
     {
       break;
@@ -348,6 +370,21 @@ void KeyOpCore::processKeyboardInput(char c)
  * - Disables power to the navigation motors (via device_manager).
  * @param msg
  */
+
+void KeyOpCore::enableGasSensor()
+{
+        GasSensorPower.data = !GasSensorPower.data;
+        gasens_onoff_publisher_.publish(GasSensorPower);	
+        printf("Gas Sensor Power =%d\n",GasSensorPower.data );
+}
+
+void KeyOpCore::enableLight()
+{
+        light_on.data = !light_on.data;
+        lightonoff_publisher_.publish(light_on);	
+        printf("light =%d\n",light_on.data );
+
+}
 void KeyOpCore::disable()
 {
   cmd->linear.x = 0.0;

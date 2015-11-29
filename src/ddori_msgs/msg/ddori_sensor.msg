@@ -12,11 +12,9 @@ int16 temp1 			#Temperature Sensor 1
 int16 temp2			#Temperature Sensor 1
 int16 temp3			#Temperature Sensor 1
 
-int16 co				#CO gas sensor
-int16 gas				#Butan Gas Sensor
-int16 air				#Air Quality Sensor
-
-int16 barometer	#Air Pressure Sensor
+int16 gas_co				#CO gas sensor
+int16 gas_lpg				#LPG/Butan Gas Sensor
+int16 gas_smoke			#SmokeSensor
 
 int8 pir					#Human body detector
 

@@ -194,10 +194,10 @@ ddori_msgs::ddori_sensor  sensor_msg_data;
 
 ros::Publisher pub_ddori_sensor("ddori_sensor", &sensor_msg_data);
 
-ros::Subscriber<std_msgs::Int8> subLight_cmd("cmd_light", light_commandCb);
+ros::Subscriber<std_msgs::Int8> subLight_cmd("keyop/cmd_light", light_commandCb);
 ros::Subscriber<std_msgs::Int8> subArmServoPower_cmd("cmd_armservo_power", armservo_power_commandCb);
 ros::Subscriber<ddori_msgs::servo_control> subArmServoPos_cmd("cmd_armservo_pos", armservo_pos_commandCb);
-ros::Subscriber<std_msgs::Int8> subGasSensorPower_cmd("cmd_gassesnsor_power", gassensor_power_commandCb);
+ros::Subscriber<std_msgs::Int8> subGasSensorPower_cmd("keyop/cmd_gassesnsor_power", gassensor_power_commandCb);
 ros::Subscriber<std_msgs::Int8> subPhonePower_cmd("cmd_phone_power", phone_power_commandCb);
 ros::Subscriber<std_msgs::Int8> subFoscamPower_cmd("cmd_foscam_power", foscam_power_commandCb);
 ros::Subscriber<std_msgs::Int8> subCamservoPos_cmd("cmd_camservo_pos", camservo_pos_commandCb);
@@ -213,6 +213,7 @@ ros::Subscriber<std_msgs::Int16> subRightPwm_cmd("cmd_rpwm", rightpwm_commandCb)
 
 void light_commandCb(const std_msgs::Int8& light_cmd) 
 {
+
 	if (light_cmd.data == 1)
 		powerled_onoff(2, 1);
 	else
@@ -448,9 +449,9 @@ void ros_report(unsigned long cur_millis)
 	sensor_msg_data.left_encoder = count_l;
 	sensor_msg_data.right_encoder = count_r;
 
-	sensor_msg_data.co = analogRead(adc_gas_senror1_pin);
-	sensor_msg_data.gas = analogRead(adc_gas_senror2_pin);
-	sensor_msg_data.air = analogRead(adc_gas_senror3_pin);
+	sensor_msg_data.gas_co = analogRead(adc_gas_senror3_pin);
+	sensor_msg_data.gas_smoke = analogRead(adc_gas_senror2_pin);
+	sensor_msg_data.gas_lpg = analogRead(adc_gas_senror1_pin);
 
 	sensor_msg_data.pir = 0;
 	sensor_msg_data.pir |= digitalRead(pir_det1_pin) ? 1 : 0;

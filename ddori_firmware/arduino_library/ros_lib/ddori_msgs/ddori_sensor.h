@@ -23,10 +23,9 @@ namespace ddori_msgs
       int16_t temp1;
       int16_t temp2;
       int16_t temp3;
-      int16_t co;
-      int16_t gas;
-      int16_t air;
-      int16_t barometer;
+      int16_t gas_co;
+      int16_t gas_lpg;
+      int16_t gas_smoke;
       int8_t pir;
       int8_t prx_1;
       int8_t prx_2;
@@ -45,10 +44,9 @@ namespace ddori_msgs
       temp1(0),
       temp2(0),
       temp3(0),
-      co(0),
-      gas(0),
-      air(0),
-      barometer(0),
+      gas_co(0),
+      gas_lpg(0),
+      gas_smoke(0),
       pir(0),
       prx_1(0),
       prx_2(0),
@@ -128,35 +126,27 @@ namespace ddori_msgs
       union {
         int16_t real;
         uint16_t base;
-      } u_co;
-      u_co.real = this->co;
-      *(outbuffer + offset + 0) = (u_co.base >> (8 * 0)) & 0xFF;
-      *(outbuffer + offset + 1) = (u_co.base >> (8 * 1)) & 0xFF;
-      offset += sizeof(this->co);
+      } u_gas_co;
+      u_gas_co.real = this->gas_co;
+      *(outbuffer + offset + 0) = (u_gas_co.base >> (8 * 0)) & 0xFF;
+      *(outbuffer + offset + 1) = (u_gas_co.base >> (8 * 1)) & 0xFF;
+      offset += sizeof(this->gas_co);
       union {
         int16_t real;
         uint16_t base;
-      } u_gas;
-      u_gas.real = this->gas;
-      *(outbuffer + offset + 0) = (u_gas.base >> (8 * 0)) & 0xFF;
-      *(outbuffer + offset + 1) = (u_gas.base >> (8 * 1)) & 0xFF;
-      offset += sizeof(this->gas);
+      } u_gas_lpg;
+      u_gas_lpg.real = this->gas_lpg;
+      *(outbuffer + offset + 0) = (u_gas_lpg.base >> (8 * 0)) & 0xFF;
+      *(outbuffer + offset + 1) = (u_gas_lpg.base >> (8 * 1)) & 0xFF;
+      offset += sizeof(this->gas_lpg);
       union {
         int16_t real;
         uint16_t base;
-      } u_air;
-      u_air.real = this->air;
-      *(outbuffer + offset + 0) = (u_air.base >> (8 * 0)) & 0xFF;
-      *(outbuffer + offset + 1) = (u_air.base >> (8 * 1)) & 0xFF;
-      offset += sizeof(this->air);
-      union {
-        int16_t real;
-        uint16_t base;
-      } u_barometer;
-      u_barometer.real = this->barometer;
-      *(outbuffer + offset + 0) = (u_barometer.base >> (8 * 0)) & 0xFF;
-      *(outbuffer + offset + 1) = (u_barometer.base >> (8 * 1)) & 0xFF;
-      offset += sizeof(this->barometer);
+      } u_gas_smoke;
+      u_gas_smoke.real = this->gas_smoke;
+      *(outbuffer + offset + 0) = (u_gas_smoke.base >> (8 * 0)) & 0xFF;
+      *(outbuffer + offset + 1) = (u_gas_smoke.base >> (8 * 1)) & 0xFF;
+      offset += sizeof(this->gas_smoke);
       union {
         int8_t real;
         uint8_t base;
@@ -274,39 +264,30 @@ namespace ddori_msgs
       union {
         int16_t real;
         uint16_t base;
-      } u_co;
-      u_co.base = 0;
-      u_co.base |= ((uint16_t) (*(inbuffer + offset + 0))) << (8 * 0);
-      u_co.base |= ((uint16_t) (*(inbuffer + offset + 1))) << (8 * 1);
-      this->co = u_co.real;
-      offset += sizeof(this->co);
+      } u_gas_co;
+      u_gas_co.base = 0;
+      u_gas_co.base |= ((uint16_t) (*(inbuffer + offset + 0))) << (8 * 0);
+      u_gas_co.base |= ((uint16_t) (*(inbuffer + offset + 1))) << (8 * 1);
+      this->gas_co = u_gas_co.real;
+      offset += sizeof(this->gas_co);
       union {
         int16_t real;
         uint16_t base;
-      } u_gas;
-      u_gas.base = 0;
-      u_gas.base |= ((uint16_t) (*(inbuffer + offset + 0))) << (8 * 0);
-      u_gas.base |= ((uint16_t) (*(inbuffer + offset + 1))) << (8 * 1);
-      this->gas = u_gas.real;
-      offset += sizeof(this->gas);
+      } u_gas_lpg;
+      u_gas_lpg.base = 0;
+      u_gas_lpg.base |= ((uint16_t) (*(inbuffer + offset + 0))) << (8 * 0);
+      u_gas_lpg.base |= ((uint16_t) (*(inbuffer + offset + 1))) << (8 * 1);
+      this->gas_lpg = u_gas_lpg.real;
+      offset += sizeof(this->gas_lpg);
       union {
         int16_t real;
         uint16_t base;
-      } u_air;
-      u_air.base = 0;
-      u_air.base |= ((uint16_t) (*(inbuffer + offset + 0))) << (8 * 0);
-      u_air.base |= ((uint16_t) (*(inbuffer + offset + 1))) << (8 * 1);
-      this->air = u_air.real;
-      offset += sizeof(this->air);
-      union {
-        int16_t real;
-        uint16_t base;
-      } u_barometer;
-      u_barometer.base = 0;
-      u_barometer.base |= ((uint16_t) (*(inbuffer + offset + 0))) << (8 * 0);
-      u_barometer.base |= ((uint16_t) (*(inbuffer + offset + 1))) << (8 * 1);
-      this->barometer = u_barometer.real;
-      offset += sizeof(this->barometer);
+      } u_gas_smoke;
+      u_gas_smoke.base = 0;
+      u_gas_smoke.base |= ((uint16_t) (*(inbuffer + offset + 0))) << (8 * 0);
+      u_gas_smoke.base |= ((uint16_t) (*(inbuffer + offset + 1))) << (8 * 1);
+      this->gas_smoke = u_gas_smoke.real;
+      offset += sizeof(this->gas_smoke);
       union {
         int8_t real;
         uint8_t base;
@@ -352,7 +333,7 @@ namespace ddori_msgs
     }
 
     const char * getType(){ return "ddori_msgs/ddori_sensor"; };
-    const char * getMD5(){ return "3676e7aa50bcd8c89f9c5ae2f526915b"; };
+    const char * getMD5(){ return "d64af280c21cd2ccfe5e684379e43e54"; };
 
   };
 
