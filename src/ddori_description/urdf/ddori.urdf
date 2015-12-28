@@ -1,0 +1,86 @@
+<?xml version="1.0"?>
+
+<robot name="ddori">
+
+
+<material name="black">
+<color rgba="0 0 0 1"/>
+</material>
+
+
+
+<material name="white">
+<color rgba="1 1 1 1"/>
+</material>
+
+<material name="red">
+<color rgba="1 0 0 1"/>
+</material>
+
+<material name="green">
+<color rgba="0 1 0 1"/>
+</material>
+
+<material name="blue">
+<color rgba="0 0 1 1"/>
+</material>
+
+<material name="grey">
+<color rgba=".2 .2 .2 1"/>
+</material>
+  <link name="base_link">
+    <visual>
+      <geometry>
+        <cylinder length="0.35" radius="0.12"/>
+      </geometry>
+    </visual>
+  </link>
+
+  <link name="right_arm">
+    <visual>
+      <geometry>
+        <box size="0.21 .055 .03"/>
+      </geometry>
+      <origin rpy="0 1.57075 0" xyz="0 0 -0.10"/>
+      <material name="white"/>
+    </visual>
+  </link>
+
+  <joint name="base_to_right_arm" type="fixed">
+    <parent link="base_link"/>
+    <child link="right_arm"/>
+    <origin xyz="0.135 0 .13"/>
+  </joint>
+
+  <link name="left_arm">
+    <visual>
+      <geometry>
+        <box size="0.21 .055 .03"/>
+      </geometry>
+      <origin rpy="0 -1.57075 0" xyz="0 0 -0.10"/>
+      <material name="white"/>
+    </visual>
+  </link>
+
+  <joint name="base_to_left_arm" type="fixed">
+    <parent link="base_link"/>
+    <child link="left_arm"/>
+    <origin xyz="-0.135 0 .13"/>
+  </joint>
+
+   <link name="head"> 
+     <visual> 
+       <geometry> 
+         <sphere radius="0.12"/> 
+       </geometry> 
+       <material name="white"/> 
+     </visual> 
+   </link> 
+   <joint name="head_swivel" type="fixed"> 
+     <parent link="base_link"/> 
+     <child link="head"/> 
+     <origin xyz="0 0 0.175"/> 
+   </joint> 
+
+</robot>
+

@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<package>
+  <name>ddori_param</name>
+  <version>0.0.0</version>
+  <description>The ddori_param package</description>
+  <license>GPL</license>
+  <maintainer email="dolmangi@todo.todo">dolmangi</maintainer>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>map_server</build_depend>
+  <run_depend>map_server</run_depend>
+
+</package>

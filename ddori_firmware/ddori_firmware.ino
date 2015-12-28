@@ -76,9 +76,21 @@ const int power_led2_pin = 43;
 const int power_led3_pin = 40;
 const int power_led4_pin = 41;
 
+/*
 const int power_phone_pin = 28;
 const int power_camera_pin = 29;
+*/
 const int power_gassensor_pin = 32;
+
+
+const int sonar_f_trig_pin = 30;		//front
+const int sonar_f_echo_pin = 33;		//
+const int sonar_l_trig_pin = 28;		//left
+const int sonar_l_echo_pin = 31;
+const int sonar_r_trig_pin = 26;		//right
+const int sonar_r_echo_pin = 29;
+const int sonar_b_trig_pin = 24;		//rear(back)
+const int sonar_b_echo_pin = 27;
 
 const int encoder_r1_pin = 2;		//Encoder Input pin 
 const int encoder_r2_pin = 17;		//Encoder Input pin 
@@ -108,6 +120,7 @@ const int adc_gas_senror3_pin = 4;    //Analog pin 4
 
 MotorData m_l, m_r;
 int light_on = 0;
+int16_t sonar_power = 0;
 
 void getMotorData();
 void updatePid(MotorData &m);
@@ -167,6 +180,7 @@ void wheel_stop_commandCb(const std_msgs::Int8& cmd);
 void alloff_commandCb(const std_msgs::Int8& cmd);
 void leftpwm_commandCb(const std_msgs::Int16& cmd);
 void rightpwm_commandCb(const std_msgs::Int16& cmd);
+void sonar_power_commandCb(const std_msgs::Int16& cmd);
 
 void InitPWM();
 
@@ -195,19 +209,20 @@ ddori_msgs::ddori_sensor  sensor_msg_data;
 ros::Publisher pub_ddori_sensor("ddori_sensor", &sensor_msg_data);
 
 ros::Subscriber<std_msgs::Int8> subLight_cmd("keyop/cmd_light", light_commandCb);
-ros::Subscriber<std_msgs::Int8> subArmServoPower_cmd("cmd_armservo_power", armservo_power_commandCb);
-ros::Subscriber<ddori_msgs::servo_control> subArmServoPos_cmd("cmd_armservo_pos", armservo_pos_commandCb);
+ros::Subscriber<std_msgs::Int8> subArmServoPower_cmd("keyop/cmd_armservo_power", armservo_power_commandCb);
+ros::Subscriber<ddori_msgs::servo_control> subArmServoPos_cmd("keyop/cmd_armservo_pos", armservo_pos_commandCb);
 ros::Subscriber<std_msgs::Int8> subGasSensorPower_cmd("keyop/cmd_gassesnsor_power", gassensor_power_commandCb);
-ros::Subscriber<std_msgs::Int8> subPhonePower_cmd("cmd_phone_power", phone_power_commandCb);
+ros::Subscriber<std_msgs::Int8> subPhonePower_cmd("keyop/cmd_phone_power", phone_power_commandCb);
 ros::Subscriber<std_msgs::Int8> subFoscamPower_cmd("cmd_foscam_power", foscam_power_commandCb);
 ros::Subscriber<std_msgs::Int8> subCamservoPos_cmd("cmd_camservo_pos", camservo_pos_commandCb);
 ros::Subscriber<ddori_msgs::motor_speed> subPWM_cmd("cmd_pwm", wheel_pwm_commandCb);
 ros::Subscriber<std_msgs::Int8> subStop_cmd("cmd_stop", wheel_stop_commandCb);
 ros::Subscriber<std_msgs::Int8> subAllOff_cmd("cmd_alloff", alloff_commandCb);
-ros::Subscriber<std_msgs::Int8> subArmsHug_cmd("cmd_armshug", arms_hug_commandCb);
-ros::Subscriber<std_msgs::Int8> subArmsPos_cmd("cmd_armspos", arms_pos_commandCb);
+ros::Subscriber<std_msgs::Int8> subArmsHug_cmd("keyop/cmd_armshug", arms_hug_commandCb);
+ros::Subscriber<std_msgs::Int8> subArmsPos_cmd("keyop/cmd_armspos", arms_pos_commandCb);
 ros::Subscriber<std_msgs::Int16> subLeftPwm_cmd("cmd_lpwm", leftpwm_commandCb);
 ros::Subscriber<std_msgs::Int16> subRightPwm_cmd("cmd_rpwm", rightpwm_commandCb);
+ros::Subscriber<std_msgs::Int16> subSonarPower_cmd("keyop/cmd_sonar_power", sonar_power_commandCb);
 
 
 
@@ -307,6 +322,10 @@ void rightpwm_commandCb(const std_msgs::Int16& cmd)
 	else SetMotorDirection(MOTOR_RIGHT, MOTOR_FORWARD);
 }
 
+void sonar_power_commandCb(const std_msgs::Int16& cmd)
+{
+	sonar_power = cmd.data;
+}
 
 
 //=======================================
@@ -359,12 +378,33 @@ void setup() {
 	digitalWrite(power_led3_pin, LOW);
 	digitalWrite(power_led4_pin, LOW);
 
+	pinMode(sonar_f_trig_pin, OUTPUT);
+	digitalWrite(sonar_f_trig_pin, LOW);
+	pinMode(sonar_f_echo_pin, INPUT);
+	digitalWrite(sonar_f_echo_pin, LOW);
+
+	pinMode(sonar_l_trig_pin, OUTPUT);
+	digitalWrite(sonar_l_trig_pin, LOW);
+	pinMode(sonar_l_echo_pin, INPUT);
+	digitalWrite(sonar_l_echo_pin, LOW);
+
+	pinMode(sonar_r_trig_pin, OUTPUT);
+	digitalWrite(sonar_r_trig_pin, LOW);
+	pinMode(sonar_r_echo_pin, INPUT);
+	digitalWrite(sonar_r_echo_pin, LOW);
+
+	pinMode(sonar_b_trig_pin, OUTPUT);
+	digitalWrite(sonar_b_trig_pin, LOW);
+	pinMode(sonar_b_echo_pin, INPUT);
+	digitalWrite(sonar_b_echo_pin, LOW);
+
+	/*
 	pinMode(power_phone_pin, OUTPUT);
 	digitalWrite(power_phone_pin, HIGH);
 
 	pinMode(power_camera_pin, OUTPUT);
 	digitalWrite(power_camera_pin, HIGH);
-
+*/
 	pinMode(power_gassensor_pin, OUTPUT);
 	digitalWrite(power_gassensor_pin, HIGH);
 
@@ -434,6 +474,8 @@ void ros_init()
 
 	nh.subscribe(subLeftPwm_cmd);
 	nh.subscribe(subRightPwm_cmd);
+
+	nh.subscribe(subSonarPower_cmd);
 }
 
 void ros_report(unsigned long cur_millis)
@@ -483,6 +525,57 @@ void loop()
 	{                                                                                 // enter timed loop
 		lastMilli = cur_millis;
 
+		if (!sonar_power) 
+			sensor_msg_data.als = 0;
+
+		if (sonar_power & 0x01)
+		{
+			uint32_t duration;
+			digitalWrite(sonar_f_trig_pin, LOW);
+			delayMicroseconds(2);
+			digitalWrite(sonar_f_trig_pin, HIGH);
+			delayMicroseconds(10);
+			digitalWrite(sonar_f_trig_pin, LOW);
+
+			duration = pulseIn(sonar_f_echo_pin, HIGH, 100000);
+			sensor_msg_data.als = duration / 29.41 / 2;
+		}
+		if (sonar_power & 0x02)
+		{
+			uint32_t duration;
+			digitalWrite(sonar_l_trig_pin, LOW);
+			delayMicroseconds(2);
+			digitalWrite(sonar_l_trig_pin, HIGH);
+			delayMicroseconds(10);
+			digitalWrite(sonar_l_trig_pin, LOW);
+
+			duration = pulseIn(sonar_l_echo_pin, HIGH, 100000);
+			sensor_msg_data.als = duration / 29.41 / 2;
+		}
+		if (sonar_power & 0x04)
+		{
+			uint32_t duration;
+			digitalWrite(sonar_r_trig_pin, LOW);
+			delayMicroseconds(2);
+			digitalWrite(sonar_r_trig_pin, HIGH);
+			delayMicroseconds(10);
+			digitalWrite(sonar_r_trig_pin, LOW);
+
+			duration = pulseIn(sonar_r_echo_pin, HIGH, 100000);
+			sensor_msg_data.als = duration / 29.41 / 2;
+		}
+		if (sonar_power & 0x08)
+		{
+			uint32_t duration;
+			digitalWrite(sonar_b_trig_pin, LOW);
+			delayMicroseconds(2);
+			digitalWrite(sonar_b_trig_pin, HIGH);
+			delayMicroseconds(10);
+			digitalWrite(sonar_b_trig_pin, LOW);
+
+			duration = pulseIn(sonar_b_echo_pin, HIGH, 100000);
+			sensor_msg_data.als = duration / 29.41 / 2;
+		}
 
 		// display data
 		check_battery();

@@ -1,0 +1,49 @@
+<launch>
+
+
+	<arg name="gui" default="False" />
+	<param name="robot_description" textfile="$(find ddori_description)/urdf/ddori.urdf" />
+	<param name="use_gui" value="$(arg gui)"/>	
+	<!-- robot_description으로 robot을 그려줌 -->
+	<node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"  output="screen"/>
+	
+	<!-- 조인트를 조정하거나 할수 있음-->
+	<node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher"  output="screen"/>
+
+
+
+	<!-- AMCL을 가짜로 만들어주는듯.. -->
+	<param name="odom_frame_id" value="odom"/>
+	<param name="base_frame_id" value="base_link"/>
+	<node name="fake_localizaton" type="fake_localization" pkg="fake_localization" output="screen"/>
+
+	<!--지도를 올려줌 -->
+	<arg name="map_file" default="$(find ddori_param)/config/myhome_map.yaml"/>
+	<node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)" /> 
+
+	<node pkg="rosserial_python" type="serial_node.py" name="serial_node">
+		<param name="port" value="/dev/ttyAMA0"/>
+		<param name="baud" value="115200"/>
+	</node>
+	<node pkg="ddori" type="ddori_main" name="main"/>
+	<node pkg="ddori_keyop" type="keyop" name="keyop">
+	    <remap from="keyop/motor_power" to="motor_power"/>	
+	    <remap from="keyop/cmd_vel" to="cmd_vel"/>	
+	</node>
+	<node pkg="mpu_6050" type="mpu_6050_node" name="mpu_6050_node"/>
+	<node pkg="imu_offset" type="imu_yaw_offset" name="imu_yaw_offset"/>
+	<node pkg="bmp085" type="bmp085_node" name="bmp085_node"/>
+
+	<!-- odom 과 map frame을 연결해주고,,, 레이저 파인더를 사용해서 SLAM을 구현-->
+	<node name="slam_gmapping" pkg="gmapping" type="slam_gmapping" />
+
+<!--	
+	<node pkg="web_video_server" type="web_video_server" name="web_video_server">
+		<param name="_port" value="8080"/>
+	</node>
+-->	
+<!--	
+	<include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch">
+	</include>
+-->	
+</launch>

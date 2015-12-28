@@ -116,6 +116,7 @@ bool KeyOpCore::init()
   
   lightonoff_publisher_ = nh.advertise<std_msgs::Int8>("cmd_light", 1);
   gasens_onoff_publisher_ = nh.advertise<std_msgs::Int8>("cmd_gassesnsor_power", 1);
+  sonar_power_publisher_ = nh.advertise<std_msgs::Int16>("cmd_sonar_power", 1);
 
   
   /*********************
@@ -131,7 +132,7 @@ bool KeyOpCore::init()
 
   GasSensorPower.data=0;
   light_on.data=0;
-
+  SonarPower.data=0;
 
   /*********************
    ** Wait for connection
@@ -263,6 +264,10 @@ void KeyOpCore::keyboardInputLoop()
   puts("d : disable motors.");
   puts("e : enable motors.");
   puts("l : turn on/off light");
+  puts("1: turn on/off front sonar");
+  puts("2: turn on/off left sonar");
+  puts("3: turn on/off right sonar");
+  puts("4: turn on/off rear sonar");
   puts("q : quit.");
   char c;
   while (!quit_requested)
@@ -346,7 +351,14 @@ void KeyOpCore::processKeyboardInput(char c)
       enableLight();
       break;
     }
-
+    case '1':
+    case '2':
+    case '3':
+    case '4':
+    {
+      enableSonar(c);
+      break;
+    }
     case 'g':
     {
         enableGasSensor();
@@ -376,6 +388,13 @@ void KeyOpCore::enableGasSensor()
         GasSensorPower.data = !GasSensorPower.data;
         gasens_onoff_publisher_.publish(GasSensorPower);	
         printf("Gas Sensor Power =%d\n",GasSensorPower.data );
+}
+
+void KeyOpCore::enableSonar(char ch)
+{
+        SonarPower.data ^= 1 << (ch-'1');
+       sonar_power_publisher_.publish(SonarPower);	
+        printf("Sonar Power =%d\n",SonarPower.data );
 }
 
 void KeyOpCore::enableLight()

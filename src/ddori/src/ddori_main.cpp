@@ -6,7 +6,9 @@
 #include "ddori_msgs/ddori_sensor.h"
 #include "ddori_msgs/servo_control.h"
 #include "ddori_msgs/motor_speed.h"
-
+#include <tf/transform_broadcaster.h>
+#include <nav_msgs/Odometry.h>
+#include <sensor_msgs/JointState.h>
 
 #include <termios.h> // for keyboard input
 #include <ecl/threads.hpp>
@@ -45,7 +47,7 @@ std_msgs::Int8 ArmsHug;
 
 ros::Subscriber sensor_subscriber;
 ros::Subscriber velocity_subscriber;
- ros::Subscriber motor_power_subscriber_;
+ros::Subscriber motor_power_subscriber_;
 
   
 ros::Publisher light_control_publisher;
@@ -63,6 +65,8 @@ ros::Publisher ArmsHug_publisher;
 ros::Publisher LeftPwm_publisher;
 ros::Publisher RightPwm_publisher;
 
+ros::Publisher odom_pub ;
+ros::Publisher joint_pub;
 
 
 ecl::Thread thread;
@@ -74,6 +78,11 @@ void keyboardInputThread();
 void send_speed(int left, int  right);
 
 
+
+double x = 0.0;
+double y = 0.0;
+double th = 0.0;
+
 // Motor Spec : 50RPM , 4.5Kg tork
 // encoder ticks  - 14 ticks per 1 revolution
 // Gear Ratio 90:1
@@ -81,8 +90,9 @@ void send_speed(int left, int  right);
 // circumference =(2.0 * 3.1415926 * 36) = 226.2 mm
 // mm per 1tick =  ((2.0 * 3.1415926 * 36)  / (90.0*14) ) = 0.17952
 
-
 #define ONETICK_MM  ((2.0 * 3.1415926 * 36)  / (90.0*14) )
+#define ONETICK_METER  ((2.0 * 3.1415926 * 0.036)  / (90.0*14) )
+#define TICKS_METER (1.0 / ONETICK_METER)	
 ddori_msgs::ddori_sensor prev;
 double spd_ms_l=0;
 double spd_ms_r=0;
@@ -93,9 +103,112 @@ double Kd=5;
 int16_t last_pwm_l=0;
 int16_t last_pwm_r=0;
 
+
+
+#define WHEEL_RADIUS	0.036
+#define WHEEL_BASE	0.20
+
+
+
+void diff_drive(double dleft, double dright,  double tick_df)
+{
+	double dt,ds,delta_th,delta_x,delta_y;
+	dleft=dleft/TICKS_METER;
+	dright=dright/TICKS_METER;
+
+	ros::Time current_time=ros::Time::now();
+	dt = tick_df/1000;
+	ds = (dleft+dright)/2.0;
+	delta_th = (dright-dleft)/WHEEL_BASE;
+	delta_x = ds * cos(delta_th);
+	delta_y = ds * -sin(delta_th);
+
+	x = x + cos(th)*delta_x - sin(th)*delta_y ;
+	y = y + sin(th)*delta_x + cos(th)*delta_y ;
+	th += delta_th;
+
+	sensor_msgs::JointState joint_state;
+	tf::TransformBroadcaster odom_broadcaster;
+
+
+        //update joint_state
+        joint_state.header.stamp = ros::Time::now();
+        joint_state.name.resize(3);
+        joint_state.position.resize(3);
+        joint_state.name[0] ="left_arm";
+        joint_state.position[0] = 0;
+        joint_state.name[1] ="right_arm";
+        joint_state.position[1] = 0;
+        joint_state.name[2] ="head";
+        joint_state.position[2] = 0;
+
+	joint_pub.publish(joint_state);
+
+
+
+
+	//since all odometry is 6DOF we'll need a quaternion created from yaw
+	geometry_msgs::Quaternion odom_quat = tf::createQuaternionMsgFromYaw(th);
+
+	//first, we'll publish the transform over tf
+	geometry_msgs::TransformStamped odom_trans;
+	odom_trans.header.stamp = current_time;
+	odom_trans.header.frame_id = "odom";
+	odom_trans.child_frame_id = "base_link";
+
+	odom_trans.transform.translation.x = x;
+	odom_trans.transform.translation.y = y;
+	odom_trans.transform.translation.z = 0.0;
+	odom_trans.transform.rotation = odom_quat;
+
+	//send the transform
+	odom_broadcaster.sendTransform(odom_trans);
+
+	//next, we'll publish the odometry message over ROS
+	nav_msgs::Odometry odom;
+	odom.header.stamp = current_time;
+	odom.header.frame_id = "odom";
+
+	//set the position
+	odom.pose.pose.position.x = x;
+	odom.pose.pose.position.y = y;
+	odom.pose.pose.position.z = 0.0;
+	odom.pose.pose.orientation = odom_quat;
+
+	//set the velocity
+	odom.child_frame_id = "base_link";
+	odom.twist.twist.linear.x = ds/dt;
+	odom.twist.twist.linear.y = 0;
+	odom.twist.twist.angular.z = delta_th/dt;
+
+
+
+	//publish the message
+	odom_pub.publish(odom);
+}
+
+
+
+
+
+// Motor  37mm - 50 RPM, Tork=4.5Kg
+// encoder - 1 revolution  1050 tick
+// wheel radius 35mm(including TankTrack Thickness),  diameter - 70mm
+// circumference = 2 pi r = 2*3.14159*35 = 220mm 
+// 1 tick = 0.2095 mm
+// tick_to_rad	 2*pi/1050
+#define TICK_TO_RAD	(2*3.14159/1050)
+char first_run=0;
+
 #define constrain(amt,low,high) ((amt)<(low)?(low):((amt)>(high)?(high):(amt)))
 void sensor_Callback(const ddori_msgs::ddori_sensor::ConstPtr& msg)
 {
+
+	if (first_run==0)
+	{
+		prev = *msg;
+		first_run=1;
+	}
 	char display=0;
 	uint16_t tick_diff=(msg->time_stamp - prev.time_stamp) & 0xffff;
 	int16_t diff_enc_l=msg->left_encoder-prev.left_encoder;
@@ -104,6 +217,8 @@ void sensor_Callback(const ddori_msgs::ddori_sensor::ConstPtr& msg)
 	double move_r= ONETICK_MM * diff_enc_r;
 	double spd_l = move_l *  (1000.0/tick_diff); // mm /s
 	double spd_r = move_r *  (1000.0/tick_diff) ; // mm/s
+
+
 	
 	spd_ms_l =spd_l / 1000;	// m/s
 	spd_ms_r =spd_r / 1000;	// m/s
@@ -133,7 +248,6 @@ void sensor_Callback(const ddori_msgs::ddori_sensor::ConstPtr& msg)
 		send_speed(pwm_l , pwm_r );
 
 
-
 	}
 	else 
 	{
@@ -141,33 +255,11 @@ void sensor_Callback(const ddori_msgs::ddori_sensor::ConstPtr& msg)
 			send_speed(0 , 0 );
 
 	}
+	diff_drive(  diff_enc_l,  diff_enc_r, tick_diff); 
 		
-/*
-	if (display) {
-#if 0		
-		ROS_INFO("%d: %6.2f[V] %d[mA]   PIR:%d  pwm=%u,%u   enc=%d,%d    speed=%d,%d   CO=%d  GAS=%d  AIR=%d ", msg->time_stamp, msg->voltage/100.0, msg->current, msg->pir, 
-			(unsigned char)msg->left_pwm, (unsigned char)msg->right_pwm,
-			msg->left_encoder,msg->right_encoder,
-			tgt_speed_left,tgt_speed_right,
-			msg->co, msg->gas, msg->air);
-#else
-		ROS_INFO("%d: %6.2f[V] %d[mA]  PIR:%d pwm=%d,%d enc=%d(%d),%d(%d)  curspd=%6.3f,%6.3f  err=%6.3f,%6.3f  tickdiff=%d  ", 
-			msg->time_stamp, msg->voltage/100.0, msg->current, msg->pir, 
-			pwm_l, pwm_r,
-			msg->left_encoder,diff_enc_l, msg->right_encoder, diff_enc_r,
-			spd_ms_l,spd_ms_r,
-			last_err_l,last_err_r,
-			tick_diff
-			);
-
-#endif
-	}
-*/
 	prev = *msg;
 	last_pwm_l=pwm_l;
 	last_pwm_r=pwm_r;
-
-	
 
 }
 
@@ -216,11 +308,6 @@ void send_speed(int left, int  right)
 }
 
 
-// Motor  37mm - 50 RPM, Tork=4.5Kg
-// encoder - 1 revolution  1050 tick
-// wheel radius 35mm(including TankTrack Thickness),  diameter - 70mm
-// circumference = 2 pi r = 2*3.14159*35 = 220mm 
-// 1 tick = 0.2095 mm
 
 
 //void sendMotorPwm();
@@ -268,12 +355,19 @@ int main(int argc, char **argv)
 	
 	WheelPWM_publisher        = n.advertise<ddori_msgs::motor_speed>("cmd_pwm", 1);
 
+
+	odom_pub = n.advertise<nav_msgs::Odometry>("odom", 50);
+	joint_pub = n.advertise<sensor_msgs::JointState>("joint_states", 1);
+
+
 	ArmsPos.data=30;
 	ArmsHug.data=30;
 
+	
 	ros::Rate r(10); // 10 hz
 	while (ros::ok() && thread_run)
 	{
+
 		//sendMotorPwm();
 		/**
 		* ros::spin() will enter a loop, pumping callbacks.  With this version, all
