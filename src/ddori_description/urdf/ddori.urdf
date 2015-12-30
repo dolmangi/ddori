@@ -2,32 +2,30 @@
 
 <robot name="ddori">
 
-
 <material name="black">
-<color rgba="0 0 0 1"/>
+	<color rgba="0 0 0 1"/>
 </material>
 
-
-
 <material name="white">
-<color rgba="1 1 1 1"/>
+	<color rgba="1 1 1 1"/>
 </material>
 
 <material name="red">
-<color rgba="1 0 0 1"/>
+	<color rgba="1 0 0 1"/>
 </material>
 
 <material name="green">
-<color rgba="0 1 0 1"/>
+		<color rgba="0 1 0 1"/>
 </material>
 
 <material name="blue">
-<color rgba="0 0 1 1"/>
+	<color rgba="0 0 1 1"/>
 </material>
 
 <material name="grey">
-<color rgba=".2 .2 .2 1"/>
+	<color rgba=".2 .2 .2 1"/>
 </material>
+
   <link name="base_link">
     <visual>
       <geometry>
@@ -35,11 +33,92 @@
       </geometry>
     </visual>
   </link>
+  
+    <link name="motordrv">
+    <visual>
+      <geometry>
+        <box size="0.16 .142 .05"/>
+      </geometry>
+      <material name="blue"/>
+    </visual>
+  </link>
+  
+  <joint name="base_to_motordrv" type="fixed">
+    <parent link="base_link"/>
+    <child link="motordrv"/>
+    <origin xyz="0 0 -0.190"/>
+  </joint>
+  
+  
+  <link name="left_front_wheel">
+    <visual>
+      <origin rpy="1.57075 0 0" xyz="0 0 0"/>
+      <geometry>
+        <cylinder length="0.03" radius="0.03"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+  </link>
+  <joint name="left_front_wheel_joint" type="fixed">
+    <parent link="motordrv"/>
+    <child link="left_front_wheel"/>
+    <origin rpy="0 0 0" xyz="0.071 -0.095 -0.02"/>
+  </joint>
 
+  <link name="left_back_wheel">
+    <visual>
+      <origin rpy="1.57075 0 0" xyz="0 0 0"/>
+      <geometry>
+        <cylinder length="0.03" radius="0.03"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+  </link>  
+  <joint name="left_back_wheel_joint" type="fixed">
+    <axis rpy="0 0 0" xyz="0 1 0"/>
+    <parent link="motordrv"/>
+    <child link="left_back_wheel"/>
+    <origin rpy="0 0 0" xyz="-0.071 -0.095 -0.02"/>
+  </joint>
+
+  
+  
+  <link name="right_front_wheel">
+    <visual>
+      <origin rpy="1.57075 0 0" xyz="0 0 0"/>
+      <geometry>
+        <cylinder length="0.03" radius="0.03"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+  </link>
+  <joint name="right_front_wheel_joint" type="fixed">
+    <parent link="motordrv"/>
+    <child link="right_front_wheel"/>
+    <origin rpy="0 0 0" xyz="0.071 0.095 -0.02"/>
+  </joint>
+
+  <link name="right_back_wheel">
+    <visual>
+      <origin rpy="1.57075 0 0" xyz="0 0 0"/>
+      <geometry>
+        <cylinder length="0.03" radius="0.03"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+  </link>  
+  <joint name="right_back_wheel_joint" type="fixed">
+    <axis rpy="0 0 0" xyz="0 1 0"/>
+    <parent link="motordrv"/>
+    <child link="right_back_wheel"/>
+    <origin rpy="0 0 0" xyz="-0.071 0.095 -0.02"/>
+  </joint>
+
+  
   <link name="right_arm">
     <visual>
       <geometry>
-        <box size="0.21 .055 .03"/>
+        <box size="0.21 .03 .055"/>
       </geometry>
       <origin rpy="0 1.57075 0" xyz="0 0 -0.10"/>
       <material name="white"/>
@@ -49,13 +128,13 @@
   <joint name="base_to_right_arm" type="fixed">
     <parent link="base_link"/>
     <child link="right_arm"/>
-    <origin xyz="0.135 0 .13"/>
+    <origin xyz="0 0.135  .13"/>
   </joint>
 
   <link name="left_arm">
     <visual>
       <geometry>
-        <box size="0.21 .055 .03"/>
+        <box size="0.21 .03 .055 "/>
       </geometry>
       <origin rpy="0 -1.57075 0" xyz="0 0 -0.10"/>
       <material name="white"/>
@@ -65,7 +144,7 @@
   <joint name="base_to_left_arm" type="fixed">
     <parent link="base_link"/>
     <child link="left_arm"/>
-    <origin xyz="-0.135 0 .13"/>
+    <origin xyz="0 -0.135  .13"/>
   </joint>
 
    <link name="head"> 
@@ -76,6 +155,7 @@
        <material name="white"/> 
      </visual> 
    </link> 
+   
    <joint name="head_swivel" type="fixed"> 
      <parent link="base_link"/> 
      <child link="head"/> 

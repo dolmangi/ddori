@@ -101,9 +101,15 @@ private:
   ros::Publisher lightonoff_publisher_;
   ros::Publisher gasens_onoff_publisher_;
   ros::Publisher sonar_power_publisher_;
+  ros::Publisher armservo_power_publisher_;
+  ros::Publisher arms_hug_publisher_;
+  ros::Publisher arms_pos_publisher_;
+
 
   std_msgs::Int8 light_on; 
   std_msgs::Int8 ArmServoPower ;
+  std_msgs::Int8 ArmsPos ;
+  std_msgs::Int8 ArmsHug ;
   std_msgs::Int8 GasSensorPower; 
   std_msgs::Int16 SonarPower; 
 
@@ -122,6 +128,12 @@ private:
   void enableLight();
   void enableGasSensor();
   void enableSonar(char ch);
+  void ArmServoPowerOn();
+  void ArmServoPowerOff();
+  void ArmsUp();
+  void ArmsDown();
+  void ArmsOpen();
+  void ArmsClose();
 
 
   /*********************

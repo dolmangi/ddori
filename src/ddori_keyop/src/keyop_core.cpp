@@ -118,6 +118,9 @@ bool KeyOpCore::init()
   gasens_onoff_publisher_ = nh.advertise<std_msgs::Int8>("cmd_gassesnsor_power", 1);
   sonar_power_publisher_ = nh.advertise<std_msgs::Int16>("cmd_sonar_power", 1);
 
+  armservo_power_publisher_ = nh.advertise<std_msgs::Int8>("cmd_armservo_power", 1);
+  arms_hug_publisher_ = nh.advertise<std_msgs::Int8>("cmd_armshug", 1);
+  arms_pos_publisher_ = nh.advertise<std_msgs::Int8>("cmd_armspos", 1);
   
   /*********************
    ** Velocities
@@ -133,6 +136,9 @@ bool KeyOpCore::init()
   GasSensorPower.data=0;
   light_on.data=0;
   SonarPower.data=0;
+  ArmsPos.data=43;
+  ArmsHug.data=16;
+  ArmServoPower.data=0;
 
   /*********************
    ** Wait for connection
@@ -268,6 +274,12 @@ void KeyOpCore::keyboardInputLoop()
   puts("2: turn on/off left sonar");
   puts("3: turn on/off right sonar");
   puts("4: turn on/off rear sonar");
+  puts("P : turn on arm servo power.");
+  puts("p : turn off arm servo power.");
+  puts("a : arm up");
+  puts("z : arm down");
+  puts("s : arm open");
+  puts("x : arm close");
   puts("q : quit.");
   char c;
   while (!quit_requested)
@@ -359,9 +371,34 @@ void KeyOpCore::processKeyboardInput(char c)
       enableSonar(c);
       break;
     }
-    case 'g':
+    case 'P':
     {
-        enableGasSensor();
+      ArmServoPowerOn();
+      break;
+    }
+    case 'p':
+    {
+      ArmServoPowerOff();
+      break;
+    }
+    case 'a':
+    {
+      ArmsUp();
+      break;
+    }
+    case 'z':
+    {
+      ArmsDown();
+      break;
+    }
+    case 's':
+    {
+      ArmsOpen();
+      break;
+    }
+    case 'x':
+    {
+      ArmsClose();
       break;
     }
     default:
@@ -403,6 +440,51 @@ void KeyOpCore::enableLight()
         lightonoff_publisher_.publish(light_on);	
         printf("light =%d\n",light_on.data );
 
+}
+
+void KeyOpCore::ArmServoPowerOn()
+{
+        ArmServoPower.data = 1;
+        armservo_power_publisher_.publish(ArmServoPower);	
+        printf("ARMs Power On\n");
+}
+void KeyOpCore::ArmServoPowerOff()
+{
+        ArmServoPower.data = 0;
+        armservo_power_publisher_.publish(ArmServoPower);	
+        printf("ARMs Power Off\n");
+}
+void KeyOpCore::ArmsUp()
+{
+	ArmsPos.data+=1;
+	if (ArmsPos.data>100) ArmsPos.data=100;
+
+        arms_pos_publisher_.publish(ArmsPos);	
+        printf("ARMs Position=%d\n", ArmsPos.data);
+}
+void KeyOpCore::ArmsDown()
+{
+	ArmsPos.data-=1;
+	if (ArmsPos.data<0) ArmsPos.data=0;
+
+        arms_pos_publisher_.publish(ArmsPos);	
+        printf("ARMs Position=%d\n", ArmsPos.data);
+}
+void KeyOpCore::ArmsOpen()
+{
+	ArmsHug.data+=1;
+	if (ArmsHug.data>100) ArmsHug.data=100;
+
+        arms_hug_publisher_.publish(ArmsHug);	
+        printf("ARMs Open/Close Position=%d\n", ArmsHug.data);
+}
+void KeyOpCore::ArmsClose()
+{
+	ArmsHug.data-=1;
+	if (ArmsHug.data<0) ArmsHug.data=0;
+
+        arms_hug_publisher_.publish(ArmsHug);	
+        printf("ARMs Open/Close Position=%d\n", ArmsHug.data);
 }
 void KeyOpCore::disable()
 {
