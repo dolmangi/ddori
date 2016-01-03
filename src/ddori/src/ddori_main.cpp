@@ -182,7 +182,6 @@ void diff_drive(double dleft, double dright,  double tick_df)
 	odom.twist.twist.angular.z = delta_th/dt;
 
 
-
 	//publish the message
 	odom_pub.publish(odom);
 }

@@ -26,11 +26,17 @@ namespace ddori_msgs
       int16_t gas_co;
       int16_t gas_lpg;
       int16_t gas_smoke;
+      int16_t air_quality;
+      int16_t dust_sensor;
       int8_t pir;
       int8_t prx_1;
       int8_t prx_2;
       int8_t prx_3;
       int16_t als;
+      int16_t sonar_front;
+      int16_t sonar_left;
+      int16_t sonar_right;
+      int16_t sonar_rear;
 
     ddori_sensor():
       time_stamp(0),
@@ -47,11 +53,17 @@ namespace ddori_msgs
       gas_co(0),
       gas_lpg(0),
       gas_smoke(0),
+      air_quality(0),
+      dust_sensor(0),
       pir(0),
       prx_1(0),
       prx_2(0),
       prx_3(0),
-      als(0)
+      als(0),
+      sonar_front(0),
+      sonar_left(0),
+      sonar_right(0),
+      sonar_rear(0)
     {
     }
 
@@ -148,6 +160,22 @@ namespace ddori_msgs
       *(outbuffer + offset + 1) = (u_gas_smoke.base >> (8 * 1)) & 0xFF;
       offset += sizeof(this->gas_smoke);
       union {
+        int16_t real;
+        uint16_t base;
+      } u_air_quality;
+      u_air_quality.real = this->air_quality;
+      *(outbuffer + offset + 0) = (u_air_quality.base >> (8 * 0)) & 0xFF;
+      *(outbuffer + offset + 1) = (u_air_quality.base >> (8 * 1)) & 0xFF;
+      offset += sizeof(this->air_quality);
+      union {
+        int16_t real;
+        uint16_t base;
+      } u_dust_sensor;
+      u_dust_sensor.real = this->dust_sensor;
+      *(outbuffer + offset + 0) = (u_dust_sensor.base >> (8 * 0)) & 0xFF;
+      *(outbuffer + offset + 1) = (u_dust_sensor.base >> (8 * 1)) & 0xFF;
+      offset += sizeof(this->dust_sensor);
+      union {
         int8_t real;
         uint8_t base;
       } u_pir;
@@ -183,6 +211,38 @@ namespace ddori_msgs
       *(outbuffer + offset + 0) = (u_als.base >> (8 * 0)) & 0xFF;
       *(outbuffer + offset + 1) = (u_als.base >> (8 * 1)) & 0xFF;
       offset += sizeof(this->als);
+      union {
+        int16_t real;
+        uint16_t base;
+      } u_sonar_front;
+      u_sonar_front.real = this->sonar_front;
+      *(outbuffer + offset + 0) = (u_sonar_front.base >> (8 * 0)) & 0xFF;
+      *(outbuffer + offset + 1) = (u_sonar_front.base >> (8 * 1)) & 0xFF;
+      offset += sizeof(this->sonar_front);
+      union {
+        int16_t real;
+        uint16_t base;
+      } u_sonar_left;
+      u_sonar_left.real = this->sonar_left;
+      *(outbuffer + offset + 0) = (u_sonar_left.base >> (8 * 0)) & 0xFF;
+      *(outbuffer + offset + 1) = (u_sonar_left.base >> (8 * 1)) & 0xFF;
+      offset += sizeof(this->sonar_left);
+      union {
+        int16_t real;
+        uint16_t base;
+      } u_sonar_right;
+      u_sonar_right.real = this->sonar_right;
+      *(outbuffer + offset + 0) = (u_sonar_right.base >> (8 * 0)) & 0xFF;
+      *(outbuffer + offset + 1) = (u_sonar_right.base >> (8 * 1)) & 0xFF;
+      offset += sizeof(this->sonar_right);
+      union {
+        int16_t real;
+        uint16_t base;
+      } u_sonar_rear;
+      u_sonar_rear.real = this->sonar_rear;
+      *(outbuffer + offset + 0) = (u_sonar_rear.base >> (8 * 0)) & 0xFF;
+      *(outbuffer + offset + 1) = (u_sonar_rear.base >> (8 * 1)) & 0xFF;
+      offset += sizeof(this->sonar_rear);
       return offset;
     }
 
@@ -289,6 +349,24 @@ namespace ddori_msgs
       this->gas_smoke = u_gas_smoke.real;
       offset += sizeof(this->gas_smoke);
       union {
+        int16_t real;
+        uint16_t base;
+      } u_air_quality;
+      u_air_quality.base = 0;
+      u_air_quality.base |= ((uint16_t) (*(inbuffer + offset + 0))) << (8 * 0);
+      u_air_quality.base |= ((uint16_t) (*(inbuffer + offset + 1))) << (8 * 1);
+      this->air_quality = u_air_quality.real;
+      offset += sizeof(this->air_quality);
+      union {
+        int16_t real;
+        uint16_t base;
+      } u_dust_sensor;
+      u_dust_sensor.base = 0;
+      u_dust_sensor.base |= ((uint16_t) (*(inbuffer + offset + 0))) << (8 * 0);
+      u_dust_sensor.base |= ((uint16_t) (*(inbuffer + offset + 1))) << (8 * 1);
+      this->dust_sensor = u_dust_sensor.real;
+      offset += sizeof(this->dust_sensor);
+      union {
         int8_t real;
         uint8_t base;
       } u_pir;
@@ -329,11 +407,47 @@ namespace ddori_msgs
       u_als.base |= ((uint16_t) (*(inbuffer + offset + 1))) << (8 * 1);
       this->als = u_als.real;
       offset += sizeof(this->als);
+      union {
+        int16_t real;
+        uint16_t base;
+      } u_sonar_front;
+      u_sonar_front.base = 0;
+      u_sonar_front.base |= ((uint16_t) (*(inbuffer + offset + 0))) << (8 * 0);
+      u_sonar_front.base |= ((uint16_t) (*(inbuffer + offset + 1))) << (8 * 1);
+      this->sonar_front = u_sonar_front.real;
+      offset += sizeof(this->sonar_front);
+      union {
+        int16_t real;
+        uint16_t base;
+      } u_sonar_left;
+      u_sonar_left.base = 0;
+      u_sonar_left.base |= ((uint16_t) (*(inbuffer + offset + 0))) << (8 * 0);
+      u_sonar_left.base |= ((uint16_t) (*(inbuffer + offset + 1))) << (8 * 1);
+      this->sonar_left = u_sonar_left.real;
+      offset += sizeof(this->sonar_left);
+      union {
+        int16_t real;
+        uint16_t base;
+      } u_sonar_right;
+      u_sonar_right.base = 0;
+      u_sonar_right.base |= ((uint16_t) (*(inbuffer + offset + 0))) << (8 * 0);
+      u_sonar_right.base |= ((uint16_t) (*(inbuffer + offset + 1))) << (8 * 1);
+      this->sonar_right = u_sonar_right.real;
+      offset += sizeof(this->sonar_right);
+      union {
+        int16_t real;
+        uint16_t base;
+      } u_sonar_rear;
+      u_sonar_rear.base = 0;
+      u_sonar_rear.base |= ((uint16_t) (*(inbuffer + offset + 0))) << (8 * 0);
+      u_sonar_rear.base |= ((uint16_t) (*(inbuffer + offset + 1))) << (8 * 1);
+      this->sonar_rear = u_sonar_rear.real;
+      offset += sizeof(this->sonar_rear);
      return offset;
     }
 
     const char * getType(){ return "ddori_msgs/ddori_sensor"; };
-    const char * getMD5(){ return "d64af280c21cd2ccfe5e684379e43e54"; };
+    const char * getMD5(){ return "3994f8a26616342a29407bb201c13537"; };
 
   };
 

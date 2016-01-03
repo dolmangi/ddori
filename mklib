@@ -1,5 +1,5 @@
 mkdir ~/temp_work
 rm -rf ~/temp_work/ros_lib
 rosrun rosserial_arduino make_libraries.py ~/temp_work/
-rm -rf ~/catkin_ws/ddori_firmware/arduino_library/ros_lib
-mv ~/temp_work/ros_lib ~/catkin_ws/ddori_firmware/arduino_library/
+rm -rf ~/catkin_ws/src/ddori_firmware/arduino_library/ros_lib
+mv ~/temp_work/ros_lib ~/catkin_ws/src/ddori_firmware/arduino_library/
