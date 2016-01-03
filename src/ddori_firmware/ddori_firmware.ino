@@ -77,7 +77,6 @@ const int power_led3_pin = 40;
 const int power_led4_pin = 41;
 
 /*
-const int power_phone_pin = 28;
 const int power_camera_pin = 29;
 */
 const int power_gassensor_pin = 32;
@@ -91,6 +90,12 @@ const int sonar_r_trig_pin = 26;		//right
 const int sonar_r_echo_pin = 29;
 const int sonar_b_trig_pin = 24;		//rear(back)
 const int sonar_b_echo_pin = 27;
+
+
+const int dust_sensor_pin = 25;	//Dust Sensor( Praticle sensor)
+const int air_q_sensor_pin = 23;	//Air Quality Sensor
+
+const int power_phone_pin = 22;
 
 const int encoder_r1_pin = 2;		//Encoder Input pin 
 const int encoder_r2_pin = 17;		//Encoder Input pin 
@@ -208,21 +213,21 @@ ddori_msgs::ddori_sensor  sensor_msg_data;
 
 ros::Publisher pub_ddori_sensor("ddori_sensor", &sensor_msg_data);
 
-ros::Subscriber<std_msgs::Int8> subLight_cmd("keyop/cmd_light", light_commandCb);
-ros::Subscriber<std_msgs::Int8> subArmServoPower_cmd("keyop/cmd_armservo_power", armservo_power_commandCb);
-ros::Subscriber<ddori_msgs::servo_control> subArmServoPos_cmd("keyop/cmd_armservo_pos", armservo_pos_commandCb);
-ros::Subscriber<std_msgs::Int8> subGasSensorPower_cmd("keyop/cmd_gassesnsor_power", gassensor_power_commandCb);
-ros::Subscriber<std_msgs::Int8> subPhonePower_cmd("keyop/cmd_phone_power", phone_power_commandCb);
+ros::Subscriber<std_msgs::Int8> subLight_cmd("cmd_light", light_commandCb);
+ros::Subscriber<std_msgs::Int8> subArmServoPower_cmd("cmd_armservo_power", armservo_power_commandCb);
+ros::Subscriber<ddori_msgs::servo_control> subArmServoPos_cmd("cmd_armservo_pos", armservo_pos_commandCb);
+ros::Subscriber<std_msgs::Int8> subGasSensorPower_cmd("cmd_gassesnsor_power", gassensor_power_commandCb);
+ros::Subscriber<std_msgs::Int8> subPhonePower_cmd("cmd_phone_power", phone_power_commandCb);
 ros::Subscriber<std_msgs::Int8> subFoscamPower_cmd("cmd_foscam_power", foscam_power_commandCb);
 ros::Subscriber<std_msgs::Int8> subCamservoPos_cmd("cmd_camservo_pos", camservo_pos_commandCb);
 ros::Subscriber<ddori_msgs::motor_speed> subPWM_cmd("cmd_pwm", wheel_pwm_commandCb);
 ros::Subscriber<std_msgs::Int8> subStop_cmd("cmd_stop", wheel_stop_commandCb);
 ros::Subscriber<std_msgs::Int8> subAllOff_cmd("cmd_alloff", alloff_commandCb);
-ros::Subscriber<std_msgs::Int8> subArmsHug_cmd("keyop/cmd_armshug", arms_hug_commandCb);
-ros::Subscriber<std_msgs::Int8> subArmsPos_cmd("keyop/cmd_armspos", arms_pos_commandCb);
+ros::Subscriber<std_msgs::Int8> subArmsHug_cmd("cmd_armshug", arms_hug_commandCb);
+ros::Subscriber<std_msgs::Int8> subArmsPos_cmd("cmd_armspos", arms_pos_commandCb);
 ros::Subscriber<std_msgs::Int16> subLeftPwm_cmd("cmd_lpwm", leftpwm_commandCb);
 ros::Subscriber<std_msgs::Int16> subRightPwm_cmd("cmd_rpwm", rightpwm_commandCb);
-ros::Subscriber<std_msgs::Int16> subSonarPower_cmd("keyop/cmd_sonar_power", sonar_power_commandCb);
+ros::Subscriber<std_msgs::Int16> subSonarPower_cmd("cmd_sonar_power", sonar_power_commandCb);
 
 
 
@@ -333,8 +338,7 @@ void sonar_power_commandCb(const std_msgs::Int16& cmd)
 //=======================================
 void setup() {
 	// set the digital pin as output:
-	m_l.pwm = 0;
-	
+	m_l.pwm = 0;	
 	m_r.pwm = 0;
 
 	analogRead(adc_battery_V_pin);
@@ -398,10 +402,16 @@ void setup() {
 	pinMode(sonar_b_echo_pin, INPUT);
 	digitalWrite(sonar_b_echo_pin, LOW);
 
-	/*
+	pinMode(dust_sensor_pin, INPUT);
+	digitalWrite(sonar_b_echo_pin, HIGH);
+	pinMode(air_q_sensor_pin, INPUT);
+	digitalWrite(sonar_b_echo_pin, HIGH);
+
+
 	pinMode(power_phone_pin, OUTPUT);
 	digitalWrite(power_phone_pin, HIGH);
 
+/*
 	pinMode(power_camera_pin, OUTPUT);
 	digitalWrite(power_camera_pin, HIGH);
 */
