@@ -548,7 +548,7 @@ void loop()
 			digitalWrite(sonar_f_trig_pin, LOW);
 
 			duration = pulseIn(sonar_f_echo_pin, HIGH, 100000);
-			sensor_msg_data.als = duration / 29.41 / 2;
+			sensor_msg_data.sonar_front = duration / 29.41 / 2;
 		}
 		if (sonar_power & 0x02)
 		{
@@ -560,7 +560,7 @@ void loop()
 			digitalWrite(sonar_l_trig_pin, LOW);
 
 			duration = pulseIn(sonar_l_echo_pin, HIGH, 100000);
-			sensor_msg_data.als = duration / 29.41 / 2;
+			sensor_msg_data.sonar_left = duration / 29.41 / 2;
 		}
 		if (sonar_power & 0x04)
 		{
@@ -572,7 +572,7 @@ void loop()
 			digitalWrite(sonar_r_trig_pin, LOW);
 
 			duration = pulseIn(sonar_r_echo_pin, HIGH, 100000);
-			sensor_msg_data.als = duration / 29.41 / 2;
+			sensor_msg_data.sonar_right = duration / 29.41 / 2;
 		}
 		if (sonar_power & 0x08)
 		{
@@ -584,7 +584,7 @@ void loop()
 			digitalWrite(sonar_b_trig_pin, LOW);
 
 			duration = pulseIn(sonar_b_echo_pin, HIGH, 100000);
-			sensor_msg_data.als = duration / 29.41 / 2;
+			sensor_msg_data.sonar_rear = duration / 29.41 / 2;
 		}
 
 		// display data
