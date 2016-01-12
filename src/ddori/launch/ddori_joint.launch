@@ -1,8 +1,6 @@
 <launch>
-<!--
 	<include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch">
 	</include>
--->
 	<arg name="gui" default="False" />
 	<param name="robot_description" textfile="$(find ddori_description)/urdf/ddori.urdf" />
 	<param name="use_gui" value="$(arg gui)"/>	
