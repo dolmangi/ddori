@@ -95,7 +95,7 @@ const int sonar_b_echo_pin = 27;
 const int dust_sensor_pin = 25;	//Dust Sensor( Praticle sensor)
 const int air_q_sensor_pin = 23;	//Air Quality Sensor
 
-const int power_phone_pin = 22;
+const int power_phone_pin = 50;
 
 const int encoder_r1_pin = 2;		//Encoder Input pin 
 const int encoder_r2_pin = 17;		//Encoder Input pin 
@@ -273,7 +273,12 @@ void gassensor_power_commandCb(const std_msgs::Int8& cmd)
 }
 void phone_power_commandCb(const std_msgs::Int8& cmd) 
 {
+	if (cmd.data)
+		digitalWrite(power_phone_pin, HIGH);
+	else
+		digitalWrite(power_phone_pin, LOW);
 }
+
 void foscam_power_commandCb(const std_msgs::Int8& cmd) 
 {
 }
