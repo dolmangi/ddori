@@ -26,7 +26,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES bmp085
-  CATKIN_DEPENDS roscpp std_msgs 
+  CATKIN_DEPENDS message_runtime roscpp std_msgs 
   DEPENDS system_lib
 )
 
