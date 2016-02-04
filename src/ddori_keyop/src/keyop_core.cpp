@@ -117,6 +117,7 @@ bool KeyOpCore::init()
   lightonoff_publisher_ = nh.advertise<std_msgs::Int8>("cmd_light", 1);
   gasens_onoff_publisher_ = nh.advertise<std_msgs::Int8>("cmd_gassesnsor_power", 1);
   sonar_power_publisher_ = nh.advertise<std_msgs::Int16>("cmd_sonar_power", 1);
+  phone_power_publisher_ = nh.advertise<std_msgs::Int8>("cmd_phone_power", 1);
 
   armservo_power_publisher_ = nh.advertise<std_msgs::Int8>("cmd_armservo_power", 1);
   arms_hug_publisher_ = nh.advertise<std_msgs::Int8>("cmd_armshug", 1);
@@ -139,6 +140,7 @@ bool KeyOpCore::init()
   ArmsPos.data=43;
   ArmsHug.data=16;
   ArmServoPower.data=0;
+  PhonePower.data=1;
 
   /*********************
    ** Wait for connection
@@ -276,6 +278,8 @@ void KeyOpCore::keyboardInputLoop()
   puts("4: turn on/off rear sonar");
   puts("P : turn on arm servo power.");
   puts("p : turn off arm servo power.");
+  puts("O : turn on Phone power.");
+  puts("o : turn off Phone power.");
   puts("a : arm up");
   puts("z : arm down");
   puts("s : arm open");
@@ -381,6 +385,16 @@ void KeyOpCore::processKeyboardInput(char c)
       ArmServoPowerOff();
       break;
     }
+    case 'O':
+    {
+      SetPhonePower(1);
+      break;
+    }
+    case 'o':
+    {
+      SetPhonePower(0);
+      break;
+    }
     case 'a':
     {
       ArmsUp();
@@ -453,6 +467,12 @@ void KeyOpCore::ArmServoPowerOff()
         ArmServoPower.data = 0;
         armservo_power_publisher_.publish(ArmServoPower);	
         printf("ARMs Power Off\n");
+}
+void KeyOpCore::SetPhonePower(char pwr)
+{
+        PhonePower.data = pwr;
+        phone_power_publisher_.publish(PhonePower);	
+        printf("PhonePower= %d\n",PhonePower.data);
 }
 void KeyOpCore::ArmsUp()
 {

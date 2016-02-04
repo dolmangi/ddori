@@ -101,6 +101,7 @@ private:
   ros::Publisher lightonoff_publisher_;
   ros::Publisher gasens_onoff_publisher_;
   ros::Publisher sonar_power_publisher_;
+  ros::Publisher phone_power_publisher_;
   ros::Publisher armservo_power_publisher_;
   ros::Publisher arms_hug_publisher_;
   ros::Publisher arms_pos_publisher_;
@@ -110,6 +111,7 @@ private:
   std_msgs::Int8 ArmServoPower ;
   std_msgs::Int8 ArmsPos ;
   std_msgs::Int8 ArmsHug ;
+  std_msgs::Int8 PhonePower ;
   std_msgs::Int8 GasSensorPower; 
   std_msgs::Int16 SonarPower; 
 
@@ -134,6 +136,7 @@ private:
   void ArmsDown();
   void ArmsOpen();
   void ArmsClose();
+  void SetPhonePower(char pwr);
 
 
   /*********************
