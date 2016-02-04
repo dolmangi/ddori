@@ -64,6 +64,7 @@ ros::Publisher ArmsPos_publisher;
 ros::Publisher ArmsHug_publisher;
 ros::Publisher LeftPwm_publisher;
 ros::Publisher RightPwm_publisher;
+ros::Publisher dolchatter_publisher;
 
 ros::Publisher odom_pub ;
 ros::Publisher joint_pub;
@@ -348,6 +349,9 @@ int main(int argc, char **argv)
 	* is the number of messages that will be buffered up before beginning to throw
 	* away the oldest ones.
 	*/
+
+	std_msgs::String chat_msg;
+
 	sensor_subscriber = n.subscribe("ddori_sensor", 1000, sensor_Callback);
 	velocity_subscriber = n.subscribe("cmd_vel", 1, velocity_Callback);
 	motor_power_subscriber_= n.subscribe("motor_power", 1, motorPower_Callback);
@@ -358,15 +362,27 @@ int main(int argc, char **argv)
 	odom_pub = n.advertise<nav_msgs::Odometry>("odom", 50);
 	joint_pub = n.advertise<sensor_msgs::JointState>("joint_states", 1);
 
+	dolchatter_publisher = n.advertise<std_msgs::String>("dolchatter", 10);
+	
+
 
 	ArmsPos.data=30;
 	ArmsHug.data=30;
 
-	
+	int first=true;
 	ros::Rate r(10); // 10 hz
 	while (ros::ok() && thread_run)
 	{
-
+		if (first)
+		{
+			if (dolchatter_publisher.getNumSubscribers()>0)
+			{
+				first=false;
+				chat_msg.data="안녕하세요?, 저는 또리 입니다., 반갑습니다";
+				ROS_INFO_STREAM("ddori : greeting :" << chat_msg.data);
+				dolchatter_publisher.publish(chat_msg);
+			}
+		}
 		//sendMotorPwm();
 		/**
 		* ros::spin() will enter a loop, pumping callbacks.  With this version, all
@@ -377,7 +393,9 @@ int main(int argc, char **argv)
 		r.sleep();	
 	}
 
-	ROS_INFO("Good Bye!");
+	chat_msg.data="Good Bye!";
+	ROS_INFO_STREAM("ddori : " << chat_msg.data);
+	dolchatter_publisher.publish(chat_msg);
 	return 0;
 }
 
