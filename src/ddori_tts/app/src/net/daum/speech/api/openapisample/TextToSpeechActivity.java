@@ -1,44 +1,72 @@
 package net.daum.speech.api.openapisample;
 
-import android.app.Activity;
-import android.os.Bundle;
+import android.app.Service;
+import android.content.Intent;
+import android.os.IBinder;
+import android.os.RemoteException;
 import android.util.Log;
-import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.RadioGroup;
-import android.widget.Spinner;
-import android.widget.TextView;
+
+import com.ddori.TTS.service.ITtsService;
 
 import net.daum.mf.speech.api.TextToSpeechClient;
 import net.daum.mf.speech.api.TextToSpeechListener;
 import net.daum.mf.speech.api.TextToSpeechManager;
 
-public class TextToSpeechActivity extends Activity implements TextToSpeechListener {
+public class TextToSpeechActivity extends Service implements TextToSpeechListener {
     private static final String TAG = "TextToSpeechActivity";
 
     private TextToSpeechClient ttsClient;
 
-    private TextView mStatus;
-    private Spinner mSpinnerMode;
+//    private TextView mStatus;
+//    private Spinner mSpinnerMode;
+    public class TtsServiceImple extends ITtsService.Stub {
+
+        @Override
+         public void SetTts(String ttstext) throws RemoteException {
+            Log.e(TAG, "TTS: " + ttstext + " 출력 준비");
+            //speak(ttstext);
+            SendTts(ttstext);
+
+            return;
+        }
+    }
+
+    public void SendTts(String txt)
+    {
+        if (ttsClient != null && ttsClient.isPlaying()) {
+            Log.e(TAG, "TTS: Stop previous voice");
+            ttsClient.stop();
+        }
+
+        if (ttsClient != null && ttsClient.play(txt)) {
+            Log.e(TAG, "TTS: " + txt + " 출력 완료");
+        }
+    }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_tts);
+    public IBinder onBind(Intent p_intent) {
+        Log.e(TAG, "onBind 호출됨");
+        SendTts("hello ddori");
+        return new TtsServiceImple();
+    }
+
+    @Override
+    public void onCreate( ) {
+        super.onCreate();
+//        setContentView(R.layout.activity_tts);
 
         TextToSpeechManager.getInstance().initializeLibrary(getApplicationContext());
 
-        mStatus = (TextView) findViewById(R.id.textViewStatus);
+//        mStatus = (TextView) findViewById(R.id.textViewStatus);
 
-        mSpinnerMode = (Spinner)findViewById(R.id.spinnerMode);
+//        mSpinnerMode = (Spinner)findViewById(R.id.spinnerMode);
 
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.mode, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        mSpinnerMode.setAdapter(adapter);
+        //       ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.mode, android.R.layout.simple_spinner_item);
+//        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        //       mSpinnerMode.setAdapter(adapter);
 
-        ImageButton buttonStartStop = (ImageButton) findViewById(R.id.imageButtonStart);
+//        ImageButton buttonStartStop = (ImageButton) findViewById(R.id.imageButtonStart);
+        /*
         buttonStartStop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -46,10 +74,10 @@ public class TextToSpeechActivity extends Activity implements TextToSpeechListen
                     ttsClient.stop();
                     return;
                 }
-
-                EditText editText1 = (EditText) findViewById(R.id.editTextTTS);
-                String strText = editText1.getText().toString();
-
+*/
+//                EditText editText1 = (EditText) findViewById(R.id.editTextTTS);
+        //               String strText = editText1.getText().toString();
+/*
                 String speechMode;
                 String voiceType;
                 double speechSpeed = 1.0;
@@ -102,7 +130,19 @@ public class TextToSpeechActivity extends Activity implements TextToSpeechListen
                 }
             }
         });
+        */
+        ttsClient = new TextToSpeechClient.Builder()
+                .setApiKey(SpeechSampleActivity.APIKEY)
+                .setSpeechMode(TextToSpeechClient.NEWTONE_TALK_2)
+                .setSpeechSpeed(1.0)
+                .setSpeechVoice(TextToSpeechClient.VOICE_WOMAN_DIALOG_BRIGHT)
+                .setListener(TextToSpeechActivity.this)
+                .build();
+
+
     }
+
+
 
     private void handleError(int errorCode) {
         String errorText;
@@ -145,12 +185,14 @@ public class TextToSpeechActivity extends Activity implements TextToSpeechListen
         final String statusMessage = errorText + " (" + errorCode + ")";
 
         Log.i(TAG, statusMessage);
+        /*
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 mStatus.setText(statusMessage);
             }
         });
+        */
     }
 
     @Override
@@ -168,13 +210,15 @@ public class TextToSpeechActivity extends Activity implements TextToSpeechListen
         final String strInacctiveText = "onFinished() SentSize : " + intSentSize + " RecvSize : " + intRecvSize;
 
         Log.i(TAG, strInacctiveText);
+        /*
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 mStatus.setText(strInacctiveText);
             }
         });
+        */
 
-        ttsClient = null;
+      //  ttsClient = null;
     }
 }

@@ -1,12 +1,12 @@
 apply plugin: 'android'
 
-dependencies {
-    compile project(':daum-speech-openapi-3.0')
-}
-
 android {
     compileSdkVersion 19
     buildToolsVersion "22.0.1"
+
+    defaultConfig {
+        applicationId "net.daum.speech.api.openapisample.ddori_tts"
+    }
 
     sourceSets {
         main {
@@ -31,4 +31,8 @@ android {
         debug.setRoot('build-types/debug')
         release.setRoot('build-types/release')
     }
+}
+
+dependencies {
+    compile project(':daum-speech-openapi-3.0')
 }

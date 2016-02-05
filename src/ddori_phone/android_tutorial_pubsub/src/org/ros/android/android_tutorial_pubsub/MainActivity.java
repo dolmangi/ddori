@@ -25,6 +25,8 @@ import android.os.IBinder;
 import android.os.RemoteException;
 import android.widget.ImageView;
 
+import com.ddori.TTS.service.ITtsService;
+
 import org.ros.android.MessageCallable;
 import org.ros.android.RosActivity;
 import org.ros.android.view.RosTextView;
@@ -32,10 +34,7 @@ import org.ros.node.NodeConfiguration;
 import org.ros.node.NodeMainExecutor;
 import org.ros.rosjava_tutorial_pubsub.Talker;
 
-import com.ddori.TTS.service.ITtsService;
-
 import java.net.URI;
-import java.lang.String;
 import java.util.ArrayList;
 
 
@@ -57,7 +56,7 @@ public class MainActivity extends RosActivity {
   public MainActivity() {
     // The RosActivity constructor configures the notification title and ticker
     // messages.
-    super("Pubsub Tutorial", "Pubsub Tutorial", URI.create("http://192.168.0.101:11311"));
+    super("Pubsub Tutorial", "Pubsub Tutorial", URI.create("http://dolmangi.iptime.org:11311"));
   }
 
   @SuppressWarnings("unchecked")
@@ -73,6 +72,8 @@ public class MainActivity extends RosActivity {
 
     String tts_class_name = ITtsService.class.getName();
     bindService(new Intent(tts_class_name), mSerConn1, Context.BIND_AUTO_CREATE);
+
+
 
     rosTextView = (RosTextView<std_msgs.String>) findViewById(R.id.text);
     rosTextView.setTopicName("chatter");
@@ -177,6 +178,7 @@ private void face_change()
       });
       nodeMainExecutor.execute(disp_cmd, nodeConfiguration);
 
+      callServiceTTS("안녕하세요?");
 
       /*
     try {
@@ -202,9 +204,12 @@ private void face_change()
   }
   @Override
   protected void onDestroy() {
+      callServiceTTS("안녕히 계세요");
     unbindService(mSerConn1);
     super.onDestroy();
   }
+
+
   private ServiceConnection mSerConn1 = new ServiceConnection() {
 
     @Override
