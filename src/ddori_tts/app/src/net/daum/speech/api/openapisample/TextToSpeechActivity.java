@@ -25,7 +25,25 @@ public class TextToSpeechActivity extends Service implements TextToSpeechListene
          public void SetTts(String ttstext) throws RemoteException {
             Log.e(TAG, "TTS: " + ttstext + " 출력 준비");
             //speak(ttstext);
-            SendTts(ttstext);
+
+            if (ttsClient != null && ttsClient.isPlaying()) {
+                Log.e(TAG, "TTS: previous voice is not finished");
+//                ttsClient.stop();
+            }
+            if (ttsClient == null) {
+                ttsClient = new TextToSpeechClient.Builder()
+                        .setApiKey(SpeechSampleActivity.APIKEY)
+                        .setSpeechMode(TextToSpeechClient.NEWTONE_TALK_2)
+                        .setSpeechSpeed(1.0)
+                        .setSpeechVoice(TextToSpeechClient.VOICE_WOMAN_DIALOG_BRIGHT)
+                        .setListener(TextToSpeechActivity.this)
+                        .build();
+
+                SendTts(ttstext);
+            }
+            else {
+                Log.e(TAG, "TTS: ttsClient is not null");
+            }
 
             return;
         }
@@ -33,11 +51,6 @@ public class TextToSpeechActivity extends Service implements TextToSpeechListene
 
     public void SendTts(String txt)
     {
-        if (ttsClient != null && ttsClient.isPlaying()) {
-            Log.e(TAG, "TTS: Stop previous voice");
-            ttsClient.stop();
-        }
-
         if (ttsClient != null && ttsClient.play(txt)) {
             Log.e(TAG, "TTS: " + txt + " 출력 완료");
         }
@@ -131,13 +144,7 @@ public class TextToSpeechActivity extends Service implements TextToSpeechListene
             }
         });
         */
-        ttsClient = new TextToSpeechClient.Builder()
-                .setApiKey(SpeechSampleActivity.APIKEY)
-                .setSpeechMode(TextToSpeechClient.NEWTONE_TALK_2)
-                .setSpeechSpeed(1.0)
-                .setSpeechVoice(TextToSpeechClient.VOICE_WOMAN_DIALOG_BRIGHT)
-                .setListener(TextToSpeechActivity.this)
-                .build();
+
 
 
     }
@@ -219,6 +226,17 @@ public class TextToSpeechActivity extends Service implements TextToSpeechListene
         });
         */
 
-      //  ttsClient = null;
+        ttsClient = null;
     }
+
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        ttsClient = null;
+
+
+        Log.e(TAG, "onDestroy 호출됨");
+    }
+
 }

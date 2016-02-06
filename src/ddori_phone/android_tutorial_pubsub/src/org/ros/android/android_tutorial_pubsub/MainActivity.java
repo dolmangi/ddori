@@ -24,8 +24,10 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.widget.ImageView;
+import android.widget.Toast;
 
-import com.ddori.TTS.service.ITtsService;
+
+import net.daum.speech.api.openapisample.ITtsService;
 
 import org.ros.android.MessageCallable;
 import org.ros.android.RosActivity;
@@ -70,7 +72,7 @@ public class MainActivity extends RosActivity {
     //ddori_face.setImageResource(R.drawable.happy);
 
 
-    String tts_class_name = ITtsService.class.getName();
+    String tts_class_name =  ITtsService.class.getName(); //"net.daum.speech.api.openapisample.ITtsService" ;//
     bindService(new Intent(tts_class_name), mSerConn1, Context.BIND_AUTO_CREATE);
 
 
@@ -137,10 +139,10 @@ private void face_change()
     nodeMainExecutor.execute(rosTextView, nodeConfiguration);
 */
     listener = new TTSCmdListener();
-    listener.setMessageToStringCallable(new MessageCallable<String, String>() {
-        @Override
-        public String call(String message) {
-            callServiceTTS(message);
+      listener.setMessageToStringCallable(new MessageCallable<String, String>() {
+          @Override
+          public String call(String message) {
+              callServiceTTS(message);
             return message;
         }
     });
@@ -165,20 +167,20 @@ private void face_change()
       disp_cmd.setMessageToStringCallable(new MessageCallable<String, ddori_msgs.display>() {
           @Override
           public String call(final ddori_msgs.display message) {
-              android.util.Log.v(TAG,  "ddori_msgs.display:" + message.getCommand());
-              String cmd=message.getCommand();
+              android.util.Log.v(TAG, "ddori_msgs.display:" + message.getCommand());
+              String cmd = message.getCommand();
               if (cmd.equals("face_change")) {
-                  String ddori_state=message.getArg1();
-                if (ddori_state.equals("idle")) {
+                  String ddori_state = message.getArg1();
+                  if (ddori_state.equals("idle")) {
 
-                }
+                  }
               }
               return "";
           }
       });
       nodeMainExecutor.execute(disp_cmd, nodeConfiguration);
 
-      callServiceTTS("안녕하세요?");
+    //  callServiceTTS("안녕하세요?");
 
       /*
     try {
@@ -204,7 +206,7 @@ private void face_change()
   }
   @Override
   protected void onDestroy() {
-      callServiceTTS("안녕히 계세요");
+   //   callServiceTTS("안녕히 계세요");
     unbindService(mSerConn1);
     super.onDestroy();
   }
@@ -228,8 +230,16 @@ private void face_change()
 
   public void callServiceTTS(final java.lang.String txt) {
     try {
-      mTTSService.SetTts(txt);
-//            Toast.makeText(this, "서비스 TTS 에 보냅니다", Toast.LENGTH_SHORT).show();
+        if (mTTSService != null) {
+            mTTSService.SetTts(txt);
+        }
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(MainActivity.this, txt, Toast.LENGTH_SHORT).show();
+            }
+        });
+
     } catch(RemoteException e) {
       android.util.Log.e(TAG, e.getMessage(), e);
     }

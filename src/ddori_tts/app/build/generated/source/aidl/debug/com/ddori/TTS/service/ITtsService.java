@@ -1,6 +1,6 @@
 /*
  * This file is auto-generated.  DO NOT MODIFY.
- * Original file: D:\\PRJ\\ddori\\src\\ddori_tts\\app\\src\\com\\ddori\\TTS\\service\\ITtsService.aidl
+ * Original file: E:\\dolproj\\2015_ddori\\src\\ddori\\src\\ddori_tts\\app\\src\\com\\ddori\\TTS\\service\\ITtsService.aidl
  */
 package com.ddori.TTS.service;
 // Declare any non-default types here with import statements

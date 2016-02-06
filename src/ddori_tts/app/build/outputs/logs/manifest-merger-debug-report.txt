@@ -1,56 +1,56 @@
 -- Merging decision tree log ---
 manifest
-ADDED from D:\PRJ\ddori\src\ddori_tts\app\AndroidManifest.xml:2:1-25:12
-	xmlns:android
-		ADDED from D:\PRJ\ddori\src\ddori_tts\app\AndroidManifest.xml:2:11-69
+ADDED from E:\dolproj\2015_ddori\src\ddori\src\ddori_tts\app\AndroidManifest.xml:2:1-25:12
 	package
-		ADDED from D:\PRJ\ddori\src\ddori_tts\app\AndroidManifest.xml:3:11-54
-		INJECTED from D:\PRJ\ddori\src\ddori_tts\app\AndroidManifest.xml
-		INJECTED from D:\PRJ\ddori\src\ddori_tts\app\AndroidManifest.xml
+		ADDED from E:\dolproj\2015_ddori\src\ddori\src\ddori_tts\app\AndroidManifest.xml:3:11-54
+		INJECTED from E:\dolproj\2015_ddori\src\ddori\src\ddori_tts\app\AndroidManifest.xml
+		INJECTED from E:\dolproj\2015_ddori\src\ddori\src\ddori_tts\app\AndroidManifest.xml
 	android:versionName
-		ADDED from D:\PRJ\ddori\src\ddori_tts\app\AndroidManifest.xml:5:11-38
+		ADDED from E:\dolproj\2015_ddori\src\ddori\src\ddori_tts\app\AndroidManifest.xml:5:11-38
 	android:versionCode
-		ADDED from D:\PRJ\ddori\src\ddori_tts\app\AndroidManifest.xml:4:11-34
-		INJECTED from D:\PRJ\ddori\src\ddori_tts\app\AndroidManifest.xml
-		INJECTED from D:\PRJ\ddori\src\ddori_tts\app\AndroidManifest.xml
+		ADDED from E:\dolproj\2015_ddori\src\ddori\src\ddori_tts\app\AndroidManifest.xml:4:11-34
+		INJECTED from E:\dolproj\2015_ddori\src\ddori\src\ddori_tts\app\AndroidManifest.xml
+		INJECTED from E:\dolproj\2015_ddori\src\ddori\src\ddori_tts\app\AndroidManifest.xml
+	xmlns:android
+		ADDED from E:\dolproj\2015_ddori\src\ddori\src\ddori_tts\app\AndroidManifest.xml:2:11-69
 uses-sdk
-ADDED from D:\PRJ\ddori\src\ddori_tts\app\AndroidManifest.xml:6:5-73
-MERGED from [ddori_tts:daum-speech-openapi-3.0:unspecified] D:\PRJ\ddori\src\ddori_tts\app\build\intermediates\exploded-aar\ddori_tts\daum-speech-openapi-3.0\unspecified\AndroidManifest.xml:7:5-9:41
+ADDED from E:\dolproj\2015_ddori\src\ddori\src\ddori_tts\app\AndroidManifest.xml:6:5-73
+MERGED from [ddori_tts:daum-speech-openapi-3.0:unspecified] E:\dolproj\2015_ddori\src\ddori\src\ddori_tts\app\build\intermediates\exploded-aar\ddori_tts\daum-speech-openapi-3.0\unspecified\AndroidManifest.xml:7:5-9:41
 	android:targetSdkVersion
-		ADDED from D:\PRJ\ddori\src\ddori_tts\app\AndroidManifest.xml:6:41-70
+		ADDED from E:\dolproj\2015_ddori\src\ddori\src\ddori_tts\app\AndroidManifest.xml:6:41-70
 	android:minSdkVersion
-		ADDED from D:\PRJ\ddori\src\ddori_tts\app\AndroidManifest.xml:6:15-40
+		ADDED from E:\dolproj\2015_ddori\src\ddori\src\ddori_tts\app\AndroidManifest.xml:6:15-40
 uses-permission#android.permission.INTERNET
-ADDED from D:\PRJ\ddori\src\ddori_tts\app\AndroidManifest.xml:8:5-67
+ADDED from E:\dolproj\2015_ddori\src\ddori\src\ddori_tts\app\AndroidManifest.xml:8:5-67
 	android:name
-		ADDED from D:\PRJ\ddori\src\ddori_tts\app\AndroidManifest.xml:8:22-64
+		ADDED from E:\dolproj\2015_ddori\src\ddori\src\ddori_tts\app\AndroidManifest.xml:8:22-64
 uses-permission#android.permission.RECORD_AUDIO
-ADDED from D:\PRJ\ddori\src\ddori_tts\app\AndroidManifest.xml:9:5-71
+ADDED from E:\dolproj\2015_ddori\src\ddori\src\ddori_tts\app\AndroidManifest.xml:9:5-71
 	android:name
-		ADDED from D:\PRJ\ddori\src\ddori_tts\app\AndroidManifest.xml:9:22-68
+		ADDED from E:\dolproj\2015_ddori\src\ddori\src\ddori_tts\app\AndroidManifest.xml:9:22-68
 uses-permission#android.permission.ACCESS_NETWORK_STATE
-ADDED from D:\PRJ\ddori\src\ddori_tts\app\AndroidManifest.xml:10:5-79
+ADDED from E:\dolproj\2015_ddori\src\ddori\src\ddori_tts\app\AndroidManifest.xml:10:5-79
 	android:name
-		ADDED from D:\PRJ\ddori\src\ddori_tts\app\AndroidManifest.xml:10:22-76
+		ADDED from E:\dolproj\2015_ddori\src\ddori\src\ddori_tts\app\AndroidManifest.xml:10:22-76
 uses-permission#android.permission.WRITE_EXTERNAL_STORAGE
-ADDED from D:\PRJ\ddori\src\ddori_tts\app\AndroidManifest.xml:11:5-81
+ADDED from E:\dolproj\2015_ddori\src\ddori\src\ddori_tts\app\AndroidManifest.xml:11:5-81
 	android:name
-		ADDED from D:\PRJ\ddori\src\ddori_tts\app\AndroidManifest.xml:11:22-78
+		ADDED from E:\dolproj\2015_ddori\src\ddori\src\ddori_tts\app\AndroidManifest.xml:11:22-78
 application
-ADDED from D:\PRJ\ddori\src\ddori_tts\app\AndroidManifest.xml:15:5-24:19
+ADDED from E:\dolproj\2015_ddori\src\ddori\src\ddori_tts\app\AndroidManifest.xml:15:5-24:19
 	android:label
-		ADDED from D:\PRJ\ddori\src\ddori_tts\app\AndroidManifest.xml:15:18-50
+		ADDED from E:\dolproj\2015_ddori\src\ddori\src\ddori_tts\app\AndroidManifest.xml:15:18-50
 	android:allowBackup
-		ADDED from D:\PRJ\ddori\src\ddori_tts\app\AndroidManifest.xml:15:85-112
+		ADDED from E:\dolproj\2015_ddori\src\ddori\src\ddori_tts\app\AndroidManifest.xml:15:85-112
 	android:icon
-		ADDED from D:\PRJ\ddori\src\ddori_tts\app\AndroidManifest.xml:15:51-84
+		ADDED from E:\dolproj\2015_ddori\src\ddori\src\ddori_tts\app\AndroidManifest.xml:15:51-84
 service#net.daum.speech.api.openapisample.TextToSpeechActivity
-ADDED from D:\PRJ\ddori\src\ddori_tts\app\AndroidManifest.xml:17:9-21:19
+ADDED from E:\dolproj\2015_ddori\src\ddori\src\ddori_tts\app\AndroidManifest.xml:17:9-21:19
 	android:name
-		ADDED from D:\PRJ\ddori\src\ddori_tts\app\AndroidManifest.xml:17:18-87
+		ADDED from E:\dolproj\2015_ddori\src\ddori\src\ddori_tts\app\AndroidManifest.xml:17:18-87
 intent-filter#com.ddori.TTS.service.ITtsService
-ADDED from D:\PRJ\ddori\src\ddori_tts\app\AndroidManifest.xml:18:13-20:29
+ADDED from E:\dolproj\2015_ddori\src\ddori\src\ddori_tts\app\AndroidManifest.xml:18:13-20:29
 action#com.ddori.TTS.service.ITtsService
-ADDED from D:\PRJ\ddori\src\ddori_tts\app\AndroidManifest.xml:19:17-76
+ADDED from E:\dolproj\2015_ddori\src\ddori\src\ddori_tts\app\AndroidManifest.xml:19:17-76
 	android:name
-		ADDED from D:\PRJ\ddori\src\ddori_tts\app\AndroidManifest.xml:19:25-73
+		ADDED from E:\dolproj\2015_ddori\src\ddori\src\ddori_tts\app\AndroidManifest.xml:19:25-73

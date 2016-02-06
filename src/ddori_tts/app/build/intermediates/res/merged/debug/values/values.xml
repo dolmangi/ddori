@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- From: file:/D:/PRJ/ddori/src/ddori_tts/app/res/values/strings.xml -->
+    <!-- From: file:/E:/dolproj/2015_ddori/src/ddori/src/ddori_tts/app/res/values/strings.xml -->
     <eat-comment/>
     <string-array name="mode">
         <item>Newtone Talk 1</item>
@@ -19,7 +19,7 @@
     <string name="man_dialog_bright">남자 대화체</string>
     <string name="man_read_calm">남자 낭독체</string>
     <string name="mode_select_title">합성방식선택</string>
-    <!-- From: file:/D:/PRJ/ddori/src/ddori_tts/app/res/values/net_daum_mf_asr_strings.xml -->
+    <!-- From: file:/E:/dolproj/2015_ddori/src/ddori/src/ddori_tts/app/res/values/net_daum_mf_asr_strings.xml -->
     <eat-comment/>
     <string name="net_daum_mf_asr_close_button_description">close</string>
     <string name="net_daum_mf_asr_daum_button_description">daum</string>
@@ -34,7 +34,7 @@
     <string name="net_daum_mf_asr_voice_search_tip_retry_after_a_while">잠시 후 다시 시도해주세요.</string>
     <string name="net_daum_mf_asr_voice_search_tip_retry_button">버튼을 누른 후 다시 말해주세요.</string>
     <string name="net_daum_mf_asr_voice_search_warn_not_support_device">현재 사용중인 기기는 음성 분석이 제대로 되지 않을 수 있습니다.</string>
-    <!-- From: file:/D:/PRJ/ddori/src/ddori_tts/app/res/values/strings.xml -->
+    <!-- From: file:/E:/dolproj/2015_ddori/src/ddori/src/ddori_tts/app/res/values/strings.xml -->
     <eat-comment/>
     <string name="radio_dictation">연속어</string>
     <string name="radio_local">지도</string>
