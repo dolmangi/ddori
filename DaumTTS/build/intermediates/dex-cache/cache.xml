@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        jar="E:\dolproj\2015_ddori\src\ddori\src\DaumTTS\app\build\intermediates\exploded-aar\DaumTTS\daum-speech-openapi-3.0\unspecified\jars\libs\dialoid-apklib-0.8.2.jar"
+        jumboMode="false"
+        revision="23.0.1"
+        sha1="a7d020d2658c8077356a6830c284a6e902a86223">
+        <dex dex="E:\dolproj\2015_ddori\src\ddori\src\DaumTTS\app\build\intermediates\pre-dexed\debug\dialoid-apklib-0.8.2-d88d74ce092755b72e6a7deadf173f5d0d1c59f4.jar" />
+    </item>
+    <item
+        jar="E:\dolproj\2015_ddori\src\ddori\src\DaumTTS\app\build\intermediates\exploded-aar\DaumTTS\daum-speech-openapi-3.0\unspecified\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.1"
+        sha1="249004128ab14406ced32875990d2b1d111ec4d3">
+        <dex dex="E:\dolproj\2015_ddori\src\ddori\src\DaumTTS\app\build\intermediates\pre-dexed\debug\classes-b8cd361addaf7b52d50cbc3ff0795e30f25dffc3.jar" />
+    </item>
+
+</items>

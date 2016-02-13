@@ -1,0 +1,5 @@
+<launch>
+  <arg name="camera"      default="camera"/>
+  <node name="camera" pkg="usb_cam" type="usb_cam_node" args="_image_height:=480 _image_width:=640"/>
+</launch>
+

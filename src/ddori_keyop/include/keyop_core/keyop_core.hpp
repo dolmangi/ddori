@@ -105,6 +105,7 @@ private:
   ros::Publisher armservo_power_publisher_;
   ros::Publisher arms_hug_publisher_;
   ros::Publisher arms_pos_publisher_;
+  ros::Publisher cam_pos_publisher_;
 
 
   std_msgs::Int8 light_on; 
@@ -137,6 +138,8 @@ private:
   void ArmsOpen();
   void ArmsClose();
   void SetPhonePower(char pwr);
+  void CamDown();
+  void CamUp();
 
 
   /*********************

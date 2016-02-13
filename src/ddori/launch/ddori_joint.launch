@@ -23,7 +23,7 @@
 	<node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)" /> 
 
 	<node pkg="rosserial_python" type="serial_node.py" name="serial_node">
-		<param name="port" value="/dev/ttyAMA0"/>
+		<param name="port" value="/dev/ttySAC0"/>
 		<param name="baud" value="115200"/>
 	</node>
 	<node pkg="ddori" type="ddori_main" name="main"/>
@@ -31,6 +31,7 @@
 	    <remap from="keyop/motor_power" to="motor_power"/>	
 	    <remap from="keyop/cmd_vel" to="cmd_vel"/>	
 	    <remap from="keyop/cmd_armservo_power" to="cmd_armservo_power"/>	
+	    <remap from="keyop/cmd_camservo_pos" to="cmd_camservo_pos"/>	
 	    <remap from="keyop/cmd_armshug" to="cmd_armshug"/>	
 	    <remap from="keyop/cmd_armspos" to="cmd_armspos"/>	
 	    <remap from="keyop/cmd_gassesnsor_power" to="cmd_gassesnsor_power"/>	
@@ -38,14 +39,16 @@
 	    <remap from="keyop/cmd_phone_power" to="cmd_phone_power"/>	
 	    <remap from="keyop/cmd_sonar_power" to="cmd_sonar_power"/>	
 	</node>
+<!--
 	<node pkg="mpu_6050" type="mpu_6050_node" name="mpu_6050_node"/>
 	<node pkg="imu_offset" type="imu_yaw_offset" name="imu_yaw_offset"/>
 	<node pkg="bmp085" type="bmp085_node" name="bmp085_node"/>
-
+-->
 	<!-- odom 과 map frame을 연결해주고,,, 레이저 파인더를 사용해서 SLAM을 구현-->
 	<node name="slam_gmapping" pkg="gmapping" type="slam_gmapping" />
-
+<!--
 	<node pkg="web_video_server" type="web_video_server" name="web_video_server">
 		<param name="_port" value="8080"/>
 	</node>
+-->
 </launch>

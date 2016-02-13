@@ -15,6 +15,7 @@
 #include <geometry_msgs/Twist.h>  // for velocity commands
 #include <geometry_msgs/TwistStamped.h>  // for velocity commands
 #include <ddori_msgs/MotorPower.h>
+#include <face_recognition/FaceRecognitionAction.h>
 
 #define  KeyCode_Right		67	//     # 0x43
 #define  KeyCode_Left		68	 //    # 0x44
@@ -48,6 +49,8 @@ std_msgs::Int8 ArmsHug;
 ros::Subscriber sensor_subscriber;
 ros::Subscriber velocity_subscriber;
 ros::Subscriber motor_power_subscriber_;
+ros::Subscriber face_recog_feedback_subscriber_;
+
 
   
 ros::Publisher light_control_publisher;
@@ -296,6 +299,34 @@ void motorPower_Callback(const ddori_msgs::MotorPower::ConstPtr& msg)
 	}
 }
 
+void face_recog_feedback_Callback(const  face_recognition::FaceRecognitionActionFeedback::ConstPtr & msg)
+{
+	std_msgs::String chat_msg;
+
+
+	chat_msg.data=msg->feedback.names[0].c_str();
+	ROS_ERROR_STREAM("ddori :Face Detected :  " <<chat_msg.data );
+
+	if (chat_msg.data=="dolmangi" || chat_msg.data=="seokwang")
+	{
+		chat_msg.data="김서광님 안녕하세요?";
+		ROS_ERROR_STREAM("ddori :Face Detected :  " <<chat_msg.data );
+	}
+	else if (chat_msg.data=="hyunji")
+	{
+		chat_msg.data="김현지님 안녕하세요?";
+		ROS_ERROR_STREAM("ddori :Face Detected :  " <<chat_msg.data );
+	}
+	else if (chat_msg.data=="juha")
+	{
+		chat_msg.data="김주하님 안녕하세요?";
+		ROS_ERROR_STREAM("ddori :Face Detected :  " <<chat_msg.data );
+	}
+	
+	dolchatter_publisher.publish(chat_msg);
+}
+
+
 
 void send_speed(int left, int  right)
 {
@@ -355,6 +386,10 @@ int main(int argc, char **argv)
 	sensor_subscriber = n.subscribe("ddori_sensor", 1000, sensor_Callback);
 	velocity_subscriber = n.subscribe("cmd_vel", 1, velocity_Callback);
 	motor_power_subscriber_= n.subscribe("motor_power", 1, motorPower_Callback);
+
+	face_recog_feedback_subscriber_= n.subscribe("face_recognition/feedback", 1, face_recog_feedback_Callback);
+
+
 	
 	WheelPWM_publisher        = n.advertise<ddori_msgs::motor_speed>("cmd_pwm", 1);
 
@@ -378,9 +413,9 @@ int main(int argc, char **argv)
 			if (dolchatter_publisher.getNumSubscribers()>0)
 			{
 				first=false;
-				chat_msg.data="안녕하세요?, 저는 또리 입니다., 반갑습니다";
-				ROS_INFO_STREAM("ddori : greeting :" << chat_msg.data);
-				dolchatter_publisher.publish(chat_msg);
+				//chat_msg.data="?덈뀞?섏꽭??, ????먮━ ?낅땲??, 諛섍컩?듬땲??;
+				//ROS_INFO_STREAM("ddori : greeting :" << chat_msg.data);
+				//dolchatter_publisher.publish(chat_msg);
 			}
 		}
 		//sendMotorPwm();

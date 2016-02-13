@@ -122,7 +122,9 @@ bool KeyOpCore::init()
   armservo_power_publisher_ = nh.advertise<std_msgs::Int8>("cmd_armservo_power", 1);
   arms_hug_publisher_ = nh.advertise<std_msgs::Int8>("cmd_armshug", 1);
   arms_pos_publisher_ = nh.advertise<std_msgs::Int8>("cmd_armspos", 1);
-  
+  cam_pos_publisher_ = nh.advertise<std_msgs::Int16>("cmd_camservo_pos", 1);
+ 
+ 
   /*********************
    ** Velocities
    **********************/
@@ -395,12 +397,22 @@ void KeyOpCore::processKeyboardInput(char c)
       SetPhonePower(0);
       break;
     }
+    case 'f':
+    {
+      CamUp();
+      break;
+    }
+    case 'v':
+    {
+      CamDown();
+      break;
+    }
     case 'a':
     {
       ArmsUp();
       break;
     }
-    case 'z':
+     case 'z':
     {
       ArmsDown();
       break;
@@ -474,6 +486,31 @@ void KeyOpCore::SetPhonePower(char pwr)
         phone_power_publisher_.publish(PhonePower);	
         printf("PhonePower= %d\n",PhonePower.data);
 }
+
+int campos=127;
+void KeyOpCore::CamUp()
+{
+	campos--;
+	if (campos<0) campos=0;
+
+	std_msgs::Int16 CamPos ;
+	CamPos.data=campos;
+	cam_pos_publisher_.publish(CamPos);	
+        printf("CamPos Position=%d\n", CamPos.data);
+}
+
+void KeyOpCore::CamDown()
+{
+	campos++;
+	if (campos>255) campos=255;
+
+	std_msgs::Int16 CamPos ;
+	CamPos.data=campos;
+	cam_pos_publisher_.publish(CamPos);	
+        printf("CamPos Position=%d\n", CamPos.data);
+}
+
+
 void KeyOpCore::ArmsUp()
 {
 	ArmsPos.data+=1;

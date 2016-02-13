@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="library-unspecified">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/app/build/intermediates/exploded-aar/DaumSpeechOpenApiAndroidSample/library/unspecified/jars/libs/dialoid-apklib-0.8.1.jar!/" />
+      <root url="file://$PROJECT_DIR$/app/build/intermediates/exploded-aar/DaumSpeechOpenApiAndroidSample/library/unspecified/res" />
+      <root url="jar://$PROJECT_DIR$/app/build/intermediates/exploded-aar/DaumSpeechOpenApiAndroidSample/library/unspecified/jars/classes.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

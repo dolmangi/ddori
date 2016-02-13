@@ -8,6 +8,7 @@ add_message_files(DIRECTORY msg
                             MotorPower.msg
                             servo_control.msg
                             KeyboardInput.msg
+			    display.msg
                  )
 
 add_action_files(DIRECTORY action

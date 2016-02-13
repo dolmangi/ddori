@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merger version="3"><dataSet config="unspecified"><source path="E:\dolproj\2015_ddori\src\ddori\src\DaumTTS\app\build\intermediates\exploded-aar\DaumTTS\daum-speech-openapi-3.0\unspecified\assets"/></dataSet><dataSet config="main"><source path="E:\dolproj\2015_ddori\src\ddori\src\DaumTTS\app\assets"/></dataSet><dataSet config="debug"><source path="E:\dolproj\2015_ddori\src\ddori\src\DaumTTS\app\build-types\debug\assets"/></dataSet></merger>

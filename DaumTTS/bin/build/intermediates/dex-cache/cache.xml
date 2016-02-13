@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        jar="/Users/mycals/dev/prtft/MobileVoiceRecoLibrary/DaumSpeechOpenApiAndroidSample/app/build/intermediates/exploded-aar/DaumSpeechOpenApiAndroidSample/library/unspecified/jars/classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="22b0e0bf982dc9630338213891b90e3cd1bf0be3">
+        <dex dex="/Users/mycals/dev/prtft/MobileVoiceRecoLibrary/DaumSpeechOpenApiAndroidSample/app/build/intermediates/pre-dexed/debug/classes-0f416177ef4e45cfc93a95e6a74749202b780a50.jar" />
+    </item>
+    <item
+        jar="/Users/mycals/dev/prtft/MobileVoiceRecoLibrary/DaumSpeechOpenApiAndroidSample/app/build/intermediates/exploded-aar/DaumSpeechOpenApiAndroidSample/library/unspecified/jars/libs/dialoid-apklib-0.8.1.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="2457dceebf65015bb23e9a389f888371229936e1">
+        <dex dex="/Users/mycals/dev/prtft/MobileVoiceRecoLibrary/DaumSpeechOpenApiAndroidSample/app/build/intermediates/pre-dexed/debug/dialoid-apklib-0.8.1-cb6f1315d870449aa8a53adbad6f33b39a715aba.jar" />
+    </item>
+
+</items>
