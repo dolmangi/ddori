@@ -14,9 +14,10 @@
 #include <Adafruit_PWMServoDriver.h>
 #include <OneWire.h>
 #include <DallasTemperature.h>
-
+#include <servo.h>
 
 #define ROS
+#define EYE_SLEEP_CNT_MAX		20
 
 typedef enum _MOTOR {
 	MOTOR_LEFT=0,
@@ -109,6 +110,7 @@ const int encoder_l1_interrupt = 1;		//Interrupt 1
 
 const int servo_arm_l_pin = 11;
 const int servo_arm_r_pin = 12;
+
 const int servo_eye_pos_pin = 4;
 
 
@@ -139,9 +141,11 @@ int arm_power_on = 0;
 int left_arm_target = 0;
 int right_arm_target = 0;
 
+Servo eye_servo; 
 int eye_servo_on = 0;
 int eye_position = 150;
 int eye_position_target = 0;
+int eyesrvo_sleep_cnt = EYE_SLEEP_CNT_MAX;
 
 unsigned long systick = 0;
 
@@ -179,16 +183,17 @@ void gassensor_power_commandCb(const std_msgs::Int8& cmd);
 void arms_hug_commandCb(const std_msgs::Int8& cmd);
 void phone_power_commandCb(const std_msgs::Int8& cmd);
 void foscam_power_commandCb(const std_msgs::Int8& cmd);
-void camservo_pos_commandCb(const std_msgs::Int8& cmd);
+void camservo_pos_commandCb(const std_msgs::Int16& cmd);
 void wheel_pwm_commandCb(const ddori_msgs::motor_speed& cmd);
 void wheel_stop_commandCb(const std_msgs::Int8& cmd);
 void alloff_commandCb(const std_msgs::Int8& cmd);
 void leftpwm_commandCb(const std_msgs::Int16& cmd);
 void rightpwm_commandCb(const std_msgs::Int16& cmd);
 void sonar_power_commandCb(const std_msgs::Int16& cmd);
-
+void powerled_onoff(int ledno, int onoff);
+void SetMotorPWM(byte left, byte right);
 void InitPWM();
-
+void stop();
 
 // Setup a oneWire instance to communicate with any OneWire devices 
 // (not just Maxim/Dallas temperature ICs)
@@ -200,6 +205,10 @@ DallasTemperature temp_sensors(&oneWire);
 // called this way, it uses the default address 0x40
 Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
 
+
+ddori_msgs::ddori_sensor  sensor_msg_data;
+
+#ifdef ROS
 //////////////////////////////////////////////////////////////////////////////////////////////
 // ROS Initialization
 ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -208,9 +217,8 @@ class NewHardware : public ArduinoHardware
 public:
 	NewHardware() :ArduinoHardware(&Serial1, 115200) {};
 };
-ros::NodeHandle_<NewHardware>  nh;
-ddori_msgs::ddori_sensor  sensor_msg_data;
 
+ros::NodeHandle_<NewHardware>  nh;
 ros::Publisher pub_ddori_sensor("ddori_sensor", &sensor_msg_data);
 
 ros::Subscriber<std_msgs::Int8> subLight_cmd("cmd_light", light_commandCb);
@@ -219,7 +227,7 @@ ros::Subscriber<ddori_msgs::servo_control> subArmServoPos_cmd("cmd_armservo_pos"
 ros::Subscriber<std_msgs::Int8> subGasSensorPower_cmd("cmd_gassesnsor_power", gassensor_power_commandCb);
 ros::Subscriber<std_msgs::Int8> subPhonePower_cmd("cmd_phone_power", phone_power_commandCb);
 ros::Subscriber<std_msgs::Int8> subFoscamPower_cmd("cmd_foscam_power", foscam_power_commandCb);
-ros::Subscriber<std_msgs::Int8> subCamservoPos_cmd("cmd_camservo_pos", camservo_pos_commandCb);
+ros::Subscriber<std_msgs::Int16> subCamservoPos_cmd("cmd_camservo_pos", camservo_pos_commandCb);
 ros::Subscriber<ddori_msgs::motor_speed> subPWM_cmd("cmd_pwm", wheel_pwm_commandCb);
 ros::Subscriber<std_msgs::Int8> subStop_cmd("cmd_stop", wheel_stop_commandCb);
 ros::Subscriber<std_msgs::Int8> subAllOff_cmd("cmd_alloff", alloff_commandCb);
@@ -229,7 +237,21 @@ ros::Subscriber<std_msgs::Int16> subLeftPwm_cmd("cmd_lpwm", leftpwm_commandCb);
 ros::Subscriber<std_msgs::Int16> subRightPwm_cmd("cmd_rpwm", rightpwm_commandCb);
 ros::Subscriber<std_msgs::Int16> subSonarPower_cmd("cmd_sonar_power", sonar_power_commandCb);
 
+#endif
 
+int eye_servo_power_control(int onoff)
+{
+	eye_servo_on = onoff;
+	if (onoff == 1)
+	{
+		eye_servo.attach(servo_eye_pos_pin);
+	}
+	else
+	{
+		eye_servo.detach();
+	}
+	return onoff;
+}
 
 void light_commandCb(const std_msgs::Int8& light_cmd) 
 {
@@ -245,6 +267,9 @@ void armservo_power_commandCb(const std_msgs::Int8& cmd)
 {
 	if (cmd.data)    digitalWrite(pwm_servo_output_power, LOW);
 	else             digitalWrite(pwm_servo_output_power, HIGH);
+//	pwm.reset();
+//	pwm.setPWMFreq(60);  // Analog servos run at ~60 Hz updates
+
 }
 
 void armservo_pos_commandCb(const ddori_msgs::servo_control& cmd)
@@ -282,8 +307,15 @@ void phone_power_commandCb(const std_msgs::Int8& cmd)
 void foscam_power_commandCb(const std_msgs::Int8& cmd) 
 {
 }
-void camservo_pos_commandCb(const std_msgs::Int8& cmd) 
+
+void camservo_pos_commandCb(const std_msgs::Int16& cmd) 
 {
+	if (!eye_servo_on) {
+		eye_servo_power_control(1);
+	}
+	eye_position = cmd.data;
+	eye_servo.write(eye_position);
+	eyesrvo_sleep_cnt = EYE_SLEEP_CNT_MAX;
 }
 
 
@@ -342,6 +374,12 @@ void sonar_power_commandCb(const std_msgs::Int16& cmd)
 // SETUP
 //=======================================
 void setup() {
+
+#ifndef ROS
+	Serial1.begin(115200);
+	Serial1.println("ddori starting...");
+#endif
+
 	// set the digital pin as output:
 	m_l.pwm = 0;	
 	m_r.pwm = 0;
@@ -443,6 +481,7 @@ void setup() {
 	digitalWrite(right_tr1_pin, HIGH);
 	digitalWrite(right_tr2_pin, LOW);
 
+
 	InitPWM();
 	SetMotorPWM(0, 0);
 
@@ -454,8 +493,12 @@ void setup() {
 	// Start up the library
 	temp_sensors.begin(); // IC Default 9 bit. If you have troubles consider upping it 12. Ups the delay giving the IC more time to process the temperature measurement
 	
+#ifdef ROS
 	ros_init();
+#endif
 
+	eye_servo_power_control(1);
+	eye_servo.write(eye_position);
 }
 
 
@@ -463,7 +506,7 @@ void setup() {
 
 
 
-
+#ifdef ROS
 void ros_init()
 {
 	//////////////////////////////////////////////////////////////////////////////////////////////
@@ -471,6 +514,7 @@ void ros_init()
 	////////////////////////////////////////////////////////////////////////////////////////////////
 	nh.initNode();
 	nh.advertise(pub_ddori_sensor);
+
 
 	nh.subscribe(subLight_cmd);
 	nh.subscribe(subArmServoPower_cmd);
@@ -492,6 +536,7 @@ void ros_init()
 
 	nh.subscribe(subSonarPower_cmd);
 }
+#endif
 
 void ros_report(unsigned long cur_millis)
 {
@@ -505,20 +550,38 @@ void ros_report(unsigned long cur_millis)
 	sensor_msg_data.time_stamp = cur_millis;
 	sensor_msg_data.left_encoder = count_l;
 	sensor_msg_data.right_encoder = count_r;
+	Serial1.print(" enc_l:");
+	Serial1.print(sensor_msg_data.left_encoder);
+	Serial1.print(" enc_r:");
+	Serial1.print(sensor_msg_data.right_encoder);
 
 	sensor_msg_data.gas_co = analogRead(adc_gas_senror3_pin);
 	sensor_msg_data.gas_smoke = analogRead(adc_gas_senror2_pin);
 	sensor_msg_data.gas_lpg = analogRead(adc_gas_senror1_pin);
+
+	Serial1.print(" co:");
+	Serial1.print(sensor_msg_data.gas_co);
+	Serial1.print(" smoke:");
+	Serial1.print(sensor_msg_data.gas_smoke);
+	Serial1.print(" lpg:");
+	Serial1.print(sensor_msg_data.gas_lpg);
 
 	sensor_msg_data.pir = 0;
 	sensor_msg_data.pir |= digitalRead(pir_det1_pin) ? 1 : 0;
 	sensor_msg_data.pir |= digitalRead(pir_det2_pin) ? 2 : 0;
 	sensor_msg_data.pir |= digitalRead(pir_det3_pin) ? 4 : 0;
 	sensor_msg_data.pir |= digitalRead(pir_det4_pin) ? 8 : 0;
-	//Serial1.print("pir="); Serial1.println(sensor_msg_data.pir);
+	
 
+#ifdef ROS
 	pub_ddori_sensor.publish(&sensor_msg_data);
+#else
+	Serial1.print(" pir=");
+	Serial1.println(sensor_msg_data.pir);
+#endif
+
 }
+
 
 
 //=======================================
@@ -596,14 +659,82 @@ void loop()
 		check_battery();
 
 		ros_report(cur_millis);
+
+#ifdef ROS
 		nh.spinOnce();
+#endif
+		if (eye_servo_on)
+		{
+			if (--eyesrvo_sleep_cnt < 0)
+			{
+				eyesrvo_sleep_cnt = EYE_SLEEP_CNT_MAX;
+				eye_servo_power_control(0);
 
+			}
+		}
 	}
-
+#ifdef ROS
 	nh.spinOnce();
+#endif
 	delay(1);
 }
 
+
+#ifndef ROS
+String inString = "";    // string to hold input
+int getParam()
+{
+	static std_msgs::Int8 light_cmd;
+	static std_msgs::Int8 arm_powr;
+	char param, cmd;
+	if (!Serial1.available())    return 0;
+	int inChar = Serial1.read();
+	switch (inChar)
+	{
+	case 'l':
+		light_cmd.data = light_cmd.data ? 0 : 1;
+		light_commandCb(light_cmd);
+		Serial1.print("Light ");
+		Serial1.println(light_cmd.data);
+		break;
+	case ' ':
+		stop();
+		Serial1.print("stop!!! v=");
+		Serial1.print(get_battery_mv());
+		Serial1.print(",a=");
+		Serial1.println(get_battery_ma());
+		break;
+	case 'p':
+		arm_powr.data = 0;
+		armservo_power_commandCb(arm_powr);
+		Serial1.print("Arm Servo Power ");
+		Serial1.println(arm_powr.data);
+		break;
+	case 'P':
+		arm_powr.data = 1;
+		armservo_power_commandCb(arm_powr);
+		Serial1.print("Arm Servo Power ");
+		Serial1.println(arm_powr.data);
+		break;
+	}
+	/*
+		void armservo_power_commandCb(const std_msgs::Int8& cmd);
+		void armservo_pos_commandCb(const ddori_msgs::servo_control& cmd);
+		void arms_pos_commandCb(const std_msgs::Int8& cmd);
+		void gassensor_power_commandCb(const std_msgs::Int8& cmd);
+		void arms_hug_commandCb(const std_msgs::Int8& cmd);
+		void phone_power_commandCb(const std_msgs::Int8& cmd);
+		void foscam_power_commandCb(const std_msgs::Int8& cmd);
+		void camservo_pos_commandCb(const std_msgs::Int16& cmd);
+		void wheel_pwm_commandCb(const ddori_msgs::motor_speed& cmd);
+		void wheel_stop_commandCb(const std_msgs::Int8& cmd);
+		void alloff_commandCb(const std_msgs::Int8& cmd);
+		void leftpwm_commandCb(const std_msgs::Int16& cmd);
+		void rightpwm_commandCb(const std_msgs::Int16& cmd);
+		void sonar_power_commandCb(const std_msgs::Int16& cmd);
+	*/
+}
+#endif
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void isr_encoder_right() {         //Read Encoder
