@@ -3,7 +3,7 @@
 
 	<node pkg="face_recognition" type="Fserver" name="face_recognition" output="screen">
 	    <param name="confidence_value" value="0.80"/> 
-	    <param name="show_screen_flag" value="false"/>
+	    <param name="show_screen_flag" value="true"/>
 	    <param name="add_face_number" value="25"/> 
 	</node>
 
