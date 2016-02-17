@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(differential_drive)
+project(knex_ros)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -8,12 +8,15 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   std_msgs
   tf
+  robot_state_publisher
+  differential_drive
+  rosserial_arduino
 )
 
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES diffdrive
-#  CATKIN_DEPENDS rospy std_msgs tf
+#  LIBRARIES knex_ros
+#  CATKIN_DEPENDS rospy std_msgs tf   robot_state_publisher
 #  DEPENDS system_lib
 )
 

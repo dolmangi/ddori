@@ -25,6 +25,7 @@ import rospy
 import roslib
 
 from std_msgs.msg import Int16
+from std_msgs.msg import Float32
 
 def lwheelCallback(msg):
     lscaled_pub.publish( msg.data * -1 * scale)
@@ -41,11 +42,11 @@ if __name__ == '__main__':
     scale = rospy.get_param('distance_scale', 1)
     rospy.loginfo("wheel_scaler scale: %0.2f", scale)
     
-    rospy.Subscriber("lwheel", Int16, lwheelCallback)
-    rospy.Subscriber("rwheel", Int16, rwheelCallback)
+    rospy.Subscriber("lwheel", Float32, lwheelCallback)
+    rospy.Subscriber("rwheel", Float32, rwheelCallback)
     
-    lscaled_pub = rospy.Publisher("lwheel_scaled", Int16)
-    rscaled_pub = rospy.Publisher("rwheel_scaled", Int16) 
+    lscaled_pub = rospy.Publisher("lwheel_scaled", Float32, queue_size=10)
+    rscaled_pub = rospy.Publisher("rwheel_scaled", Float32, queue_size=10) 
     
     ### testing sleep CPU usage
     r = rospy.Rate(50) 

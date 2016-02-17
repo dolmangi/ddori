@@ -61,6 +61,7 @@ from geometry_msgs.msg import Twist
 from nav_msgs.msg import Odometry
 from tf.broadcaster import TransformBroadcaster
 from std_msgs.msg import Int16
+from std_msgs.msg import Float32
 
 #############################################################################
 class DiffTf:
@@ -106,8 +107,8 @@ class DiffTf:
         self.then = rospy.Time.now()
         
         # subscriptions
-        rospy.Subscriber("lwheel", Int16, self.lwheelCallback)
-        rospy.Subscriber("rwheel", Int16, self.rwheelCallback)
+        rospy.Subscriber("lwheel", Float32, self.lwheelCallback)
+        rospy.Subscriber("rwheel", Float32, self.rwheelCallback)
         self.odomPub = rospy.Publisher("odom", Odometry, queue_size=10)
         self.odomBroadcaster = TransformBroadcaster()
         
