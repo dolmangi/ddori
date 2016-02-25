@@ -15,18 +15,24 @@
 #include <OneWire.h>
 #include <DallasTemperature.h>
 #include <servo.h>
+#include <stdarg.h>
+
+
+
+#define PRINTF_BUF 200 // define the tmp buffer size (change if desired)
+#define MOTOR_ON_CNT 10
 
 #define ROS
 #define EYE_SLEEP_CNT_MAX		20
 
 typedef enum _MOTOR {
-	MOTOR_LEFT=0,
-	MOTOR_RIGHT
+	MOTOR_RIGHT=0,
+	MOTOR_LEFT
 } MotorSelect;
 
 typedef enum _MOTOR_DIRECTION {
-	MOTOR_FORWARD=0,
-	MOTOR_BACKWARD
+	MOTOR_BACKWARD=0,
+	MOTOR_FORWARD
 } MotorDirection;
 
 
@@ -36,6 +42,7 @@ typedef struct _motor_data
 	float targetSpeed;
 	float last_error;
 	long prev_cnt;
+	int on_cnt;
 } MotorData;
 
 
@@ -59,10 +66,10 @@ typedef struct _motor_data
 //int readings[NUMREADINGS];   
 
 
-const int left_tr1_pin = 46;
-const int left_tr2_pin = 47;
-const int right_tr1_pin = 45;
-const int right_tr2_pin = 44;
+const int right_tr1_pin = 46;
+const int right_tr2_pin = 47;
+const int left_tr1_pin = 45;
+const int left_tr2_pin = 44;
 const int front_light_pin = 49;
 
 
@@ -98,14 +105,14 @@ const int air_q_sensor_pin = 23;	//Air Quality Sensor
 
 const int power_phone_pin = 50;
 
-const int encoder_r1_pin = 2;		//Encoder Input pin 
-const int encoder_r2_pin = 17;		//Encoder Input pin 
-const int encoder_r1_interrupt = 0;		//Interrupt 0
+const int encoder_r1_pin = 3;		//Encoder Input pin 
+const int encoder_r2_pin = 16;		//Encoder Input pin 
+const int encoder_r1_interrupt = 1;		//Interrupt 0
 
 
-const int encoder_l1_pin = 3;		//Encoder Input pin 
-const int encoder_l2_pin = 16;		//Encoder Input pin 
-const int encoder_l1_interrupt = 1;		//Interrupt 1
+const int encoder_l1_pin = 2;		//Encoder Input pin 
+const int encoder_l2_pin = 17;		//Encoder Input pin 
+const int encoder_l1_interrupt = 0;		//Interrupt 1
 
 
 const int servo_arm_l_pin = 11;
@@ -125,12 +132,13 @@ const int adc_gas_senror3_pin = 4;    //Analog pin 4
 
 
 
-MotorData m_l, m_r;
+MotorData m_l = { 0 };
+MotorData m_r = { 0 };
+
 int light_on = 0;
 int16_t sonar_power = 0;
 
 void getMotorData();
-void updatePid(MotorData &m);
 void SetMotorDirection(MotorSelect m, MotorDirection dir);
 
 int arm_pos = 30;
@@ -151,9 +159,6 @@ unsigned long systick = 0;
 
 
 int servo_pos[] = { 150,150,150,150,150,150,150,150 };
-
-volatile long count_l = 0; // revolution counter
-volatile long count_r = 0; // revolution counter
 
 
 float Kp = 2;          //setting Kp  
@@ -184,16 +189,27 @@ void arms_hug_commandCb(const std_msgs::Int8& cmd);
 void phone_power_commandCb(const std_msgs::Int8& cmd);
 void foscam_power_commandCb(const std_msgs::Int8& cmd);
 void camservo_pos_commandCb(const std_msgs::Int16& cmd);
-void wheel_pwm_commandCb(const ddori_msgs::motor_speed& cmd);
 void wheel_stop_commandCb(const std_msgs::Int8& cmd);
 void alloff_commandCb(const std_msgs::Int8& cmd);
-void leftpwm_commandCb(const std_msgs::Int16& cmd);
-void rightpwm_commandCb(const std_msgs::Int16& cmd);
+//void wheel_pwm_commandCb(const ddori_msgs::motor_speed& cmd);
+//void leftpwm_commandCb(const std_msgs::Int16& cmd);
+//void rightpwm_commandCb(const std_msgs::Int16& cmd);
 void sonar_power_commandCb(const std_msgs::Int16& cmd);
 void powerled_onoff(int ledno, int onoff);
 void SetMotorPWM(byte left, byte right);
 void InitPWM();
 void stop();
+
+void rmotor_cmd_cb(const std_msgs::Int16& cmd);
+void lmotor_cmd_cb(const std_msgs::Int16& cmd);
+
+
+
+
+
+
+
+
 
 // Setup a oneWire instance to communicate with any OneWire devices 
 // (not just Maxim/Dallas temperature ICs)
@@ -207,6 +223,12 @@ Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
 
 
 ddori_msgs::ddori_sensor  sensor_msg_data;
+std_msgs::String dbg_data;
+std_msgs::Int16 lwheel;
+std_msgs::Int16 rwheel;
+void dbgprint(const char *format, ...);
+
+
 
 #ifdef ROS
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -219,7 +241,13 @@ public:
 };
 
 ros::NodeHandle_<NewHardware>  nh;
+ros::Publisher pub_dbg("ddori_dbg", &dbg_data);
 ros::Publisher pub_ddori_sensor("ddori_sensor", &sensor_msg_data);
+ros::Publisher pub_left_wheel_encoder("lwheel", &lwheel);
+ros::Publisher pub_right_wheel_encoder("rwheel", &rwheel);
+
+ros::Subscriber<std_msgs::Int16> sub_lmotor_cmd("lmotor_cmd", lmotor_cmd_cb);
+ros::Subscriber<std_msgs::Int16> sub_rmotor_cmd("rmotor_cmd", rmotor_cmd_cb);
 
 ros::Subscriber<std_msgs::Int8> subLight_cmd("cmd_light", light_commandCb);
 ros::Subscriber<std_msgs::Int8> subArmServoPower_cmd("cmd_armservo_power", armservo_power_commandCb);
@@ -228,13 +256,13 @@ ros::Subscriber<std_msgs::Int8> subGasSensorPower_cmd("cmd_gassesnsor_power", ga
 ros::Subscriber<std_msgs::Int8> subPhonePower_cmd("cmd_phone_power", phone_power_commandCb);
 ros::Subscriber<std_msgs::Int8> subFoscamPower_cmd("cmd_foscam_power", foscam_power_commandCb);
 ros::Subscriber<std_msgs::Int16> subCamservoPos_cmd("cmd_camservo_pos", camservo_pos_commandCb);
-ros::Subscriber<ddori_msgs::motor_speed> subPWM_cmd("cmd_pwm", wheel_pwm_commandCb);
 ros::Subscriber<std_msgs::Int8> subStop_cmd("cmd_stop", wheel_stop_commandCb);
 ros::Subscriber<std_msgs::Int8> subAllOff_cmd("cmd_alloff", alloff_commandCb);
 ros::Subscriber<std_msgs::Int8> subArmsHug_cmd("cmd_armshug", arms_hug_commandCb);
 ros::Subscriber<std_msgs::Int8> subArmsPos_cmd("cmd_armspos", arms_pos_commandCb);
-ros::Subscriber<std_msgs::Int16> subLeftPwm_cmd("cmd_lpwm", leftpwm_commandCb);
-ros::Subscriber<std_msgs::Int16> subRightPwm_cmd("cmd_rpwm", rightpwm_commandCb);
+//ros::Subscriber<ddori_msgs::motor_speed> subPWM_cmd("cmd_pwm", wheel_pwm_commandCb);
+//ros::Subscriber<std_msgs::Int16> subLeftPwm_cmd("cmd_lpwm", leftpwm_commandCb);
+//ros::Subscriber<std_msgs::Int16> subRightPwm_cmd("cmd_rpwm", rightpwm_commandCb);
 ros::Subscriber<std_msgs::Int16> subSonarPower_cmd("cmd_sonar_power", sonar_power_commandCb);
 
 #endif
@@ -257,16 +285,26 @@ void light_commandCb(const std_msgs::Int8& light_cmd)
 {
 
 	if (light_cmd.data == 1)
+	{
 		powerled_onoff(2, 1);
+
+		dbgprint("light=%d", light_cmd.data);
+	}
 	else
+	{
 		powerled_onoff(2, 0);
+
+		dbgprint("light=%d", light_cmd.data);
+	}
 }
+
 
 
 void armservo_power_commandCb(const std_msgs::Int8& cmd) 
 {
 	if (cmd.data)    digitalWrite(pwm_servo_output_power, LOW);
 	else             digitalWrite(pwm_servo_output_power, HIGH);
+	dbgprint("armservo_power_commandCb=%d", cmd.data);
 //	pwm.reset();
 //	pwm.setPWMFreq(60);  // Analog servos run at ~60 Hz updates
 
@@ -275,11 +313,13 @@ void armservo_power_commandCb(const std_msgs::Int8& cmd)
 void armservo_pos_commandCb(const ddori_msgs::servo_control& cmd)
 {
 	pwm.setPWM(cmd.no, 0, cmd.pos);
+	dbgprint("armservo_pos_commandCb=%d", cmd.pos);
 }
 void arms_pos_commandCb(const std_msgs::Int8& cmd)
 {
 	pwm.setPWM(0, 0, map(cmd.data, 0, 100, PWM0_LOW, PWM0_HIGH));
 	pwm.setPWM(4, 0, map(cmd.data, 0, 100, PWM4_HIGH, PWM4_LOW));
+	dbgprint("arms_pos_commandCb=%d", cmd.data);
 }
 void arms_hug_commandCb(const std_msgs::Int8& cmd)
 {
@@ -287,6 +327,7 @@ void arms_hug_commandCb(const std_msgs::Int8& cmd)
 	pwm.setPWM(5, 0, map(cmd.data, 0, 100, PWM5_HIGH, PWM5_LOW));
 	pwm.setPWM(2, 0, map(cmd.data, 0, 100, PWM1_LOW, PWM1_HIGH));
 	pwm.setPWM(6, 0, map(cmd.data, 0, 100, PWM1_LOW, PWM1_HIGH));
+	dbgprint("arms_hug_commandCb=%d", cmd.data);
 }
 
 void gassensor_power_commandCb(const std_msgs::Int8& cmd)
@@ -295,6 +336,8 @@ void gassensor_power_commandCb(const std_msgs::Int8& cmd)
 		digitalWrite(power_gassensor_pin, LOW);
 	else
 		digitalWrite(power_gassensor_pin, HIGH);
+
+	dbgprint("gassensor_power = %d", cmd.data);
 }
 void phone_power_commandCb(const std_msgs::Int8& cmd) 
 {
@@ -302,6 +345,7 @@ void phone_power_commandCb(const std_msgs::Int8& cmd)
 		digitalWrite(power_phone_pin, HIGH);
 	else
 		digitalWrite(power_phone_pin, LOW);
+	dbgprint("phone_power = %d", cmd.data);
 }
 
 void foscam_power_commandCb(const std_msgs::Int8& cmd) 
@@ -316,23 +360,45 @@ void camservo_pos_commandCb(const std_msgs::Int16& cmd)
 	eye_position = cmd.data;
 	eye_servo.write(eye_position);
 	eyesrvo_sleep_cnt = EYE_SLEEP_CNT_MAX;
+
+	dbgprint("camservo_pos = %d", eye_position);
 }
 
-
-void wheel_pwm_commandCb(const ddori_msgs::motor_speed& cmd)
+void set_motor_cmd(bool right, int16_t cmd)
 {
-	m_l.pwm = abs(cmd.left_speed);
-	m_r.pwm = abs(cmd.right_speed);
-	SetMotorPWM(m_l.pwm, m_r.pwm);
-
-	if (cmd.left_speed<0) SetMotorDirection(MOTOR_LEFT, MOTOR_BACKWARD);
-	else SetMotorDirection(MOTOR_LEFT, MOTOR_FORWARD);
-
-	if (cmd.right_speed<0) SetMotorDirection(MOTOR_RIGHT, MOTOR_BACKWARD);
-	else SetMotorDirection(MOTOR_RIGHT, MOTOR_FORWARD);
-
-
+	int8_t pwm = abs(cmd);
+	if (right)
+	{
+		if (cmd<0) SetMotorDirection(MOTOR_RIGHT, MOTOR_BACKWARD);
+		else SetMotorDirection(MOTOR_RIGHT, MOTOR_FORWARD);
+		OCR2B = pwm;  //right; 		// send PWM to motor
+		if (cmd) dbgprint("wheel R PWM = %d", cmd);
+	}
+	else
+	{
+		if (cmd<0) SetMotorDirection(MOTOR_LEFT, MOTOR_BACKWARD);
+		else SetMotorDirection(MOTOR_LEFT, MOTOR_FORWARD);
+		OCR2A = pwm;  //left;		// send PWM to motor
+		if (cmd) dbgprint("wheel L PWM = %d", cmd);
+	}
 }
+
+
+void lmotor_cmd_cb(const std_msgs::Int16& cmd)
+{
+	m_l.pwm = cmd.data;
+	m_l.on_cnt = MOTOR_ON_CNT;
+	//set_motor_cmd(false,cmd.data);
+}
+
+void rmotor_cmd_cb(const std_msgs::Int16& cmd)
+{
+	m_r.pwm = cmd.data;
+	m_r.on_cnt = MOTOR_ON_CNT;
+	//set_motor_cmd(true, cmd.data);
+}
+
+
 
 void wheel_stop_commandCb(const std_msgs::Int8& cmd) {
 	m_l.pwm = 0;
@@ -347,23 +413,40 @@ void alloff_commandCb(const std_msgs::Int8& cmd) {
 	powerled_onoff(2, 0);
 	digitalWrite(pwm_servo_output_power, HIGH);
 }
+/*
+void wheel_pwm_commandCb(const ddori_msgs::motor_speed& cmd)
+{
+m_l.pwm = abs(cmd.left_speed);
+m_r.pwm = abs(cmd.right_speed);
+SetMotorPWM(m_l.pwm, m_r.pwm);
 
+if (cmd.left_speed<0) SetMotorDirection(MOTOR_RIGHT, MOTOR_BACKWARD);
+else SetMotorDirection(MOTOR_RIGHT, MOTOR_FORWARD);
+
+if (cmd.right_speed<0) SetMotorDirection(MOTOR_LEFT, MOTOR_BACKWARD);
+else SetMotorDirection(MOTOR_LEFT, MOTOR_FORWARD);
+
+if (cmd.left_speed || cmd.right_speed)
+{
+dbgprint("wheel_pwm_command = %d %d", cmd.left_speed, cmd.right_speed);
+}
+}
 void leftpwm_commandCb(const std_msgs::Int16& cmd)
 {
 	m_l.pwm = cmd.data;
 	SetMotorPWM(m_l.pwm, m_r.pwm);
-	if (cmd.data < 0) SetMotorDirection(MOTOR_LEFT, MOTOR_BACKWARD);
-	else SetMotorDirection(MOTOR_LEFT, MOTOR_FORWARD);
+	if (cmd.data < 0) SetMotorDirection(MOTOR_RIGHT, MOTOR_BACKWARD);
+	else SetMotorDirection(MOTOR_RIGHT, MOTOR_FORWARD);
 }
 
 void rightpwm_commandCb(const std_msgs::Int16& cmd)
 {
 	m_r.pwm = cmd.data;
 	SetMotorPWM(m_l.pwm, m_r.pwm);
-	if (cmd.data < 0) SetMotorDirection(MOTOR_RIGHT, MOTOR_BACKWARD);
-	else SetMotorDirection(MOTOR_RIGHT, MOTOR_FORWARD);
+	if (cmd.data < 0) SetMotorDirection(MOTOR_LEFT, MOTOR_BACKWARD);
+	else SetMotorDirection(MOTOR_LEFT, MOTOR_FORWARD);
 }
-
+*/
 void sonar_power_commandCb(const std_msgs::Int16& cmd)
 {
 	sonar_power = cmd.data;
@@ -471,15 +554,15 @@ void setup() {
 	
 
 	//init motor (Wheel) 
-	pinMode(left_tr1_pin, OUTPUT);
-	pinMode(left_tr2_pin, OUTPUT);
 	pinMode(right_tr1_pin, OUTPUT);
 	pinMode(right_tr2_pin, OUTPUT);
+	pinMode(left_tr1_pin, OUTPUT);
+	pinMode(left_tr2_pin, OUTPUT);
 
-	digitalWrite(left_tr1_pin, HIGH);
-	digitalWrite(left_tr2_pin, LOW);
 	digitalWrite(right_tr1_pin, HIGH);
 	digitalWrite(right_tr2_pin, LOW);
+	digitalWrite(left_tr1_pin, HIGH);
+	digitalWrite(left_tr2_pin, LOW);
 
 
 	InitPWM();
@@ -514,6 +597,13 @@ void ros_init()
 	////////////////////////////////////////////////////////////////////////////////////////////////
 	nh.initNode();
 	nh.advertise(pub_ddori_sensor);
+	nh.advertise(pub_dbg);
+	nh.advertise(pub_left_wheel_encoder);
+	nh.advertise(pub_right_wheel_encoder);
+
+
+	nh.subscribe(sub_lmotor_cmd);
+	nh.subscribe(sub_rmotor_cmd);
 
 
 	nh.subscribe(subLight_cmd);
@@ -523,7 +613,6 @@ void ros_init()
 	nh.subscribe(subPhonePower_cmd);
 	nh.subscribe(subFoscamPower_cmd);
 	nh.subscribe(subCamservoPos_cmd);
-	nh.subscribe(subPWM_cmd);
 
 	nh.subscribe(subStop_cmd);
 	nh.subscribe(subAllOff_cmd);
@@ -531,8 +620,9 @@ void ros_init()
 	nh.subscribe(subArmsHug_cmd);
 	nh.subscribe(subArmsPos_cmd);
 
-	nh.subscribe(subLeftPwm_cmd);
-	nh.subscribe(subRightPwm_cmd);
+//	nh.subscribe(subPWM_cmd);
+//	nh.subscribe(subLeftPwm_cmd);
+//	nh.subscribe(subRightPwm_cmd);
 
 	nh.subscribe(subSonarPower_cmd);
 }
@@ -548,24 +638,27 @@ void ros_report(unsigned long cur_millis)
 	sensor_msg_data.current = get_battery_ma();
 
 	sensor_msg_data.time_stamp = cur_millis;
-	sensor_msg_data.left_encoder = count_l;
-	sensor_msg_data.right_encoder = count_r;
+	sensor_msg_data.left_encoder = lwheel.data;
+	sensor_msg_data.right_encoder = rwheel.data;
+#ifndef ROS
 	Serial1.print(" enc_l:");
 	Serial1.print(sensor_msg_data.left_encoder);
 	Serial1.print(" enc_r:");
 	Serial1.print(sensor_msg_data.right_encoder);
+#endif
 
 	sensor_msg_data.gas_co = analogRead(adc_gas_senror3_pin);
 	sensor_msg_data.gas_smoke = analogRead(adc_gas_senror2_pin);
 	sensor_msg_data.gas_lpg = analogRead(adc_gas_senror1_pin);
 
+#ifndef ROS
 	Serial1.print(" co:");
 	Serial1.print(sensor_msg_data.gas_co);
 	Serial1.print(" smoke:");
 	Serial1.print(sensor_msg_data.gas_smoke);
 	Serial1.print(" lpg:");
 	Serial1.print(sensor_msg_data.gas_lpg);
-
+#endif
 	sensor_msg_data.pir = 0;
 	sensor_msg_data.pir |= digitalRead(pir_det1_pin) ? 1 : 0;
 	sensor_msg_data.pir |= digitalRead(pir_det2_pin) ? 2 : 0;
@@ -582,7 +675,39 @@ void ros_report(unsigned long cur_millis)
 
 }
 
+void motor_cmd()
+{
+	if (m_l.on_cnt>0)
+	{
+		m_l.on_cnt--;
+		set_motor_cmd(false, m_l.pwm);
+	}
 
+	if (m_r.on_cnt>0)
+	{
+		m_r.on_cnt--;
+		set_motor_cmd(true, m_r.pwm);
+	}
+
+	if (m_l.on_cnt <= 0) set_motor_cmd(false, 0);
+	if (m_r.on_cnt <= 0) set_motor_cmd(true, 0);
+}
+
+void  report_enc()
+{
+	static int16_t prev_enc_l = 0;
+	static int16_t prev_enc_r = 0;
+
+	if (prev_enc_l != lwheel.data || prev_enc_r != rwheel.data)
+	{
+		pub_left_wheel_encoder.publish(&lwheel);
+		pub_right_wheel_encoder.publish(&rwheel);
+		dbgprint("enc=[%d, %d]", lwheel.data, rwheel.data);
+	}
+
+	prev_enc_l = lwheel.data;
+	prev_enc_r = rwheel.data;
+}
 
 //=======================================
 // LOOP
@@ -594,15 +719,21 @@ void loop()
 	getParam();                                                                 // check keyboard
 #endif
 
-	if (arm_power_on && (cur_millis - last_arm_milli >= 10))
+	//if (arm_power_on && (cur_millis - last_arm_milli >= 10))
+	//{
+//		last_arm_milli = cur_millis;
+//	}
+
+	if (cur_millis - last_arm_milli >= 30)
 	{
 		last_arm_milli = cur_millis;
+		report_enc();
 	}
 
 	if ((cur_millis - lastMilli) >= LOOPTIME)
 	{                                                                                 // enter timed loop
 		lastMilli = cur_millis;
-
+		/*
 		if (!sonar_power) 
 			sensor_msg_data.als = 0;
 
@@ -654,10 +785,11 @@ void loop()
 			duration = pulseIn(sonar_b_echo_pin, HIGH, 100000);
 			sensor_msg_data.sonar_rear = duration / 29.41 / 2;
 		}
-
+		*/
 		// display data
 		check_battery();
 
+		motor_cmd();
 		ros_report(cur_millis);
 
 #ifdef ROS
@@ -740,20 +872,20 @@ int getParam()
 void isr_encoder_right() {         //Read Encoder
 	if (digitalRead(encoder_r2_pin) == HIGH)
 	{
-		count_r--;
+		rwheel.data--;
 	}
 	else {
-		count_r++;
+		rwheel.data++;
 	}
 
 }
 void isr_encoder_left() {         //Read Encoder
 	if (digitalRead(encoder_l2_pin) == LOW)
 	{
-		count_l--;
+		lwheel.data--;
 	}
 	else {
-		count_l++;
+		lwheel.data++;
 	}
 }
 
@@ -813,10 +945,10 @@ int get_battery_ma()
 
 void stop()
 {
-	digitalWrite(left_tr1_pin, LOW);
-	digitalWrite(left_tr2_pin, LOW);
 	digitalWrite(right_tr1_pin, LOW);
 	digitalWrite(right_tr2_pin, LOW);
+	digitalWrite(left_tr1_pin, LOW);
+	digitalWrite(left_tr2_pin, LOW);
 	SetMotorPWM(0, 0); // send PWM to motor
 }
 
@@ -843,30 +975,30 @@ void powerled_onoff(int ledno, int onoff)
 
 void SetMotorDirection(MotorSelect m, MotorDirection dir)
 {
-	if (m == MOTOR_LEFT)
+	if (m == MOTOR_RIGHT)
 	{
 		if (dir == MOTOR_BACKWARD)
 		{
-			digitalWrite(left_tr1_pin, LOW);
-			digitalWrite(left_tr2_pin, HIGH);
+			digitalWrite(right_tr1_pin, HIGH);
+			digitalWrite(right_tr2_pin, LOW);
 		}
 		else
 		{
-			digitalWrite(left_tr1_pin, HIGH);
-			digitalWrite(left_tr2_pin, LOW);
+			digitalWrite(right_tr1_pin, LOW);
+			digitalWrite(right_tr2_pin, HIGH);
 		}
 	}
 	else
 	{
 		if (dir == MOTOR_BACKWARD)
 		{
-			digitalWrite(right_tr1_pin, LOW);
-			digitalWrite(right_tr2_pin, HIGH);
+			digitalWrite(left_tr1_pin, HIGH);
+			digitalWrite(left_tr2_pin, LOW);
 		}
 		else
 		{
-			digitalWrite(right_tr1_pin, HIGH);
-			digitalWrite(right_tr2_pin, LOW);
+			digitalWrite(left_tr1_pin, LOW);
+			digitalWrite(left_tr2_pin, HIGH);
 		}
 
 	}
@@ -900,6 +1032,22 @@ void InitPWM()
 
 void SetMotorPWM(byte left, byte right)
 {
-	OCR2B = left; 		// send PWM to motor
-	OCR2A = right;		// send PWM to motor
+	OCR2B = right; 		// send PWM to motor
+	OCR2A = left;		// send PWM to motor
+}
+
+void dbgprint(const char *format, ...)
+{
+	char dbgbuf[PRINTF_BUF];
+	va_list ap;
+	va_start(ap, format);
+	vsnprintf(dbgbuf, sizeof(dbgbuf), format, ap);
+
+#ifdef ROS
+	dbg_data.data = dbgbuf;
+	pub_dbg.publish(&dbg_data);
+#else
+#endif
+	va_end(ap);
+
 }
