@@ -105,12 +105,12 @@ const int air_q_sensor_pin = 23;	//Air Quality Sensor
 
 const int power_phone_pin = 50;
 
-const int encoder_r1_pin = 3;		//Encoder Input pin 
+//const int encoder_r1_pin = 3;		//Encoder Input pin 
 const int encoder_r2_pin = 16;		//Encoder Input pin 
 const int encoder_r1_interrupt = 1;		//Interrupt 0
 
 
-const int encoder_l1_pin = 2;		//Encoder Input pin 
+//const int encoder_l1_pin = 2;		//Encoder Input pin 
 const int encoder_l2_pin = 17;		//Encoder Input pin 
 const int encoder_l1_interrupt = 0;		//Interrupt 1
 
@@ -483,16 +483,16 @@ void setup() {
 	pinMode(pir_det3_pin, INPUT);        //PIR SENSOR
 	pinMode(pir_det4_pin, INPUT);        //PIR SENSOR
 
-	pinMode(encoder_r1_pin, INPUT);      //encoder
+//	pinMode(encoder_r1_pin, INPUT);      //encoder
 	pinMode(encoder_r2_pin, INPUT);        //encoder
 
-	pinMode(encoder_l1_pin, INPUT);      //encoder
+//	pinMode(encoder_l1_pin, INPUT);      //encoder
 	pinMode(encoder_l2_pin, INPUT);        //encoder
 										   
 	//internal pullup for encoders
-	digitalWrite(encoder_r1_pin, HIGH);
+//	digitalWrite(encoder_r1_pin, HIGH);
 	digitalWrite(encoder_r2_pin, HIGH);
-	digitalWrite(encoder_l1_pin, HIGH);
+//	digitalWrite(encoder_l1_pin, HIGH);
 	digitalWrite(encoder_l2_pin, HIGH);
 
 	attachInterrupt(encoder_r1_interrupt, isr_encoder_right, RISING);  //set pin no 2 as interrupt pin (INTERRUPT 0) 

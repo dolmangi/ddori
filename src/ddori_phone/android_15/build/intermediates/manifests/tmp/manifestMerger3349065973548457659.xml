@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="org.ros.android.android_15.test">
+
+    <uses-sdk android:minSdkVersion="15" android:targetSdkVersion="15" />
+
+    <application>
+        <uses-library android:name="android.test.runner" />
+    </application>
+
+    <instrumentation android:name="android.test.InstrumentationTestRunner"
+                     android:targetPackage="org.ros.android.android_15.test"
+                     android:handleProfiling="false"
+                     android:functionalTest="false"
+                     android:label="Tests for org.ros.android.android_15.test"/>
+</manifest>

@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merger version="3"><dataSet config="main"><source path="E:\dolproj\2015_ddori\src\ddori\src\ddori_phone\android_acm_serial\src\main\assets"/><source path="E:\dolproj\2015_ddori\src\ddori\src\ddori_phone\android_acm_serial\assets"/></dataSet><dataSet config="debug"><source path="E:\dolproj\2015_ddori\src\ddori\src\ddori_phone\android_acm_serial\src\debug\assets"/></dataSet></merger>
