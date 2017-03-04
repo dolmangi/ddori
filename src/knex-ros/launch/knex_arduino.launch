@@ -1,0 +1,4 @@
+<launch>
+  <include file="$(find knex_ros)/launch/knex_arduino_noser.launch" />
+  <include file="$(find knex_ros)/launch/knex_arduino_ser.launch" />
+</launch>

@@ -1,0 +1,4 @@
+<launch>
+  <include file="$(find knex_ros)/launch/knex_arduino_ser.launch" />
+  <node name="knex_scratch" pkg="knex_ros" type="knex_scratch_connector.py" output="screen"/>
+</launch>

@@ -1,0 +1,5 @@
+<launch>
+<!--  TODO: make these parameters local -->
+  <include file="$(find knex_ros)/launch/knex_arduino_ser.launch" />
+  <node pkg="knex_ros" type="knex_arduino_connector.py" name="knex_arduino_connector" output="screen"/>
+</launch>

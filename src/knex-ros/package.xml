@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<package>
+  <name>knex_ros</name>
+  <version>0.0.0</version>
+
+  <description>
+
+     kinex_ros
+
+  </description>
+  <author>jfstepha</author>
+  <license>BSD</license>
+  <!--review status="unreviewed" notes=""/-->
+  <url>http://ros.org/wiki/kinex_ros</url>
+  <maintainer email="dolmangi@todo.todo">dolmangi</maintainer>
+  
+  <!--   <test_depend>gtest</test_depend> -->
+  <buildtool_depend>catkin</buildtool_depend>
+  
+  <build_depend>rospy</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <build_depend>tf</build_depend>
+  <build_depend>rosserial_arduino</build_depend>
+  <build_depend>robot_state_publisher</build_depend>
+  <build_depend>rosserial_arduino</build_depend>  
+  
+  <run_depend>rospy</run_depend>
+  <run_depend>std_msgs</run_depend>
+  <run_depend>tf</run_depend>
+  <run_depend>rosserial_arduino</run_depend>
+  <run_depend>robot_state_publisher</run_depend>
+  <run_depend>differential_drive</run_depend>
+
+
+  <!-- The export tag contains other, unspecified, tags -->
+  <export>
+    <!-- Other tools can request additional information be placed here -->
+
+  </export>
+</package>
